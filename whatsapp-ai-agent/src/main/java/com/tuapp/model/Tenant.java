@@ -12,8 +12,15 @@ import java.time.Instant;
  * Contiene el contexto propio del negocio: catálogo, precios, horarios, tono,
  * plan contratado (Básico / Pro / Catálogo) y credenciales de canal (WhatsApp/Instagram).
  *
- * TODO: campos de plan, credenciales Twilio/Meta, tono/prompt del negocio,
- * horarios de atención, etc. se agregan en la Semana 2-3 (ver roadmap doc, sección 9).
+ * businessContext (Semana 2): texto libre con catálogo/precios/horarios/tono
+ * que se inyecta directo en el system prompt del agente de IA. Es una
+ * simplificación deliberada para esta semana - no hay panel todavía para
+ * cargarlo, así que AiResponseService usa un tenant de prueba hardcodeado.
+ * TODO Semana 3: reemplazar por catálogo estructurado (entidad Product) +
+ * panel web para que el dueño lo cargue, y resolver el Tenant real por
+ * número de WhatsApp entrante en vez de un valor fijo.
+ *
+ * TODO: campos de plan, credenciales Twilio/Meta.
  */
 @Entity
 @Table(name = "tenants")
@@ -27,6 +34,9 @@ public class Tenant {
     private Long id;
 
     private String businessName;
+
+    @Column(columnDefinition = "TEXT")
+    private String businessContext;
 
     private Instant createdAt;
 }

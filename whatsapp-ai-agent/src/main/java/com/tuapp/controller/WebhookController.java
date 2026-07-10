@@ -1,5 +1,7 @@
 package com.tuapp.controller;
 
+import com.tuapp.service.AiResponseService;
+import com.tuapp.service.HandoffService;
 import com.twilio.security.RequestValidator;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Message;
@@ -27,9 +29,9 @@ import java.util.Map;
  *
  * Semana 1: endpoint de webhook de Twilio (sandbox), con validación de firma
  * para rechazar requests que no vengan realmente de Twilio.
- *
- * TODO Semana 2: reemplazar la respuesta fija por AiResponseService
- * (contexto propio del tenant + derivar_a_humano).
+ * Semana 2: delega en AiResponseService. Si la conversación está pausada por
+ * un handoff a humano (HandoffService), el bot no responde nada automático -
+ * el dueño la retoma manualmente desde el panel (doc, sección 4).
  */
 @Slf4j
 @RestController
@@ -37,9 +39,16 @@ import java.util.Map;
 public class WebhookController {
 
     private final RequestValidator requestValidator;
+    private final AiResponseService aiResponseService;
+    private final HandoffService handoffService;
 
-    public WebhookController(@Value("${twilio.auth-token}") String authToken) {
+    public WebhookController(
+            @Value("${twilio.auth-token}") String authToken,
+            AiResponseService aiResponseService,
+            HandoffService handoffService) {
         this.requestValidator = new RequestValidator(authToken);
+        this.aiResponseService = aiResponseService;
+        this.handoffService = handoffService;
     }
 
     @PostMapping(value = "/whatsapp", produces = MediaType.APPLICATION_XML_VALUE)
@@ -63,8 +72,14 @@ public class WebhookController {
         String incomingBody = params.getOrDefault("Body", "");
         log.info("Mensaje de WhatsApp recibido de {}: {}", from, incomingBody);
 
-        // TODO Semana 2: delegar a AiResponseService en vez de este eco fijo.
-        String replyText = "Recibimos tu mensaje: \"" + incomingBody + "\". Pronto un agente de IA te va a responder acá.";
+        if (handoffService.estaPausada(from)) {
+            // Ya se derivó a un humano: el bot no contesta más en esta conversación,
+            // la sigue el dueño desde el panel (doc, sección 4).
+            log.info("Conversación con {} está pausada (handoff activo) - no se responde automático", from);
+            return ResponseEntity.ok(new MessagingResponse.Builder().build().toXml());
+        }
+
+        String replyText = aiResponseService.generarRespuesta(from, incomingBody);
         Message message = new Message.Builder(replyText).build();
         MessagingResponse twiml = new MessagingResponse.Builder()
                 .message(message)

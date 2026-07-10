@@ -61,6 +61,13 @@
             <version>11.4.0</version>
         </dependency>
 
+        <!-- Claude Haiku 4.5 (modelo económico con prompt caching, ver doc 5.1 y 6) -->
+        <dependency>
+            <groupId>com.anthropic</groupId>
+            <artifactId>anthropic-java</artifactId>
+            <version>2.40.1</version>
+        </dependency>
+
         <!-- Panel web (Thymeleaf, según doc 5.1) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
