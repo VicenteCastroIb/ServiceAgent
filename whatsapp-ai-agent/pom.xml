@@ -39,6 +39,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- H2 en memoria: solo para el perfil "local" (ver application-local.properties),
+             mientras Docker/Postgres no esté disponible en desarrollo. No se usa en producción. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Validación de DTOs (webhooks, panel) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
