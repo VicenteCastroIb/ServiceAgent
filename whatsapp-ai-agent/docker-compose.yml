@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: whatsapp-ai-agent-db
+    environment:
+      POSTGRES_DB: whatsapp_ai_agent
+      POSTGRES_USER: whatsapp
+      POSTGRES_PASSWORD: whatsapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - whatsapp-ai-agent-pgdata:/var/lib/postgresql/data
+
+volumes:
+  whatsapp-ai-agent-pgdata:
