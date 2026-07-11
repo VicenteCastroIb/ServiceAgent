@@ -56,6 +56,16 @@ export interface Handoff {
   motivo: string;
 }
 
+export interface TenantSubscription {
+  id: number;
+  paymentMethod: "MANUAL" | "FLOW_AUTOMATICO";
+  paidUntil: string | null;
+  status: "PENDIENTE_TARJETA" | "ACTIVA" | "MOROSA" | "CANCELADA";
+  lastPaymentAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export async function login(username: string, password: string): Promise<string> {
   const data = await request<{ token: string }>("/auth/login", {
     method: "POST",
@@ -105,5 +115,25 @@ export function listarHandoffs(): Promise<Handoff[]> {
 export function reanudarHandoff(numeroCliente: string): Promise<void> {
   return request<void>(`/admin/handoffs/${encodeURIComponent(numeroCliente)}/reanudar`, {
     method: "POST",
+  });
+}
+
+// null significa "todavía no se registró ningún pago para este negocio"
+// (ni manual ni por Flow) - no es un error, es un estado válido.
+export async function obtenerSuscripcion(tenantId: number): Promise<TenantSubscription | null> {
+  try {
+    return await request<TenantSubscription>(`/admin/tenants/${tenantId}/billing`);
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 404) {
+      return null;
+    }
+    throw e;
+  }
+}
+
+export function registrarPagoManual(tenantId: number, paidUntil: string): Promise<TenantSubscription> {
+  return request<TenantSubscription>(`/admin/tenants/${tenantId}/billing/manual`, {
+    method: "PUT",
+    body: JSON.stringify({ paidUntil }),
   });
 }

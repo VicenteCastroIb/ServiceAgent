@@ -8,6 +8,7 @@ import com.tuapp.repository.MessageRepository;
 import com.tuapp.repository.PaymentOrderRepository;
 import com.tuapp.repository.ProductRepository;
 import com.tuapp.repository.TenantRepository;
+import com.tuapp.repository.TenantSubscriptionRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +52,7 @@ public class TenantService {
     private final MessageRepository messageRepository;
     private final ProductRepository productRepository;
     private final PaymentOrderRepository paymentOrderRepository;
+    private final TenantSubscriptionRepository tenantSubscriptionRepository;
     private final PasswordEncoder passwordEncoder;
 
     public TenantService(
@@ -61,6 +63,7 @@ public class TenantService {
             MessageRepository messageRepository,
             ProductRepository productRepository,
             PaymentOrderRepository paymentOrderRepository,
+            TenantSubscriptionRepository tenantSubscriptionRepository,
             PasswordEncoder passwordEncoder) {
         this.tenantRepository = tenantRepository;
         this.schedulingService = schedulingService;
@@ -69,6 +72,7 @@ public class TenantService {
         this.messageRepository = messageRepository;
         this.productRepository = productRepository;
         this.paymentOrderRepository = paymentOrderRepository;
+        this.tenantSubscriptionRepository = tenantSubscriptionRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -125,6 +129,7 @@ public class TenantService {
         schedulingService.eliminarDatosDeTenant(tenant);
         paymentOrderRepository.deleteByTenant(tenant);
         productRepository.deleteByTenant(tenant);
+        tenantSubscriptionRepository.deleteByTenant(tenant);
         handoffService.eliminarPorTenant(id);
 
         tenantRepository.delete(tenant);
