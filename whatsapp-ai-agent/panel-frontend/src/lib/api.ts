@@ -48,6 +48,8 @@ export interface Tenant {
   businessContext: string;
   plan: "BASICO" | "PRO" | "CATALOGO";
   panelUsername: string | null;
+  wooCommerceConfigurado: boolean;
+  flowConfigurado: boolean;
   createdAt: string;
 }
 
@@ -64,6 +66,62 @@ export interface TenantSubscription {
   lastPaymentAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Professional {
+  id: number;
+  name: string;
+  active: boolean;
+}
+
+export type DiaSemana =
+  | "MONDAY"
+  | "TUESDAY"
+  | "WEDNESDAY"
+  | "THURSDAY"
+  | "FRIDAY"
+  | "SATURDAY"
+  | "SUNDAY";
+
+export interface Availability {
+  id: number;
+  dayOfWeek: DiaSemana;
+  startTime: string;
+  endTime: string;
+  slotMinutes: number;
+}
+
+export interface Appointment {
+  id: number;
+  professional: Professional;
+  clientPhoneNumber: string;
+  service: string;
+  startTime: string;
+  status: "CONFIRMADA" | "CANCELADA" | "REAGENDADA" | "COMPLETADA" | "NO_SHOW";
+  reminderSent: boolean;
+  createdAt: string;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  externalId: number | null;
+  imageUrl: string | null;
+  purchaseUrl: string | null;
+  stockQuantity: number | null;
+  active: boolean;
+  updatedAt: string | null;
+}
+
+export interface PaymentOrder {
+  id: number;
+  clientPhoneNumber: string;
+  commerceOrder: string;
+  amount: number;
+  status: "PENDIENTE" | "PAGADA" | "RECHAZADA" | "ANULADA";
+  createdAt: string;
+  confirmedAt: string | null;
 }
 
 export async function login(username: string, password: string): Promise<string> {
@@ -136,4 +194,106 @@ export function registrarPagoManual(tenantId: number, paidUntil: string): Promis
     method: "PUT",
     body: JSON.stringify({ paidUntil }),
   });
+}
+
+export function iniciarSuscripcion(tenantId: number, email: string): Promise<{ urlRegistroTarjeta: string }> {
+  return request(`/admin/tenants/${tenantId}/billing/iniciar`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function marcarSuscripcionMorosa(tenantId: number): Promise<void> {
+  return request<void>(`/admin/tenants/${tenantId}/billing/marcar-morosa`, {
+    method: "POST",
+  });
+}
+
+// --- Agendamiento (Semana 5) ---
+
+export function listarProfesionales(tenantId: number): Promise<Professional[]> {
+  return request<Professional[]>(`/admin/tenants/${tenantId}/professionals`);
+}
+
+export function crearProfesional(tenantId: number, name: string): Promise<Professional> {
+  return request<Professional>(`/admin/tenants/${tenantId}/professionals`, {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export function listarDisponibilidad(professionalId: number): Promise<Availability[]> {
+  return request<Availability[]>(`/admin/professionals/${professionalId}/availability`);
+}
+
+export function crearDisponibilidad(
+  professionalId: number,
+  input: { dayOfWeek: DiaSemana; startTime: string; endTime: string; slotMinutes: number }
+): Promise<Availability> {
+  return request<Availability>(`/admin/professionals/${professionalId}/availability`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function listarCitas(
+  tenantId: number,
+  filtros?: { professionalId?: number; desde?: string; hasta?: string }
+): Promise<Appointment[]> {
+  const params = new URLSearchParams();
+  if (filtros?.professionalId) params.set("professionalId", String(filtros.professionalId));
+  if (filtros?.desde) params.set("desde", filtros.desde);
+  if (filtros?.hasta) params.set("hasta", filtros.hasta);
+  const query = params.toString();
+  return request<Appointment[]>(
+    `/admin/tenants/${tenantId}/appointments${query ? `?${query}` : ""}`
+  );
+}
+
+export function actualizarCita(
+  id: number,
+  input: { status?: Appointment["status"]; startTime?: string }
+): Promise<Appointment> {
+  return request<Appointment>(`/admin/appointments/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
+// --- Catálogo (Semana 6) ---
+
+export function fijarCredencialesWooCommerce(
+  tenantId: number,
+  input: { url: string; consumerKey: string; consumerSecret: string }
+): Promise<Tenant> {
+  return request<Tenant>(`/admin/tenants/${tenantId}/catalogo/woocommerce`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
+export function sincronizarCatalogo(tenantId: number): Promise<{ productosSincronizados: number }> {
+  return request(`/admin/tenants/${tenantId}/catalogo/sincronizar`, {
+    method: "POST",
+  });
+}
+
+export function listarProductos(tenantId: number): Promise<Product[]> {
+  return request<Product[]>(`/admin/tenants/${tenantId}/catalogo/productos`);
+}
+
+// --- Pagos del tenant a sus propios clientes (Semana 6) ---
+
+export function fijarCredencialesFlow(
+  tenantId: number,
+  input: { apiKey: string; secretKey: string }
+): Promise<Tenant> {
+  return request<Tenant>(`/admin/tenants/${tenantId}/pagos/flow`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
+export function listarOrdenesPago(tenantId: number): Promise<PaymentOrder[]> {
+  return request<PaymentOrder[]>(`/admin/tenants/${tenantId}/pagos/ordenes`);
 }

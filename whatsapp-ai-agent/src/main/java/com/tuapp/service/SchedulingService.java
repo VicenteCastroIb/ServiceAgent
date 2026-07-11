@@ -207,8 +207,68 @@ public class SchedulingService {
         return availabilityRepository.findByProfessional(profesional);
     }
 
-    public List<Appointment> listarCitas(Tenant tenant) {
+    /**
+     * Lista las citas del tenant, con filtros opcionales por profesional y/o
+     * rango de fechas (ambos inclusive, en días). Los usa el panel para la
+     * vista de calendario/lista con filtros.
+     */
+    public List<Appointment> listarCitas(Tenant tenant, Long professionalId, LocalDate desde, LocalDate hasta) {
+        Professional profesional = null;
+        if (professionalId != null) {
+            profesional = professionalRepository.findById(professionalId)
+                    .filter(p -> p.getTenant().getId().equals(tenant.getId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Profesional no encontrado: " + professionalId));
+        }
+        LocalDateTime inicio = desde != null ? desde.atStartOfDay() : null;
+        LocalDateTime fin = hasta != null ? hasta.plusDays(1).atStartOfDay() : null;
+
+        if (profesional != null && inicio != null && fin != null) {
+            return appointmentRepository.findByTenantAndProfessionalAndStartTimeBetween(tenant, profesional, inicio, fin);
+        }
+        if (profesional != null) {
+            return appointmentRepository.findByTenantAndProfessional(tenant, profesional);
+        }
+        if (inicio != null && fin != null) {
+            return appointmentRepository.findByTenantAndStartTimeBetween(tenant, inicio, fin);
+        }
         return appointmentRepository.findByTenant(tenant);
+    }
+
+    public Optional<Appointment> buscarCita(Long id) {
+        return appointmentRepository.findById(id);
+    }
+
+    /**
+     * Actualización administrativa de una cita desde el panel: cambiar estado
+     * (cancelar, marcar completada/no-show, etc.) y/o reagendar a un nuevo
+     * horario. A diferencia de {@link #cancelarOReagendarCita}, no exige que
+     * coincida el número del cliente (la ejecuta el dueño del negocio o el
+     * admin) y no valida la disponibilidad semanal configurada (permite
+     * horarios manuales fuera de la agenda, ej. un cliente que llega sin
+     * hora) - sí valida que el profesional no tenga otra cita CONFIRMADA en
+     * ese mismo horario.
+     */
+    public Appointment actualizarCita(Long id, AppointmentStatus nuevoStatus, LocalDateTime nuevoInicio) {
+        Appointment cita = appointmentRepository.findById(id)
+                .orElseThrow(() -> new SchedulingException("No encontré esa cita."));
+
+        if (nuevoInicio != null && !nuevoInicio.equals(cita.getStartTime())) {
+            boolean ocupado = appointmentRepository.existsByProfessionalAndStartTimeAndStatusAndIdNot(
+                    cita.getProfessional(), nuevoInicio, AppointmentStatus.CONFIRMADA, cita.getId());
+            if (ocupado) {
+                throw new SchedulingException("Ese profesional ya tiene otra cita confirmada a esa hora.");
+            }
+            cita.setStartTime(nuevoInicio);
+            cita.setReminderSent(false);
+            if (nuevoStatus == null) {
+                cita.setStatus(AppointmentStatus.REAGENDADA);
+            }
+        }
+        if (nuevoStatus != null) {
+            cita.setStatus(nuevoStatus);
+        }
+        log.info("Cita actualizada desde admin id={} status={} inicio={}", cita.getId(), cita.getStatus(), cita.getStartTime());
+        return appointmentRepository.save(cita);
     }
 
     /**

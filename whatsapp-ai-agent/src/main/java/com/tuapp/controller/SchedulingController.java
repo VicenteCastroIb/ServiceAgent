@@ -1,21 +1,26 @@
 package com.tuapp.controller;
 
 import com.tuapp.model.Appointment;
+import com.tuapp.model.AppointmentStatus;
 import com.tuapp.model.Availability;
 import com.tuapp.model.Professional;
 import com.tuapp.model.Tenant;
 import com.tuapp.security.PanelAuth;
+import com.tuapp.service.SchedulingException;
 import com.tuapp.service.SchedulingService;
 import com.tuapp.service.TenantService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -100,7 +105,11 @@ public class SchedulingController {
     }
 
     @GetMapping("/tenants/{tenantId}/appointments")
-    public ResponseEntity<List<Appointment>> listarCitas(@PathVariable Long tenantId) {
+    public ResponseEntity<List<Appointment>> listarCitas(
+            @PathVariable Long tenantId,
+            @RequestParam(required = false) Long professionalId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
         if (!PanelAuth.puedeAcceder(tenantId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -108,7 +117,29 @@ public class SchedulingController {
         if (tenant == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(schedulingService.listarCitas(tenant));
+        try {
+            return ResponseEntity.ok(schedulingService.listarCitas(tenant, professionalId, desde, hasta));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/appointments/{id}")
+    public ResponseEntity<?> actualizarCita(@PathVariable Long id, @RequestBody ActualizarCitaRequest request) {
+        return schedulingService.buscarCita(id)
+                .map(cita -> {
+                    if (!PanelAuth.puedeAcceder(cita.getTenant().getId())) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).body((Object) null);
+                    }
+                    try {
+                        Appointment actualizada =
+                                schedulingService.actualizarCita(id, request.status(), request.startTime());
+                        return ResponseEntity.ok((Object) actualizada);
+                    } catch (SchedulingException e) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body((Object) new ErrorResponse(e.getMessage()));
+                    }
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private Tenant buscarTenant(Long tenantId) {
@@ -123,5 +154,11 @@ public class SchedulingController {
             @NotNull LocalTime startTime,
             @NotNull LocalTime endTime,
             @Positive Integer slotMinutes) {
+    }
+
+    public record ActualizarCitaRequest(AppointmentStatus status, LocalDateTime startTime) {
+    }
+
+    public record ErrorResponse(String mensaje) {
     }
 }

@@ -9,6 +9,7 @@ import {
   Tenant,
   TenantSubscription,
 } from "@/lib/api";
+import { esAdminSegunToken } from "@/lib/auth";
 
 const NOMBRE_PLAN: Record<Tenant["plan"], string> = {
   BASICO: "Básico",
@@ -49,6 +50,7 @@ export default function TenantCard({
   eliminando: boolean;
   onEliminar: (tenant: Tenant) => void;
 }) {
+  const esAdmin = esAdminSegunToken();
   const [suscripcion, setSuscripcion] = useState<TenantSubscription | null>(null);
   const [cargandoSuscripcion, setCargandoSuscripcion] = useState(true);
   const [editandoPago, setEditandoPago] = useState(false);
@@ -147,17 +149,30 @@ export default function TenantCard({
         {errorPago && <p className="mt-1 text-xs text-red-600">{errorPago}</p>}
       </div>
 
-      <div className="mt-3 flex justify-end gap-4 text-sm">
-        <Link href={`/tenants/${tenant.id}/edit`} className="text-blue-600 hover:underline">
-          Editar
-        </Link>
-        <button
-          onClick={() => onEliminar(tenant)}
-          disabled={eliminando}
-          className="text-red-600 hover:underline disabled:opacity-50"
-        >
-          {eliminando ? "Eliminando..." : "Eliminar"}
-        </button>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+          <Link href={`/tenants/${tenant.id}/edit`} className="text-blue-600 hover:underline">
+            Contexto
+          </Link>
+          <Link href={`/tenants/${tenant.id}/agendamiento`} className="text-blue-600 hover:underline">
+            Agendamiento
+          </Link>
+          <Link href={`/tenants/${tenant.id}/catalogo`} className="text-blue-600 hover:underline">
+            Catálogo
+          </Link>
+          <Link href={`/tenants/${tenant.id}/pagos`} className="text-blue-600 hover:underline">
+            Pagos
+          </Link>
+        </div>
+        {esAdmin && (
+          <button
+            onClick={() => onEliminar(tenant)}
+            disabled={eliminando}
+            className="text-red-600 hover:underline disabled:opacity-50"
+          >
+            {eliminando ? "Eliminando..." : "Eliminar"}
+          </button>
+        )}
       </div>
     </div>
   );
