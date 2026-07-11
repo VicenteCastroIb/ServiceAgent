@@ -7,6 +7,7 @@ import com.anthropic.models.messages.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tuapp.model.Appointment;
 import com.tuapp.model.AppointmentStatus;
+import com.tuapp.model.Product;
 import com.tuapp.model.Tenant;
 import com.tuapp.model.TenantPlan;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +17,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Genera la respuesta del agente de IA para un mensaje entrante, usando el
@@ -34,7 +37,10 @@ import java.util.Map;
  * webhook).
  * Semana 5: agendar_cita y cancelar_reagendar_cita, expuestas solo si el
  * tenant tiene plan PRO o CATALOGO (doc sección 5.4).
- * TODO: agregar la tool de pago (generar_link_pago) para el plan Catálogo.
+ * Semana 6: generar_link_pago, expuesta solo si el tenant tiene plan
+ * CATALOGO. El catálogo activo (sincronizado por CatalogSyncService desde
+ * WooCommerce) se inyecta en el system prompt para que la IA pueda
+ * recomendar productos reales y arme el carrito con sus ids.
  */
 @Slf4j
 @Service
@@ -48,16 +54,22 @@ public class AiResponseService {
     private final HandoffService handoffService;
     private final TenantService tenantService;
     private final SchedulingService schedulingService;
+    private final CatalogSyncService catalogSyncService;
+    private final PaymentService paymentService;
 
     public AiResponseService(
             @Value("${anthropic.api-key}") String apiKey,
             HandoffService handoffService,
             TenantService tenantService,
-            SchedulingService schedulingService) {
+            SchedulingService schedulingService,
+            CatalogSyncService catalogSyncService,
+            PaymentService paymentService) {
         this.client = AnthropicOkHttpClient.builder().apiKey(apiKey).build();
         this.handoffService = handoffService;
         this.tenantService = tenantService;
         this.schedulingService = schedulingService;
+        this.catalogSyncService = catalogSyncService;
+        this.paymentService = paymentService;
     }
 
     /**
@@ -108,6 +120,7 @@ public class AiResponseService {
                 .build();
 
         boolean tieneAgendamiento = tenant.getPlan() != TenantPlan.BASICO;
+        boolean tieneCatalogo = tenant.getPlan() == TenantPlan.CATALOGO;
 
         MessageCreateParams.Builder paramsBuilder = MessageCreateParams.builder()
                 .model(MODELO)
@@ -125,6 +138,9 @@ public class AiResponseService {
         if (tieneAgendamiento) {
             paramsBuilder.addTool(construirToolAgendarCita());
             paramsBuilder.addTool(construirToolCancelarReagendarCita());
+        }
+        if (tieneCatalogo) {
+            paramsBuilder.addTool(construirToolGenerarLinkPago());
         }
         paramsBuilder.addUserMessage(mensaje);
 
@@ -183,6 +199,17 @@ public class AiResponseService {
                     """.formatted(LocalDate.now()));
         }
 
+        if (tenant.getPlan() == TenantPlan.CATALOGO) {
+            prompt.append("""
+
+                    Este negocio tiene catálogo sincronizado con su tienda online. Cuando el \
+                    cliente quiera comprar, armá el carrito con generar_link_pago usando el id \
+                    de cada producto (no el nombre) y la cantidad pedida, y mandale el link que \
+                    te devuelva la tool. No inventes productos ni precios que no estén en esta lista:
+                    %s
+                    """.formatted(listarCatalogoParaPrompt(tenant)));
+        }
+
         prompt.append("""
 
                 Contexto del negocio:
@@ -190,6 +217,16 @@ public class AiResponseService {
                 """.formatted(tenant.getBusinessContext()));
 
         return prompt.toString();
+    }
+
+    private String listarCatalogoParaPrompt(Tenant tenant) {
+        List<Product> productos = catalogSyncService.listarProductosActivos(tenant);
+        if (productos.isEmpty()) {
+            return "(el catálogo todavía no está sincronizado - avisale al cliente que en breve lo cargamos)";
+        }
+        return productos.stream()
+                .map(p -> "- id %d: %s, $%s CLP".formatted(p.getId(), p.getName(), p.getPrice().toPlainString()))
+                .collect(Collectors.joining("\n"));
     }
 
     private Tool construirToolAgendarCita() {
@@ -226,6 +263,36 @@ public class AiResponseService {
                 .build();
     }
 
+    private Tool construirToolGenerarLinkPago() {
+        return Tool.builder()
+                .name("generar_link_pago")
+                .description("""
+                        Genera un link de pago para el carrito que arme el cliente y se lo \
+                        manda por WhatsApp. Usá los ids de producto de la lista del catálogo \
+                        (nunca inventes un id ni un precio). Solo llamala cuando el cliente ya \
+                        confirmó qué quiere comprar y en qué cantidad.""")
+                .inputSchema(Tool.InputSchema.builder()
+                        .properties(JsonValue.from(Map.of(
+                                "carrito", Map.of(
+                                        "type", "array",
+                                        "description", "Productos que el cliente quiere comprar",
+                                        "items", Map.of(
+                                                "type", "object",
+                                                "properties", Map.of(
+                                                        "producto_id", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Id del producto en el catálogo"),
+                                                        "cantidad", Map.of(
+                                                                "type", "integer",
+                                                                "description", "Cantidad de unidades")
+                                                )
+                                        )
+                                )
+                        )))
+                        .build())
+                .build();
+    }
+
     private String ejecutarTool(Tenant tenant, String numeroCliente, ToolUseBlock toolUse) {
         return switch (toolUse.name()) {
             case "derivar_a_humano" -> {
@@ -235,6 +302,7 @@ public class AiResponseService {
             }
             case "agendar_cita" -> ejecutarAgendarCita(tenant, numeroCliente, toolUse);
             case "cancelar_reagendar_cita" -> ejecutarCancelarReagendarCita(tenant, numeroCliente, toolUse);
+            case "generar_link_pago" -> ejecutarGenerarLinkPago(tenant, numeroCliente, toolUse);
             default -> {
                 log.warn("Tool desconocida invocada por el modelo: {}", toolUse.name());
                 yield "Esa acción no está disponible.";
@@ -277,6 +345,28 @@ public class AiResponseService {
         }
     }
 
+    private String ejecutarGenerarLinkPago(Tenant tenant, String numeroCliente, ToolUseBlock toolUse) {
+        GenerarLinkPagoInput input = toolUse._input().convert(GenerarLinkPagoInput.class);
+        if (input == null || input.carrito == null || input.carrito.isEmpty()) {
+            return "El carrito está vacío, pedile al cliente qué quiere comprar.";
+        }
+        try {
+            List<PaymentService.ItemCarrito> items = new ArrayList<>();
+            for (ItemCarritoInput item : input.carrito) {
+                if (item.productoId == null || item.cantidad == null) {
+                    return "No entendí bien el carrito, pedile al cliente que confirme qué producto y cuántos.";
+                }
+                items.add(new PaymentService.ItemCarrito(item.productoId, item.cantidad));
+            }
+            String link = paymentService.generarLinkPago(tenant, numeroCliente, items);
+            return "Link de pago generado: %s . Mandaselo al cliente para que pague.".formatted(link);
+        } catch (PaymentException e) {
+            return e.getMessage();
+        } catch (NullPointerException e) {
+            return "No entendí bien el carrito, pedile al cliente que confirme qué producto y cuántos.";
+        }
+    }
+
     private String extraerTexto(Message respuesta) {
         return respuesta.content().stream()
                 .flatMap(bloque -> bloque.text().stream())
@@ -308,5 +398,16 @@ public class AiResponseService {
         public String nuevaFecha;
         @JsonProperty("nueva_hora")
         public String nuevaHora;
+    }
+
+    /** Forma esperada del input de la tool generar_link_pago, para deserializar con Jackson. */
+    private static class GenerarLinkPagoInput {
+        public List<ItemCarritoInput> carrito;
+    }
+
+    private static class ItemCarritoInput {
+        @JsonProperty("producto_id")
+        public Long productoId;
+        public Integer cantidad;
     }
 }

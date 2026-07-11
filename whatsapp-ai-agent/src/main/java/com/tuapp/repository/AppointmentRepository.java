@@ -16,6 +16,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByTenant(Tenant tenant);
 
+    void deleteByTenant(Tenant tenant);
+
     boolean existsByProfessionalAndStartTimeAndStatus(
             Professional professional, LocalDateTime startTime, AppointmentStatus status);
 

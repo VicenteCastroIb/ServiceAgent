@@ -67,6 +67,16 @@ public class TenantController {
                 request.businessName(),
                 request.whatsappNumber(),
                 request.businessContext());
+
+        // Login del dueño opcional: si se mandan ambos campos, se activa de
+        // una sola vez en el alta en vez de requerir un segundo llamado a
+        // /credenciales.
+        boolean tieneUsuario = request.panelUsername() != null && !request.panelUsername().isBlank();
+        boolean tieneClave = request.panelPassword() != null && !request.panelPassword().isBlank();
+        if (tieneUsuario && tieneClave) {
+            tenant = tenantService.fijarCredencialesPanel(tenant.getId(), request.panelUsername(), request.panelPassword());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(tenant);
     }
 
@@ -101,10 +111,21 @@ public class TenantController {
                 tenantService.fijarCredencialesPanel(id, request.panelUsername(), request.panelPassword()));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        if (!PanelAuth.esAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        tenantService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
     public record CrearTenantRequest(
             @NotBlank String businessName,
             @NotBlank String whatsappNumber,
-            @NotBlank String businessContext) {
+            @NotBlank String businessContext,
+            String panelUsername,
+            String panelPassword) {
     }
 
     public record ActualizarContextoRequest(@NotBlank String businessContext) {

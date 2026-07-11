@@ -3,11 +3,16 @@ package com.tuapp.service;
 import com.tuapp.model.Professional;
 import com.tuapp.model.Tenant;
 import com.tuapp.model.TenantPlan;
+import com.tuapp.repository.ConversationRepository;
+import com.tuapp.repository.MessageRepository;
+import com.tuapp.repository.PaymentOrderRepository;
+import com.tuapp.repository.ProductRepository;
 import com.tuapp.repository.TenantRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -41,14 +46,29 @@ public class TenantService {
 
     private final TenantRepository tenantRepository;
     private final SchedulingService schedulingService;
+    private final HandoffService handoffService;
+    private final ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
+    private final ProductRepository productRepository;
+    private final PaymentOrderRepository paymentOrderRepository;
     private final PasswordEncoder passwordEncoder;
 
     public TenantService(
             TenantRepository tenantRepository,
             SchedulingService schedulingService,
+            HandoffService handoffService,
+            ConversationRepository conversationRepository,
+            MessageRepository messageRepository,
+            ProductRepository productRepository,
+            PaymentOrderRepository paymentOrderRepository,
             PasswordEncoder passwordEncoder) {
         this.tenantRepository = tenantRepository;
         this.schedulingService = schedulingService;
+        this.handoffService = handoffService;
+        this.conversationRepository = conversationRepository;
+        this.messageRepository = messageRepository;
+        this.productRepository = productRepository;
+        this.paymentOrderRepository = paymentOrderRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -89,6 +109,29 @@ public class TenantService {
     }
 
     /**
+     * Borra un negocio y todos sus datos asociados: citas, disponibilidad,
+     * profesionales, conversaciones/mensajes, productos, y las conversaciones
+     * pausadas en memoria (HandoffService). Se borra en orden hijo-a-padre
+     * para no violar las foreign keys. Irreversible - solo el admin puede
+     * hacerlo (ver TenantController).
+     */
+    @Transactional
+    public void eliminar(Long id) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+
+        messageRepository.deleteByConversation_Tenant(tenant);
+        conversationRepository.deleteByTenant(tenant);
+        schedulingService.eliminarDatosDeTenant(tenant);
+        paymentOrderRepository.deleteByTenant(tenant);
+        productRepository.deleteByTenant(tenant);
+        handoffService.eliminarPorTenant(id);
+
+        tenantRepository.delete(tenant);
+        log.info("Tenant eliminado: id={} businessName={}", id, tenant.getBusinessName());
+    }
+
+    /**
      * Activa o cambia el acceso al panel del dueño de este negocio. Lo hace
      * el admin (ver SchedulingController/TenantController) - el dueño no se
      * auto-registra. La contraseña se guarda hasheada (BCrypt), nunca en
@@ -99,6 +142,33 @@ public class TenantService {
                 .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
         tenant.setPanelUsername(panelUsername);
         tenant.setPanelPasswordHash(passwordEncoder.encode(panelPassword));
+        return tenantRepository.save(tenant);
+    }
+
+    /**
+     * Credenciales de la tienda WooCommerce del propio comercio (plan
+     * Catálogo, ver CatalogSyncService). Las carga el dueño desde su panel -
+     * no son secretos nuestros (doc sección 11).
+     */
+    public Tenant fijarCredencialesWooCommerce(Long id, String url, String consumerKey, String consumerSecret) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setWooCommerceUrl(url);
+        tenant.setWooCommerceConsumerKey(consumerKey);
+        tenant.setWooCommerceConsumerSecret(consumerSecret);
+        return tenantRepository.save(tenant);
+    }
+
+    /**
+     * Credenciales de la cuenta Flow del propio comercio (plan Catálogo, ver
+     * PaymentService). Igual que WooCommerce: son del comercio, la
+     * responsabilidad ante el pagador es suya, no nuestra (doc sección 11).
+     */
+    public Tenant fijarCredencialesFlow(Long id, String apiKey, String secretKey) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setFlowApiKey(apiKey);
+        tenant.setFlowSecretKey(secretKey);
         return tenantRepository.save(tenant);
     }
 

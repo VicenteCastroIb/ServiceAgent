@@ -3,21 +3,43 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { listarTenants, Tenant } from "@/lib/api";
+import { eliminarTenant, listarTenants, Tenant } from "@/lib/api";
 
 export default function TenantsPage() {
   const listo = useRequireAuth();
   const [tenants, setTenants] = useState<Tenant[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [eliminando, setEliminando] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!listo) return;
+  function cargar() {
     listarTenants()
       .then(setTenants)
       .catch(() => setError("No se pudieron cargar los negocios."));
+  }
+
+  useEffect(() => {
+    if (listo) cargar();
   }, [listo]);
 
   if (!listo) return null;
+
+  async function onEliminar(tenant: Tenant) {
+    const confirmado = window.confirm(
+      `¿Eliminar "${tenant.businessName}"? Esto borra también sus citas, profesionales y conversaciones. No se puede deshacer.`
+    );
+    if (!confirmado) return;
+
+    setEliminando(tenant.id);
+    setError(null);
+    try {
+      await eliminarTenant(tenant.id);
+      cargar();
+    } catch {
+      setError("No se pudo eliminar el negocio.");
+    } finally {
+      setEliminando(null);
+    }
+  }
 
   return (
     <div>
@@ -58,13 +80,20 @@ export default function TenantsPage() {
                 <td className="max-w-xs truncate px-4 py-2 text-gray-500">
                   {tenant.businessContext}
                 </td>
-                <td className="px-4 py-2 text-right">
+                <td className="px-4 py-2 text-right whitespace-nowrap">
                   <Link
                     href={`/tenants/${tenant.id}/edit`}
                     className="text-blue-600 hover:underline"
                   >
                     Editar
                   </Link>
+                  <button
+                    onClick={() => onEliminar(tenant)}
+                    disabled={eliminando === tenant.id}
+                    className="ml-4 text-red-600 hover:underline disabled:opacity-50"
+                  >
+                    {eliminando === tenant.id ? "Eliminando..." : "Eliminar"}
+                  </button>
                 </td>
               </tr>
             ))}

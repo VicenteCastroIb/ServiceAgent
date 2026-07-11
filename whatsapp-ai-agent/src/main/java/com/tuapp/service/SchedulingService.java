@@ -210,4 +210,15 @@ public class SchedulingService {
     public List<Appointment> listarCitas(Tenant tenant) {
         return appointmentRepository.findByTenant(tenant);
     }
+
+    /**
+     * Borra todos los datos de agendamiento de un tenant (citas, disponibilidad
+     * y profesionales), en ese orden por las FKs. Lo usa TenantService.eliminar
+     * al borrar un negocio completo.
+     */
+    public void eliminarDatosDeTenant(Tenant tenant) {
+        appointmentRepository.deleteByTenant(tenant);
+        availabilityRepository.deleteByProfessional_Tenant(tenant);
+        professionalRepository.deleteByTenant(tenant);
+    }
 }

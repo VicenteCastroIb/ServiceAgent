@@ -46,6 +46,8 @@ export interface Tenant {
   businessName: string;
   whatsappNumber: string;
   businessContext: string;
+  plan: "BASICO" | "PRO" | "CATALOGO";
+  panelUsername: string | null;
   createdAt: string;
 }
 
@@ -74,6 +76,8 @@ export function crearTenant(input: {
   businessName: string;
   whatsappNumber: string;
   businessContext: string;
+  panelUsername?: string;
+  panelPassword?: string;
 }): Promise<Tenant> {
   return request<Tenant>("/admin/tenants", {
     method: "POST",
@@ -85,6 +89,12 @@ export function actualizarContextoTenant(id: number, businessContext: string): P
   return request<Tenant>(`/admin/tenants/${id}/contexto`, {
     method: "PUT",
     body: JSON.stringify({ businessContext }),
+  });
+}
+
+export function eliminarTenant(id: number): Promise<void> {
+  return request<void>(`/admin/tenants/${id}`, {
+    method: "DELETE",
   });
 }
 

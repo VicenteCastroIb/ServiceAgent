@@ -70,5 +70,53 @@ public class Tenant {
     @JsonIgnore
     private String panelPasswordHash;
 
+    /**
+     * Credenciales del plan Catálogo/Ecommerce (doc secciones 3, 5.1 y 5.3),
+     * propias de cada comercio - no son secretos nuestros, son las claves del
+     * comercio con SU tienda WooCommerce y SU cuenta de Flow. Por eso el
+     * riesgo de intermediación financiera es del comercio, no de la
+     * plataforma (doc sección 11): nosotros solo armamos el link de pago con
+     * las credenciales que el propio dueño carga en su panel.
+     *
+     * @JsonIgnore en consumer secret / api key / secret key: nunca deben salir
+     * en las respuestas JSON. wooCommerceUrl y wooCommerceConsumerKey no son
+     * tan sensibles pero se ocultan igual por consistencia y porque el
+     * frontend no los necesita de vuelta (solo confirma que están cargados
+     * vía isWooCommerceConfigurado()/isFlowConfigurado()).
+     */
+    @JsonIgnore
+    private String wooCommerceUrl;
+
+    @JsonIgnore
+    private String wooCommerceConsumerKey;
+
+    @JsonIgnore
+    private String wooCommerceConsumerSecret;
+
+    @JsonIgnore
+    private String flowApiKey;
+
+    @JsonIgnore
+    private String flowSecretKey;
+
+    /** URL de retorno tras pagar en Flow (opcional). Si no se carga, se usa wooCommerceUrl o una página genérica propia. */
+    private String paymentReturnUrl;
+
     private Instant createdAt;
+
+    /** Para que el panel sepa si ya está configurado, sin exponer las claves reales. */
+    @Transient
+    public boolean isWooCommerceConfigurado() {
+        return notBlank(wooCommerceUrl) && notBlank(wooCommerceConsumerKey) && notBlank(wooCommerceConsumerSecret);
+    }
+
+    /** Para que el panel sepa si ya está configurado, sin exponer las claves reales. */
+    @Transient
+    public boolean isFlowConfigurado() {
+        return notBlank(flowApiKey) && notBlank(flowSecretKey);
+    }
+
+    private static boolean notBlank(String valor) {
+        return valor != null && !valor.isBlank();
+    }
 }

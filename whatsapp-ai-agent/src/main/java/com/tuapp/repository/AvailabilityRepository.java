@@ -14,4 +14,6 @@ public interface AvailabilityRepository extends JpaRepository<Availability, Long
     List<Availability> findByProfessional(Professional professional);
 
     List<Availability> findByProfessional_Tenant(Tenant tenant);
+
+    void deleteByProfessional_Tenant(Tenant tenant);
 }

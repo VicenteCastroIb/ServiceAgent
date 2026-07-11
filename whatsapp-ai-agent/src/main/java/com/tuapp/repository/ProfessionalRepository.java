@@ -13,4 +13,6 @@ public interface ProfessionalRepository extends JpaRepository<Professional, Long
     List<Professional> findByTenant(Tenant tenant);
 
     List<Professional> findByTenantAndActiveTrue(Tenant tenant);
+
+    void deleteByTenant(Tenant tenant);
 }

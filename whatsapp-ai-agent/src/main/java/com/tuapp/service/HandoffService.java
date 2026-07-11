@@ -76,6 +76,11 @@ public class HandoffService {
         return true;
     }
 
+    /** Limpia las conversaciones pausadas de un tenant al borrarlo (ver TenantService.eliminar). */
+    public void eliminarPorTenant(Long tenantId) {
+        conversacionesPausadas.entrySet().removeIf(e -> tenantId.equals(e.getValue().tenantId()));
+    }
+
     private record Handoff(Long tenantId, String motivo) {
     }
 

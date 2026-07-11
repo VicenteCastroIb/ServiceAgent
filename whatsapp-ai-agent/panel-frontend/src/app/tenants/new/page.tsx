@@ -11,6 +11,8 @@ export default function NuevoTenantPage() {
   const [businessName, setBusinessName] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [businessContext, setBusinessContext] = useState("");
+  const [panelUsername, setPanelUsername] = useState("");
+  const [panelPassword, setPanelPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
 
@@ -21,7 +23,13 @@ export default function NuevoTenantPage() {
     setError(null);
     setGuardando(true);
     try {
-      await crearTenant({ businessName, whatsappNumber, businessContext });
+      await crearTenant({
+        businessName,
+        whatsappNumber,
+        businessContext,
+        panelUsername: panelUsername.trim() || undefined,
+        panelPassword: panelPassword.trim() || undefined,
+      });
       router.push("/tenants");
     } catch {
       setError("No se pudo crear el negocio. Revisá los datos.");
@@ -70,6 +78,34 @@ export default function NuevoTenantPage() {
             onChange={(e) => setBusinessContext(e.target.value)}
             required
           />
+        </div>
+
+        <div className="rounded-md border border-gray-200 p-4">
+          <p className="mb-3 text-sm font-medium">Login del dueño (opcional)</p>
+          <p className="mb-3 text-xs text-gray-500">
+            Si lo completás, el dueño va a poder entrar al panel y ver solo este
+            negocio. Si lo dejás vacío, se lo podés activar después desde la
+            lista de negocios.
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium">Usuario</label>
+              <input
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                value={panelUsername}
+                onChange={(e) => setPanelUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Clave</label>
+              <input
+                type="password"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                value={panelPassword}
+                onChange={(e) => setPanelPassword(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
