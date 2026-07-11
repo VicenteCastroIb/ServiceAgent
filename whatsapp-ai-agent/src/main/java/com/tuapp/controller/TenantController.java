@@ -14,10 +14,9 @@ import java.util.List;
  * API de administración de tenants (negocios/locales). Semana 3: reemplaza
  * la carga hardcodeada de contexto por alta real en base de datos.
  *
- * Protegido por la configuración default de SecurityConfig (requiere login -
- * ver la contraseña generada en el log al arrancar la app). No hay panel
- * visual todavía: se usa con curl/Postman hasta que se construya el panel
- * web con Thymeleaf (segunda mitad de la Semana 3).
+ * Protegida por JWT (ver SecurityConfig): requiere header
+ * "Authorization: Bearer &lt;token&gt;", emitido por AuthController tras
+ * /auth/login. La consume el panel Next.js (panel-frontend/).
  * TODO: reemplazar el login in-memory generado por autenticación real por
  * dueño de negocio.
  */
@@ -34,6 +33,13 @@ public class TenantController {
     @GetMapping
     public List<Tenant> listar() {
         return tenantService.listar();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Tenant> buscarPorId(@PathVariable Long id) {
+        return tenantService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping

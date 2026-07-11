@@ -3,6 +3,7 @@ package com.tuapp.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +35,11 @@ public class HandoffService {
 
     public boolean estaPausada(String numeroCliente) {
         return conversacionesPausadas.containsKey(numeroCliente);
+    }
+
+    /** Todas las conversaciones pausadas actualmente (número de cliente -> motivo), para el panel. */
+    public Map<String, String> listarPausadas() {
+        return Collections.unmodifiableMap(conversacionesPausadas);
     }
 
     /** Vuelve a activar el bot para ese cliente (ej: el dueño lo reactiva desde el panel). */
