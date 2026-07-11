@@ -5,11 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+
 /**
- * Cupo/hora disponible de un profesional o box de un Tenant (plan Pro).
- * Usado por SchedulingService para ofrecer horarios al agendar_cita.
- *
- * TODO: profesional/box, día/hora, duración, estado (libre/tomado).
+ * Ventana de disponibilidad semanal recurrente de un Professional (ej: "lunes
+ * a viernes de 10:00 a 19:00"). SchedulingService la usa para calcular cupos
+ * libres, cortando el rango en bloques de slotMinutes y descontando las citas
+ * ya agendadas (Appointment) en estado CONFIRMADA.
  */
 @Entity
 @Table(name = "availabilities")
@@ -22,7 +25,17 @@ public class Availability {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
-    private Tenant tenant;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "professional_id")
+    private Professional professional;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
+
+    /** Duración de cada cupo/turno, en minutos (ej: 30). */
+    private int slotMinutes = 30;
 }

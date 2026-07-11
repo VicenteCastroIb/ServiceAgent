@@ -1,12 +1,17 @@
 package com.tuapp.service;
 
+import com.tuapp.model.Professional;
 import com.tuapp.model.Tenant;
+import com.tuapp.model.TenantPlan;
 import com.tuapp.repository.TenantRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,16 +40,28 @@ public class TenantService {
     private static final String NUMERO_SANDBOX_TWILIO = "whatsapp:+14155238886";
 
     private final TenantRepository tenantRepository;
+    private final SchedulingService schedulingService;
+    private final PasswordEncoder passwordEncoder;
 
-    public TenantService(TenantRepository tenantRepository) {
+    public TenantService(
+            TenantRepository tenantRepository,
+            SchedulingService schedulingService,
+            PasswordEncoder passwordEncoder) {
         this.tenantRepository = tenantRepository;
+        this.schedulingService = schedulingService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Tenant crear(String businessName, String whatsappNumber, String businessContext) {
+        return crear(businessName, whatsappNumber, businessContext, TenantPlan.BASICO);
+    }
+
+    public Tenant crear(String businessName, String whatsappNumber, String businessContext, TenantPlan plan) {
         Tenant tenant = new Tenant();
         tenant.setBusinessName(businessName);
         tenant.setWhatsappNumber(whatsappNumber);
         tenant.setBusinessContext(businessContext);
+        tenant.setPlan(plan);
         tenant.setCreatedAt(Instant.now());
         return tenantRepository.save(tenant);
     }
@@ -61,6 +78,27 @@ public class TenantService {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
         tenant.setBusinessContext(businessContext);
+        return tenantRepository.save(tenant);
+    }
+
+    public Tenant actualizarPlan(Long id, TenantPlan plan) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setPlan(plan);
+        return tenantRepository.save(tenant);
+    }
+
+    /**
+     * Activa o cambia el acceso al panel del dueño de este negocio. Lo hace
+     * el admin (ver SchedulingController/TenantController) - el dueño no se
+     * auto-registra. La contraseña se guarda hasheada (BCrypt), nunca en
+     * texto plano (ver PanelUserDetailsService, quien la valida).
+     */
+    public Tenant fijarCredencialesPanel(Long id, String panelUsername, String panelPassword) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setPanelUsername(panelUsername);
+        tenant.setPanelPasswordHash(passwordEncoder.encode(panelPassword));
         return tenantRepository.save(tenant);
     }
 
@@ -102,7 +140,28 @@ public class TenantService {
                 - Envíos a todo Chile, despacho gratis sobre $40.000 CLP
                 """;
 
-        crear("Ropa Urbana Ñuñoa", NUMERO_SANDBOX_TWILIO, contexto);
+        // Plan PRO en el tenant de prueba (aunque el rubro no sea "de horas")
+        // a propósito, para poder probar el módulo de agendamiento end-to-end
+        // en el sandbox, que solo tiene un número/tenant disponible.
+        Tenant tenant = crear("Ropa Urbana Ñuñoa", NUMERO_SANDBOX_TWILIO, contexto, TenantPlan.PRO);
         log.info("Tenant de prueba creado para el número sandbox {}", NUMERO_SANDBOX_TWILIO);
+
+        // Login de prueba del "dueño" de este tenant, para poder probar el
+        // panel con una cuenta que solo ve este negocio (no el admin, que ve
+        // todos). Password de ejemplo - cambiarla desde /admin en un uso real.
+        fijarCredencialesPanel(tenant.getId(), "ropaurbana", "qVEUt6wnvmK1YERp");
+        log.info("Login de panel de prueba creado para el tenant id={} (usuario: ropaurbana)", tenant.getId());
+
+        // Profesional + disponibilidad de prueba, para poder probar
+        // agendar_cita/cancelar_reagendar_cita sin tener que cargarlos a mano
+        // primero por la API admin (ver SchedulingService y doc sección 5.3).
+        Professional profesional = schedulingService.crearProfesional(tenant, "Atención Ropa Urbana Ñuñoa");
+        for (DayOfWeek dia : List.of(
+                DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY)) {
+            schedulingService.crearDisponibilidad(
+                    profesional.getId(), dia, LocalTime.of(10, 0), LocalTime.of(20, 0), 30);
+        }
+        log.info("Disponibilidad de prueba creada para el profesional id={}", profesional.getId());
     }
 }

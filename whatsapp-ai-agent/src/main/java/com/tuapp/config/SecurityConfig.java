@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,8 +32,9 @@ import java.util.List;
  * protege sesiones de cookies de navegador, no tokens Bearer - y se habilita
  * CORS solo para el origen del panel.
  *
- * TODO: reemplazar el usuario in-memory generado por Spring Boot (que valida
- * AuthController) por usuarios reales por tenant.
+ * Login: PanelUserDetailsService resuelve tanto al admin (ve todos los
+ * tenants) como al dueño de cada negocio (ve solo el suyo, filtrado en cada
+ * controller según el tenantId embebido en el JWT - ver JwtService/JwtAuthFilter).
  */
 @Configuration
 public class SecurityConfig {
@@ -60,6 +63,17 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    // El UserDetailsService lo provee PanelUserDetailsService (admin + login
+    // por tenant - ver com.tuapp.security). Al declarar un AuthenticationManager
+    // propio, Spring Boot ya NO genera el usuario "user" con password aleatoria
+    // de sus logs - ese mecanismo solo existe cuando no hay ningún
+    // UserDetailsService/AuthenticationManager configurado.
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     /**

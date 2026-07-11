@@ -1,6 +1,7 @@
 package com.tuapp.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -16,11 +17,14 @@ import java.util.Date;
  * Genera y valida los JWT que usa el panel (Next.js, en otro origen/puerto)
  * para autenticar sus requests a /admin/** en vez de sesión de cookies.
  *
- * TODO: reemplazar el username genérico por el tenant/dueño real cuando
- * exista login por negocio.
+ * Lleva el tenantId como claim (ver PanelUserDetails): null para el admin
+ * (ve todos los negocios), o el id del negocio si es el login de un dueño -
+ * los controllers /admin/** lo usan para restringir el acceso a lo suyo.
  */
 @Component
 public class JwtService {
+
+    private static final String CLAIM_TENANT_ID = "tenantId";
 
     private final SecretKey key;
     private final long expirationMinutes;
@@ -32,18 +36,27 @@ public class JwtService {
         this.expirationMinutes = expirationMinutes;
     }
 
-    public String generarToken(String username) {
+    /** @param tenantId null si es el admin (ve todos los negocios). */
+    public String generarToken(String username, Long tenantId) {
         Instant ahora = Instant.now();
-        return Jwts.builder()
+        JwtBuilder builder = Jwts.builder()
                 .subject(username)
                 .issuedAt(Date.from(ahora))
-                .expiration(Date.from(ahora.plusSeconds(expirationMinutes * 60)))
-                .signWith(key)
-                .compact();
+                .expiration(Date.from(ahora.plusSeconds(expirationMinutes * 60)));
+        if (tenantId != null) {
+            builder.claim(CLAIM_TENANT_ID, tenantId);
+        }
+        return builder.signWith(key).compact();
     }
 
     public String extraerUsername(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    /** Null si el token es del admin (sin tenant asociado). */
+    public Long extraerTenantId(String token) {
+        Object valor = parseClaims(token).get(CLAIM_TENANT_ID);
+        return valor != null ? ((Number) valor).longValue() : null;
     }
 
     public boolean esValido(String token) {

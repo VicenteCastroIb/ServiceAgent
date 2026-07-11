@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
     Optional<Tenant> findByWhatsappNumber(String whatsappNumber);
+
+    Optional<Tenant> findByPanelUsername(String panelUsername);
 }

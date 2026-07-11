@@ -39,7 +39,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = header.substring("Bearer ".length());
             if (jwtService.esValido(token)) {
                 String username = jwtService.extraerUsername(token);
+                Long tenantId = jwtService.extraerTenantId(token);
                 var authentication = new UsernamePasswordAuthenticationToken(username, null, List.of());
+                // tenantId viaja en "details": null = admin (ve todo), si no,
+                // el dueño de ese negocio (ver PanelAuth, que lo lee acá).
+                authentication.setDetails(tenantId);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

@@ -1,10 +1,11 @@
 package com.tuapp.controller;
 
+import com.tuapp.security.PanelAuth;
 import com.tuapp.service.HandoffService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,8 @@ import java.util.List;
  * ya los atendió.
  *
  * Protegida por JWT igual que {@link TenantController} (ver SecurityConfig).
+ * Autorización por tenant (ver PanelAuth): el admin ve todas las conversaciones
+ * pausadas; el dueño de un negocio solo ve y reanuda las suyas.
  */
 @RestController
 @RequestMapping("/admin/handoffs")
@@ -29,18 +32,13 @@ public class HandoffController {
     }
 
     @GetMapping
-    public List<HandoffDto> listar() {
-        return handoffService.listarPausadas().entrySet().stream()
-                .map(entrada -> new HandoffDto(entrada.getKey(), entrada.getValue()))
-                .toList();
+    public List<HandoffService.HandoffView> listar() {
+        return handoffService.listarPausadas(PanelAuth.tenantIdActual());
     }
 
     @PostMapping("/{numeroCliente}/reanudar")
     public ResponseEntity<Void> reanudar(@PathVariable String numeroCliente) {
-        handoffService.reanudar(numeroCliente);
-        return ResponseEntity.noContent().build();
-    }
-
-    public record HandoffDto(String numeroCliente, String motivo) {
+        boolean reanudada = handoffService.reanudar(numeroCliente, PanelAuth.tenantIdActual());
+        return reanudada ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
