@@ -13,10 +13,14 @@ import org.springframework.security.web.SecurityFilterChain;
  * su autenticación real es la validación de firma que hace WebhookController
  * contra cada request (RequestValidator con el auth token de Twilio), no un
  * login de sesión - Twilio no puede completar un login interactivo.
- * CSRF se desactiva solo para esa ruta porque son POSTs servidor-a-servidor,
- * sin token CSRF disponible.
  *
- * Todo lo demás (futuro panel del dueño del local) exige autenticación.
+ * /admin/** (API de administración, Semana 3) SÍ requiere autenticación
+ * (login básico in-memory por ahora), pero se ignora CSRF ahí también:
+ * es una API JSON pensada para curl/Postman, no un formulario de navegador
+ * con sesión de cookies - CSRF protege ese segundo caso, no este.
+ * Cuando exista el panel real con formularios (Thymeleaf), esas rutas SÍ
+ * deben mantener CSRF activo.
+ *
  * TODO Semana 3: reemplazar el login in-memory generado por Spring Boot con
  * usuarios reales por tenant.
  */
@@ -26,7 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**"))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**", "/admin/**"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/webhooks/**").permitAll()
                         .anyRequest().authenticated()

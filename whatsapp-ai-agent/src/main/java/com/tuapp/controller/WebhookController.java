@@ -32,6 +32,8 @@ import java.util.Map;
  * Semana 2: delega en AiResponseService. Si la conversación está pausada por
  * un handoff a humano (HandoffService), el bot no responde nada automático -
  * el dueño la retoma manualmente desde el panel (doc, sección 4).
+ * Semana 3: se extrae también el "To" (número del negocio) para que
+ * AiResponseService resuelva el tenant real correspondiente.
  */
 @Slf4j
 @RestController
@@ -69,8 +71,9 @@ public class WebhookController {
         }
 
         String from = params.getOrDefault("From", "desconocido");
+        String to = params.getOrDefault("To", "desconocido");
         String incomingBody = params.getOrDefault("Body", "");
-        log.info("Mensaje de WhatsApp recibido de {}: {}", from, incomingBody);
+        log.info("Mensaje de WhatsApp recibido de {} para {}: {}", from, to, incomingBody);
 
         if (handoffService.estaPausada(from)) {
             // Ya se derivó a un humano: el bot no contesta más en esta conversación,
@@ -79,7 +82,7 @@ public class WebhookController {
             return ResponseEntity.ok(new MessagingResponse.Builder().build().toXml());
         }
 
-        String replyText = aiResponseService.generarRespuesta(from, incomingBody);
+        String replyText = aiResponseService.generarRespuesta(to, from, incomingBody);
         Message message = new Message.Builder(replyText).build();
         MessagingResponse twiml = new MessagingResponse.Builder()
                 .message(message)
