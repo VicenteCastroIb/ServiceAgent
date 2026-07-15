@@ -1,6 +1,5 @@
 package com.tuapp.service;
 
-import com.tuapp.model.Professional;
 import com.tuapp.model.Tenant;
 import com.tuapp.model.TenantPlan;
 import com.tuapp.repository.ConversationRepository;
@@ -9,15 +8,12 @@ import com.tuapp.repository.PaymentOrderRepository;
 import com.tuapp.repository.ProductRepository;
 import com.tuapp.repository.TenantRepository;
 import com.tuapp.repository.TenantSubscriptionRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,21 +25,11 @@ import java.util.Optional;
  * entrante según el número de WhatsApp al que le escribieron ("To" del
  * webhook de Twilio), en vez de usar un contexto hardcodeado.
  *
- * Sin panel visual todavía (eso es la otra mitad de la Semana 3) - por ahora
- * los tenants se administran vía TenantController (API) o se cargan con el
- * seeder de más abajo.
+ * Los tenants se administran vía TenantController (API) / panel admin.
  */
 @Slf4j
 @Service
 public class TenantService {
-
-    /**
-     * Número compartido del sandbox de Twilio. Todos los tenants de prueba
-     * "responden" a este número mientras no tengamos números dedicados por
-     * negocio (ver doc, sección 5.6). TODO: sacar este seeder cuando haya
-     * panel real para dar de alta negocios.
-     */
-    private static final String NUMERO_SANDBOX_TWILIO = "whatsapp:+14155238886";
 
     private final TenantRepository tenantRepository;
     private final SchedulingService schedulingService;
@@ -109,6 +95,14 @@ public class TenantService {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
         tenant.setPlan(plan);
+        return tenantRepository.save(tenant);
+    }
+
+    /** Email del dueño para notificaciones (ver OwnerNotificationService). Puede pasarse null/vacío para borrarlo. */
+    public Tenant actualizarOwnerEmail(Long id, String ownerEmail) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setOwnerEmail(ownerEmail);
         return tenantRepository.save(tenant);
     }
 
@@ -232,52 +226,5 @@ public class TenantService {
     /** Tenants con Instagram configurado cuyo token vence antes de la fecha dada (ver InstagramTokenRefreshJob). */
     public List<Tenant> listarConTokenInstagramPorVencer(Instant antesDe) {
         return tenantRepository.findByInstagramAccountIdIsNotNullAndInstagramTokenExpiresAtBefore(antesDe);
-    }
-
-    /**
-     * Carga un tenant de prueba en el arranque si la base está vacía, para no
-     * perder el comportamiento de pruebas que teníamos con el contexto
-     * hardcodeado. TODO: sacar esto una vez que exista el panel real.
-     */
-    @PostConstruct
-    void seedTenantDePrueba() {
-        if (tenantRepository.count() > 0) {
-            return;
-        }
-
-        String contexto = """
-                Rubro: tienda de ropa casual/streetwear
-                Horario de atención: lunes a sábado de 10:00 a 20:00, domingo cerrado
-                Tono: cercano, informal pero respetuoso, como si fueras un vendedor joven de la tienda
-                Catálogo (resumen):
-                - Poleras básicas: $9.990 CLP (colores: negro, blanco, gris)
-                - Jockeys bordados: $12.990 CLP
-                - Zapatillas urbanas: $34.990 - $49.990 CLP según modelo
-                - Envíos a todo Chile, despacho gratis sobre $40.000 CLP
-                """;
-
-        // Plan PRO en el tenant de prueba (aunque el rubro no sea "de horas")
-        // a propósito, para poder probar el módulo de agendamiento end-to-end
-        // en el sandbox, que solo tiene un número/tenant disponible.
-        Tenant tenant = crear("Ropa Urbana Ñuñoa", NUMERO_SANDBOX_TWILIO, contexto, TenantPlan.PRO);
-        log.info("Tenant de prueba creado para el número sandbox {}", NUMERO_SANDBOX_TWILIO);
-
-        // Login de prueba del "dueño" de este tenant, para poder probar el
-        // panel con una cuenta que solo ve este negocio (no el admin, que ve
-        // todos). Password de ejemplo - cambiarla desde /admin en un uso real.
-        fijarCredencialesPanel(tenant.getId(), "ropaurbana", "qVEUt6wnvmK1YERp");
-        log.info("Login de panel de prueba creado para el tenant id={} (usuario: ropaurbana)", tenant.getId());
-
-        // Profesional + disponibilidad de prueba, para poder probar
-        // agendar_cita/cancelar_reagendar_cita sin tener que cargarlos a mano
-        // primero por la API admin (ver SchedulingService y doc sección 5.3).
-        Professional profesional = schedulingService.crearProfesional(tenant, "Atención Ropa Urbana Ñuñoa");
-        for (DayOfWeek dia : List.of(
-                DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY)) {
-            schedulingService.crearDisponibilidad(
-                    profesional.getId(), dia, LocalTime.of(10, 0), LocalTime.of(20, 0), 30);
-        }
-        log.info("Disponibilidad de prueba creada para el profesional id={}", profesional.getId());
     }
 }

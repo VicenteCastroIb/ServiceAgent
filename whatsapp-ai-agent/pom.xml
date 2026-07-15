@@ -74,6 +74,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Notificación al dueño por email cuando hay un handoff (doc sección 4,
+             ver OwnerNotificationService). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- /actuator/health: lo usa el healthcheck de Railway/Render para saber
              si el contenedor levantó bien (ver Dockerfile/railway.json). -->
         <dependency>

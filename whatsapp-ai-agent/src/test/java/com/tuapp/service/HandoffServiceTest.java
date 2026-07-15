@@ -4,13 +4,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests de HandoffService: la lógica de "pausar el bot y que atienda un
  * humano" (doc sección 4) - crítica porque un bug acá significa que el bot
  * le sigue respondiendo a un cliente que ya debería estar hablando con el
  * dueño del negocio, o al revés, que una conversación se quede pausada sin
- * que nadie la retome. Estado en memoria, sin mocks necesarios.
+ * que nadie la retome. Estado en memoria. OwnerNotificationService se mockea
+ * sin stubbing (un mock sin comportamiento configurado no hace nada en sus
+ * métodos void) - el envío de email en sí no es lo que testea este archivo.
  */
 class HandoffServiceTest {
 
@@ -18,7 +21,7 @@ class HandoffServiceTest {
 
     @BeforeEach
     void setUp() {
-        handoffService = new HandoffService();
+        handoffService = new HandoffService(mock(OwnerNotificationService.class));
     }
 
     @Test

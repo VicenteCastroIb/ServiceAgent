@@ -124,6 +124,21 @@ public class SchedulingController {
         }
     }
 
+    @GetMapping("/tenants/{tenantId}/appointments/reporte")
+    public ResponseEntity<SchedulingService.ReporteAgendamiento> generarReporte(
+            @PathVariable Long tenantId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
+        if (!PanelAuth.puedeAcceder(tenantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Tenant tenant = buscarTenant(tenantId);
+        if (tenant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(schedulingService.generarReporte(tenant, desde, hasta));
+    }
+
     @PatchMapping("/appointments/{id}")
     public ResponseEntity<?> actualizarCita(@PathVariable Long id, @RequestBody ActualizarCitaRequest request) {
         return schedulingService.buscarCita(id)

@@ -6,6 +6,7 @@ import { useRequireAuth } from "@/lib/useRequireAuth";
 import { esAdminSegunToken } from "@/lib/auth";
 import {
   actualizarContextoTenant,
+  actualizarOwnerEmail,
   ApiError,
   buscarTenant,
   fijarCredencialesInstagram,
@@ -32,12 +33,18 @@ export default function EditarTenantPage() {
   const [mensajeInstagram, setMensajeInstagram] = useState<string | null>(null);
   const [errorInstagram, setErrorInstagram] = useState<string | null>(null);
 
+  const [ownerEmail, setOwnerEmail] = useState("");
+  const [guardandoOwnerEmail, setGuardandoOwnerEmail] = useState(false);
+  const [mensajeOwnerEmail, setMensajeOwnerEmail] = useState<string | null>(null);
+  const [errorOwnerEmail, setErrorOwnerEmail] = useState<string | null>(null);
+
   useEffect(() => {
     if (!listo) return;
     buscarTenant(id)
       .then((t) => {
         setTenant(t);
         setBusinessContext(t.businessContext);
+        setOwnerEmail(t.ownerEmail ?? "");
       })
       .catch(() => setError("No se pudo cargar el negocio."));
   }, [listo, id]);
@@ -78,6 +85,24 @@ export default function EditarTenantPage() {
       setErrorInstagram(err instanceof ApiError ? err.message : "No se pudieron guardar las credenciales.");
     } finally {
       setGuardandoInstagram(false);
+    }
+  }
+
+  async function onGuardarOwnerEmail(e: FormEvent) {
+    e.preventDefault();
+    setErrorOwnerEmail(null);
+    setMensajeOwnerEmail(null);
+    setGuardandoOwnerEmail(true);
+    try {
+      const actualizado = await actualizarOwnerEmail(id, ownerEmail.trim());
+      setTenant(actualizado);
+      setMensajeOwnerEmail(
+        ownerEmail.trim() ? "Email guardado." : "Email borrado: ya no se van a mandar notificaciones."
+      );
+    } catch (err) {
+      setErrorOwnerEmail(err instanceof ApiError ? err.message : "No se pudo guardar el email.");
+    } finally {
+      setGuardandoOwnerEmail(false);
     }
   }
 
@@ -129,6 +154,33 @@ export default function EditarTenantPage() {
           </button>
         </div>
       </form>
+
+      <section className="mt-8 rounded-md border border-gray-200 bg-white p-4">
+        <h2 className="mb-1 text-sm font-medium text-gray-700">Notificaciones</h2>
+        <p className="mb-3 text-xs text-gray-500">
+          Cuando una conversación se deriva a un humano (el bot no puede seguir solo), te avisamos por
+          email a esta dirección. Dejalo vacío para no recibir avisos (igual vas a ver la conversación
+          pausada en el panel).
+        </p>
+        <form onSubmit={onGuardarOwnerEmail} className="flex gap-2">
+          <input
+            value={ownerEmail}
+            onChange={(e) => setOwnerEmail(e.target.value)}
+            placeholder="tu@negocio.cl"
+            type="email"
+            className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          />
+          <button
+            type="submit"
+            disabled={guardandoOwnerEmail}
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          >
+            {guardandoOwnerEmail ? "Guardando..." : "Guardar"}
+          </button>
+        </form>
+        {mensajeOwnerEmail && <p className="mt-2 text-sm text-green-600">{mensajeOwnerEmail}</p>}
+        {errorOwnerEmail && <p className="mt-2 text-sm text-red-600">{errorOwnerEmail}</p>}
+      </section>
 
       <section className="mt-8 rounded-md border border-gray-200 bg-white p-4">
         <h2 className="mb-1 text-sm font-medium text-gray-700">Instagram</h2>

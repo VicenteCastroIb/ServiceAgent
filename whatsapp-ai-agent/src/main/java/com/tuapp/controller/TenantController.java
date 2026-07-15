@@ -5,6 +5,7 @@ import com.tuapp.model.TenantPlan;
 import com.tuapp.security.PanelAuth;
 import com.tuapp.service.TenantService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,16 @@ public class TenantController {
         return ResponseEntity.ok(tenantService.actualizarContexto(id, request.businessContext()));
     }
 
+    @PutMapping("/{id}/owner-email")
+    public ResponseEntity<Tenant> actualizarOwnerEmail(
+            @PathVariable Long id,
+            @Valid @RequestBody ActualizarOwnerEmailRequest request) {
+        if (!PanelAuth.puedeAcceder(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(tenantService.actualizarOwnerEmail(id, request.ownerEmail()));
+    }
+
     @PutMapping("/{id}/plan")
     public ResponseEntity<Tenant> actualizarPlan(
             @PathVariable Long id,
@@ -132,6 +143,10 @@ public class TenantController {
     }
 
     public record ActualizarPlanRequest(@NotNull TenantPlan plan) {
+    }
+
+    // Sin @NotBlank a propósito: mandar "" permite borrar el email ya cargado.
+    public record ActualizarOwnerEmailRequest(@Email String ownerEmail) {
     }
 
     public record FijarCredencialesRequest(@NotBlank String panelUsername, @NotBlank String panelPassword) {

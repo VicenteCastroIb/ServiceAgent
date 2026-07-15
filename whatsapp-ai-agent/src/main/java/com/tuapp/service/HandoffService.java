@@ -14,15 +14,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * se detectan reclamos/negociación de precio, o tras varios intentos fallidos
  * (ver doc, sección 4).
  *
- * Semana 2: estado en memoria (se pierde al reiniciar la app) y "notificación"
- * por log. Suficiente para probar el flujo end-to-end.
+ * Semana 2: estado en memoria (se pierde al reiniciar la app).
  * Semana 5: cada handoff queda asociado a un tenantId, para que el panel
  * (login por negocio - ver PanelAuth) solo muestre las conversaciones de SU
  * negocio. tenantId puede ser null si el handoff ocurrió antes de poder
- * resolver el tenant (número de negocio desconocido) - solo el admin lo ve.
- * TODO: persistir el estado de pausa en Conversation (ya existe la
- * entidad/repositorio), y notificar al dueño de verdad (WhatsApp/email/panel)
- * en vez de solo loguear.
+ * resolver el tenant (número de negocio desconocido) - solo el admin lo ve,
+ * y no hay a quién notificarle por email en ese caso.
+ * La notificación real al dueño (email, ver OwnerNotificationService) es
+ * best-effort: si falla o no está configurada, el handoff igual queda
+ * registrado y visible en el panel - ver TODO histórico de persistir el
+ * estado de pausa en Conversation (todavía en memoria).
  */
 @Slf4j
 @Service
@@ -31,11 +32,17 @@ public class HandoffService {
     /** Número de WhatsApp del cliente -> datos de la derivación. */
     private final Map<String, Handoff> conversacionesPausadas = new ConcurrentHashMap<>();
 
+    private final OwnerNotificationService ownerNotificationService;
+
+    public HandoffService(OwnerNotificationService ownerNotificationService) {
+        this.ownerNotificationService = ownerNotificationService;
+    }
+
     public void derivarAHumano(Long tenantId, String numeroCliente, String motivo) {
         conversacionesPausadas.put(numeroCliente, new Handoff(tenantId, motivo));
         log.warn("Conversación derivada a humano. Tenant={}, cliente={}, motivo={}",
                 tenantId, numeroCliente, motivo);
-        // TODO: notificar al dueño del negocio (push/WhatsApp/email al panel).
+        ownerNotificationService.notificarHandoff(tenantId, numeroCliente, motivo);
     }
 
     public boolean estaPausada(String numeroCliente) {

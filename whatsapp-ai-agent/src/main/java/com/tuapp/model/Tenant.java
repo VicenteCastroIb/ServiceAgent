@@ -122,6 +122,15 @@ public class Tenant {
 
     private Instant instagramTokenExpiresAt;
 
+    /**
+     * Email del dueño del negocio, para notificarle cuando una conversación
+     * se deriva a humano (doc sección 4, ver OwnerNotificationService). Lo
+     * carga el propio dueño o el admin desde el panel - opcional: mientras no
+     * esté cargado, el handoff se sigue viendo en el panel pero no se manda
+     * ningún email.
+     */
+    private String ownerEmail;
+
     private Instant createdAt;
 
     /** Para que el panel sepa si ya está configurado, sin exponer las claves reales. */

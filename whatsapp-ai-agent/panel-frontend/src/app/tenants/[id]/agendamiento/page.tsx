@@ -17,6 +17,7 @@ import TenantSubNav from "@/components/TenantSubNav";
 import ProfessionalAvailability from "@/components/ProfessionalAvailability";
 import AppointmentsCalendar from "@/components/AppointmentsCalendar";
 import CitaDetailPanel from "@/components/CitaDetailPanel";
+import ReportesAgendamiento from "@/components/ReportesAgendamiento";
 
 const NOMBRE_ESTADO_CITA: Record<Appointment["status"], string> = {
   CONFIRMADA: "Confirmada",
@@ -323,6 +324,8 @@ export default function AgendamientoPage() {
           </div>
         )}
       </section>
+
+      <ReportesAgendamiento tenantId={tenantId} />
 
       {citaSeleccionada && (
         <CitaDetailPanel

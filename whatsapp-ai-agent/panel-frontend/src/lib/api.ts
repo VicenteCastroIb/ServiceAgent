@@ -52,6 +52,7 @@ export interface Tenant {
   flowConfigurado: boolean;
   instagramAccountId: string | null;
   instagramConfigurado: boolean;
+  ownerEmail: string | null;
   createdAt: string;
 }
 
@@ -116,6 +117,17 @@ export interface Product {
   updatedAt: string | null;
 }
 
+export interface ReporteAgendamiento {
+  desde: string;
+  hasta: string;
+  totalCitas: number;
+  citasPorEstado: Partial<Record<Appointment["status"], number>>;
+  noShowsEvitados: number;
+  noShows: number;
+  citasPorSemana: { inicioSemana: string; cantidad: number }[];
+  horasPeak: { hora: number; cantidad: number }[];
+}
+
 export interface PaymentOrder {
   id: number;
   clientPhoneNumber: string;
@@ -165,6 +177,14 @@ export function actualizarContextoTenant(id: number, businessContext: string): P
 export function eliminarTenant(id: number): Promise<void> {
   return request<void>(`/admin/tenants/${id}`, {
     method: "DELETE",
+  });
+}
+
+// Vacío ("") borra el email cargado (deja de notificar al dueño por handoff).
+export function actualizarOwnerEmail(id: number, ownerEmail: string): Promise<Tenant> {
+  return request<Tenant>(`/admin/tenants/${id}/owner-email`, {
+    method: "PUT",
+    body: JSON.stringify({ ownerEmail }),
   });
 }
 
@@ -260,6 +280,19 @@ export function actualizarCita(
     method: "PATCH",
     body: JSON.stringify(input),
   });
+}
+
+export function obtenerReporteAgendamiento(
+  tenantId: number,
+  filtros?: { desde?: string; hasta?: string }
+): Promise<ReporteAgendamiento> {
+  const params = new URLSearchParams();
+  if (filtros?.desde) params.set("desde", filtros.desde);
+  if (filtros?.hasta) params.set("hasta", filtros.hasta);
+  const query = params.toString();
+  return request<ReporteAgendamiento>(
+    `/admin/tenants/${tenantId}/appointments/reporte${query ? `?${query}` : ""}`
+  );
 }
 
 // --- Catálogo (Semana 6) ---

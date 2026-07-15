@@ -16,8 +16,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Agenda, cupos y recordatorios (plan Pro, doc secciones 3, 5.2 y 5.3-5.4).
@@ -280,5 +285,71 @@ public class SchedulingService {
         appointmentRepository.deleteByTenant(tenant);
         availabilityRepository.deleteByProfessional_Tenant(tenant);
         professionalRepository.deleteByTenant(tenant);
+    }
+
+    // ---- Reportes (plan Pro, doc sección 3: "no-shows evitados, citas por semana, horas peak") ----
+
+    /**
+     * Calcula las métricas básicas del módulo de agendamiento para el panel.
+     * Si no se pasan fechas, usa las últimas 12 semanas hasta hoy.
+     *
+     * "noShowsEvitados" es una métrica proxy, no una medición causal real: son
+     * las citas con recordatorio enviado que NO terminaron en NO_SHOW. No hay
+     * forma de saber con certeza si el recordatorio fue la causa, pero es el
+     * indicador que tiene sentido mostrarle al dueño del negocio para
+     * justificar el valor del módulo de recordatorios (doc sección 3, plan Pro).
+     */
+    public ReporteAgendamiento generarReporte(Tenant tenant, LocalDate desde, LocalDate hasta) {
+        LocalDate hastaFinal = hasta != null ? hasta : LocalDate.now();
+        LocalDate desdeFinal = desde != null ? desde : hastaFinal.minusWeeks(12);
+
+        List<Appointment> citas = listarCitas(tenant, null, desdeFinal, hastaFinal);
+
+        Map<AppointmentStatus, Long> citasPorEstado = citas.stream()
+                .collect(Collectors.groupingBy(Appointment::getStatus, Collectors.counting()));
+
+        long noShows = citasPorEstado.getOrDefault(AppointmentStatus.NO_SHOW, 0L);
+        long noShowsEvitados = citas.stream()
+                .filter(Appointment::isReminderSent)
+                .filter(c -> c.getStatus() != AppointmentStatus.NO_SHOW)
+                .count();
+
+        Map<LocalDate, Long> porSemanaMap = citas.stream()
+                .collect(Collectors.groupingBy(
+                        c -> c.getStartTime().toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
+                        TreeMap::new,
+                        Collectors.counting()));
+        List<CitasPorSemana> citasPorSemana = porSemanaMap.entrySet().stream()
+                .map(e -> new CitasPorSemana(e.getKey(), e.getValue()))
+                .toList();
+
+        List<HoraPeak> horasPeak = citas.stream()
+                .collect(Collectors.groupingBy(c -> c.getStartTime().getHour(), Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> new HoraPeak(e.getKey(), e.getValue()))
+                .sorted(Comparator.comparingLong(HoraPeak::cantidad).reversed()
+                        .thenComparing(HoraPeak::hora))
+                .toList();
+
+        return new ReporteAgendamiento(
+                desdeFinal, hastaFinal, citas.size(), citasPorEstado,
+                noShowsEvitados, noShows, citasPorSemana, horasPeak);
+    }
+
+    public record ReporteAgendamiento(
+            LocalDate desde,
+            LocalDate hasta,
+            long totalCitas,
+            Map<AppointmentStatus, Long> citasPorEstado,
+            long noShowsEvitados,
+            long noShows,
+            List<CitasPorSemana> citasPorSemana,
+            List<HoraPeak> horasPeak) {
+    }
+
+    public record CitasPorSemana(LocalDate inicioSemana, long cantidad) {
+    }
+
+    public record HoraPeak(int hora, long cantidad) {
     }
 }
