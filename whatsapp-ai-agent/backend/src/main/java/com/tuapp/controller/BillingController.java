@@ -1,5 +1,6 @@
 package com.tuapp.controller;
 
+import com.tuapp.model.BillingStatus;
 import com.tuapp.model.Tenant;
 import com.tuapp.model.TenantSubscription;
 import com.tuapp.security.PanelAuth;
@@ -85,6 +86,35 @@ public class BillingController {
         return suscripcion != null ? ResponseEntity.ok(suscripcion) : ResponseEntity.notFound().build();
     }
 
+    /**
+     * Resumen para el gating del panel (doc sección 12): mientras la
+     * suscripción no esté ACTIVA, o el admin todavía no le aprovisionó ningún
+     * canal (WhatsApp/Instagram - hoy sigue siendo manual, ver
+     * InstagramController), el panel muestra "completá tu pago"/"estamos
+     * activando tu cuenta" en vez del dashboard completo. Centralizado acá en
+     * vez de en el frontend para que la regla de negocio ("listo para operar")
+     * viva en un solo lugar.
+     */
+    @GetMapping("/tenants/{tenantId}/estado")
+    public ResponseEntity<EstadoCuentaResponse> verEstadoCuenta(@PathVariable Long tenantId) {
+        if (!PanelAuth.puedeAcceder(tenantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Tenant tenant = tenantService.buscarPorId(tenantId).orElse(null);
+        if (tenant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TenantSubscription suscripcion = subscriptionBillingService.buscarPorTenant(tenant);
+        BillingStatus status = suscripcion != null ? suscripcion.getStatus() : null;
+        boolean whatsappConfigurado = tenant.getWhatsappNumber() != null && !tenant.getWhatsappNumber().isBlank();
+        boolean instagramConfigurado = tenant.isInstagramConfigurado();
+        boolean suscripcionActiva = status == BillingStatus.ACTIVA;
+        boolean listoParaOperar = suscripcionActiva && (whatsappConfigurado || instagramConfigurado);
+
+        return ResponseEntity.ok(new EstadoCuentaResponse(
+                status, suscripcionActiva, whatsappConfigurado, instagramConfigurado, listoParaOperar));
+    }
+
     /** Admin-only: mientras no haya notificación automática de cobro fallido confirmada con Flow, la mora se marca a mano. */
     @PostMapping("/tenants/{tenantId}/billing/marcar-morosa")
     public ResponseEntity<Void> marcarMorosa(@PathVariable Long tenantId) {
@@ -117,6 +147,14 @@ public class BillingController {
         }
         TenantSubscription suscripcion = subscriptionBillingService.registrarPagoManual(tenant, request.paidUntil());
         return ResponseEntity.ok(suscripcion);
+    }
+
+    public record EstadoCuentaResponse(
+            BillingStatus subscriptionStatus,
+            boolean suscripcionActiva,
+            boolean whatsappConfigurado,
+            boolean instagramConfigurado,
+            boolean listoParaOperar) {
     }
 
     public record IniciarSuscripcionRequest(@NotBlank @Email String email) {

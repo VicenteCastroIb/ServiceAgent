@@ -31,3 +31,21 @@ export function esAdminSegunToken(): boolean {
     return false;
   }
 }
+
+/**
+ * Lee el tenantId del JWT (null si es el admin o si no hay token) - mismo
+ * criterio "cosmético" que esAdminSegunToken: solo para decidir qué mostrar
+ * (ej. CuentaGate consultando /estado del propio negocio), nunca como fuente
+ * de autorización real.
+ */
+export function tenantIdSegunToken(): number | null {
+  const token = getToken();
+  if (!token) return null;
+  try {
+    const payload = token.split(".")[1];
+    const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return typeof json.tenantId === "number" ? json.tenantId : null;
+  } catch {
+    return null;
+  }
+}

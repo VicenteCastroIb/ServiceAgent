@@ -26,7 +26,7 @@ const PLANES: PlanPrecio[] = [
       "Soporte de lunes a viernes, horario oficina",
     ],
     ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "#",
+    ctaHref: "/registro?plan=BASICO",
   },
   {
     nombre: "Pro",
@@ -43,7 +43,7 @@ const PLANES: PlanPrecio[] = [
     ],
     destacado: true,
     ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "#",
+    ctaHref: "/registro?plan=PRO",
   },
   {
     nombre: "Ecommerce",
@@ -122,6 +122,7 @@ export default function PreciosPage() {
         title="Empezá a atender con ServiceAgent"
         subtitle="Sin tarjeta para probar, sin instalar nada y sin dejar a tus clientes esperando."
         accent={ACCENT_HOME}
+        primaryHref="/registro?plan=BASICO"
       />
     </>
   );

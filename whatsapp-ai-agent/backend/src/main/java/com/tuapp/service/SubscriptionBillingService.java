@@ -75,6 +75,7 @@ public class SubscriptionBillingService {
     private static final int INTERVAL_MENSUAL = 3;
 
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
+    private final OwnerNotificationService ownerNotificationService;
     private final ObjectMapper objectMapper;
     private final String flowApiBaseUrl;
     private final String appBaseUrl;
@@ -86,12 +87,14 @@ public class SubscriptionBillingService {
 
     public SubscriptionBillingService(
             TenantSubscriptionRepository tenantSubscriptionRepository,
+            OwnerNotificationService ownerNotificationService,
             ObjectMapper objectMapper,
             @Value("${flow.api-base-url}") String flowApiBaseUrl,
             @Value("${app.base-url}") String appBaseUrl,
             @Value("${flow.billing.api-key:}") String apiKey,
             @Value("${flow.billing.secret-key:}") String secretKey) {
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
+        this.ownerNotificationService = ownerNotificationService;
         this.objectMapper = objectMapper;
         this.flowApiBaseUrl = flowApiBaseUrl.replaceAll("/+$", "");
         this.appBaseUrl = appBaseUrl.replaceAll("/+$", "");
@@ -241,6 +244,7 @@ public class SubscriptionBillingService {
             return;
         }
 
+        boolean yaEstabaActiva = suscripcion.getStatus() == BillingStatus.ACTIVA;
         try {
             String planId = planIdParaPlan(suscripcion.getTenant().getPlan());
             String subscriptionId = crearSuscripcionFlow(planId, customerId);
@@ -249,6 +253,16 @@ public class SubscriptionBillingService {
             suscripcion.setUpdatedAt(Instant.now());
             tenantSubscriptionRepository.save(suscripcion);
             log.info("Suscripción activada en Flow para tenant {}: subscriptionId={}", tenantId, subscriptionId);
+
+            // Solo en la transición a ACTIVA (alta nueva o reactivación tras
+            // MOROSA/CANCELADA) - no tiene sentido re-notificar si ya estaba
+            // activa. Ver OwnerNotificationService.notificarNuevoTenantActivo:
+            // hoy el aprovisionamiento de WhatsApp/Instagram sigue siendo
+            // manual (admin), así que esta notificación es lo que cierra el
+            // loop del alta self-service (doc sección 12).
+            if (!yaEstabaActiva) {
+                ownerNotificationService.notificarNuevoTenantActivo(suscripcion.getTenant());
+            }
         } catch (Exception e) {
             log.error("Tarjeta registrada pero falló crear la suscripción en Flow para tenant {}", tenantId, e);
         }

@@ -231,6 +231,20 @@ export function marcarSuscripcionMorosa(tenantId: number): Promise<void> {
   });
 }
 
+export interface EstadoCuenta {
+  subscriptionStatus: TenantSubscription["status"] | null;
+  suscripcionActiva: boolean;
+  whatsappConfigurado: boolean;
+  instagramConfigurado: boolean;
+  listoParaOperar: boolean;
+}
+
+// Usado por CuentaGate (doc sección 12) para decidir si mostrar el dashboard
+// completo o la pantalla de "completá tu pago"/"estamos activando tu cuenta".
+export function obtenerEstadoCuenta(tenantId: number): Promise<EstadoCuenta> {
+  return request<EstadoCuenta>(`/admin/tenants/${tenantId}/estado`);
+}
+
 // --- Agendamiento (Semana 5) ---
 
 export function listarProfesionales(tenantId: number): Promise<Professional[]> {
