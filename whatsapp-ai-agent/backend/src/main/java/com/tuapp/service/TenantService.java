@@ -9,6 +9,7 @@ import com.tuapp.repository.ProductRepository;
 import com.tuapp.repository.TenantRepository;
 import com.tuapp.repository.TenantSubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +77,55 @@ public class TenantService {
         return tenantRepository.save(tenant);
     }
 
+    /**
+     * Alta SELF-SERVICE de un negocio nuevo (RegistroController, endpoint
+     * público /public/registro - doc sección 12, flujo de auto-registro).
+     * A diferencia de crear()+fijarCredencialesPanel() (que hace el admin a
+     * mano), acá el propio dueño elige su usuario/clave del panel en el
+     * momento del registro.
+     * <p>
+     * Sin whatsappNumber todavía: el número real (dedicado o migrado, doc
+     * sección 5.6) se aprovisiona después - no es algo que el dueño tenga a
+     * mano al momento de registrarse. Sin plan CATALOGO: ese plan es a medida
+     * (cotización, doc sección 3) y no tiene alta self-service - lo valida el
+     * caller (RegistroController) antes de llegar acá.
+     * <p>
+     * La contraseña se guarda hasheada (BCrypt) - nunca en texto plano, mismo
+     * criterio que fijarCredencialesPanel.
+     *
+     * @throws IllegalArgumentException si panelUsername ya está en uso (chequeo
+     *                                   previo + fallback al constraint único de
+     *                                   la base para cubrir la carrera entre
+     *                                   dos registros simultáneos con el mismo
+     *                                   usuario).
+     */
+    @Transactional
+    public Tenant registrarSelfService(
+            String businessName, String ownerEmail, String panelUsername, String panelPassword, TenantPlan plan) {
+        if (tenantRepository.findByPanelUsername(panelUsername).isPresent()) {
+            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso.");
+        }
+
+        Tenant tenant = new Tenant();
+        tenant.setBusinessName(businessName);
+        tenant.setBusinessContext("");
+        tenant.setPlan(plan);
+        tenant.setOwnerEmail(ownerEmail);
+        tenant.setCreatedAt(Instant.now());
+        tenant.setPanelUsername(panelUsername);
+        tenant.setPanelPasswordHash(passwordEncoder.encode(panelPassword));
+
+        try {
+            return tenantRepository.save(tenant);
+        } catch (DataIntegrityViolationException e) {
+            // Carrera con otro registro simultáneo que tomó el mismo usuario
+            // entre el chequeo de arriba y este save - se traduce al mismo
+            // error de negocio en vez de dejar escapar un 500 con detalle de
+            // la constraint de la base.
+            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso.");
+        }
+    }
+
     public List<Tenant> listar() {
         return tenantRepository.findAll();
     }
@@ -131,10 +181,11 @@ public class TenantService {
     }
 
     /**
-     * Activa o cambia el acceso al panel del dueño de este negocio. Lo hace
-     * el admin (ver SchedulingController/TenantController) - el dueño no se
-     * auto-registra. La contraseña se guarda hasheada (BCrypt), nunca en
-     * texto plano (ver PanelUserDetailsService, quien la valida).
+     * Cambia el usuario/clave del panel de un negocio YA EXISTENTE. Lo hace
+     * el admin (ver TenantController) - para el alta inicial de un negocio
+     * nuevo que elige su propio usuario/clave, ver registrarSelfService().
+     * La contraseña se guarda hasheada (BCrypt), nunca en texto plano (ver
+     * PanelUserDetailsService, quien la valida).
      */
     public Tenant fijarCredencialesPanel(Long id, String panelUsername, String panelPassword) {
         Tenant tenant = tenantRepository.findById(id)

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
@@ -200,5 +201,49 @@ class TenantServiceTest {
 
         assertThat(resultado.getPlan()).isEqualTo(TenantPlan.BASICO);
         assertThat(resultado.getWhatsappNumber()).isEqualTo("whatsapp:+56933333333");
+    }
+
+    // ---- alta self-service (RegistroController) ----
+
+    @Test
+    void registrarSelfService_creaElTenantSinWhatsappNumberConLaPasswordHasheada() {
+        when(tenantRepository.findByPanelUsername("dueno-nuevo")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("miPasswordSecreta")).thenReturn("hash-bcrypt-simulado");
+        when(tenantRepository.save(any(Tenant.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Tenant resultado = tenantService.registrarSelfService(
+                "Negocio nuevo", "dueno@negocio.cl", "dueno-nuevo", "miPasswordSecreta", TenantPlan.PRO);
+
+        assertThat(resultado.getBusinessName()).isEqualTo("Negocio nuevo");
+        assertThat(resultado.getOwnerEmail()).isEqualTo("dueno@negocio.cl");
+        assertThat(resultado.getPanelUsername()).isEqualTo("dueno-nuevo");
+        assertThat(resultado.getPanelPasswordHash()).isEqualTo("hash-bcrypt-simulado");
+        assertThat(resultado.getPlan()).isEqualTo(TenantPlan.PRO);
+        assertThat(resultado.getWhatsappNumber()).isNull();
+    }
+
+    @Test
+    void registrarSelfService_tiraExcepcionSiElUsuarioYaExiste() {
+        when(tenantRepository.findByPanelUsername("dueno-repetido")).thenReturn(Optional.of(tenant(1L)));
+
+        assertThatThrownBy(() -> tenantService.registrarSelfService(
+                "Negocio nuevo", "dueno@negocio.cl", "dueno-repetido", "miPasswordSecreta", TenantPlan.BASICO))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(tenantRepository, never()).save(any());
+    }
+
+    @Test
+    void registrarSelfService_traduceCarreraDeUsuarioDuplicadoAExcepcionDeNegocio() {
+        // El chequeo previo no ve nada, pero el save() choca con la
+        // constraint única de la base (otro registro tomó el usuario justo
+        // en el medio) - debe traducirse a la misma excepción de negocio, no
+        // dejar escapar la excepción de persistencia cruda.
+        when(tenantRepository.findByPanelUsername("dueno-nuevo")).thenReturn(Optional.empty());
+        when(tenantRepository.save(any(Tenant.class))).thenThrow(new DataIntegrityViolationException("duplicate key"));
+
+        assertThatThrownBy(() -> tenantService.registrarSelfService(
+                "Negocio nuevo", "dueno@negocio.cl", "dueno-nuevo", "miPasswordSecreta", TenantPlan.BASICO))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

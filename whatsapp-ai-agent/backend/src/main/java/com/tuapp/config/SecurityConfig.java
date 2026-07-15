@@ -4,6 +4,7 @@ import com.tuapp.security.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,6 +61,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/webhooks/**").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        // Alta self-service de un negocio nuevo (RegistroController, doc
+                        // sección 12). Único endpoint público de escritura de la API -
+                        // tiene su propio rate limiting por IP porque no hay JWT que lo
+                        // proteja (ver RegistroController/RateLimiter).
+                        .requestMatchers(HttpMethod.POST, "/public/registro").permitAll()
                         // Healthcheck de Railway/Render (ver application.properties, Actuator
                         // solo expone "health" - nada sensible queda público acá).
                         .requestMatchers("/actuator/health").permitAll()
