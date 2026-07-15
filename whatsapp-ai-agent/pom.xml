@@ -74,6 +74,13 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- /actuator/health: lo usa el healthcheck de Railway/Render para saber
+             si el contenedor levantó bien (ver Dockerfile/railway.json). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- JWT: el panel (Next.js, otro origen/puerto) no usa sesión de cookies -
              login devuelve un token que el frontend manda en cada request. -->
         <dependency>

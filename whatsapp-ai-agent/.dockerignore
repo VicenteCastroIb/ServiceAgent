@@ -1,0 +1,8 @@
+target/
+panel-frontend/
+.git/
+.idea/
+*.md
+.env
+.env.example
+docker-compose.yml

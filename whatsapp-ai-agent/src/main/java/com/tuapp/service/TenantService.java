@@ -194,6 +194,47 @@ public class TenantService {
     }
 
     /**
+     * Resuelve el tenant dueño de una cuenta de Instagram (el "id" de la
+     * entry del webhook de Meta), igual que resolverPorNumeroWhatsapp pero
+     * para el canal Instagram (doc secciones 3 y 5.1).
+     *
+     * @throws IllegalStateException si no hay ningún tenant configurado para
+     *                                esa cuenta.
+     */
+    public Tenant resolverPorInstagramAccountId(String instagramAccountId) {
+        return tenantRepository.findByInstagramAccountId(instagramAccountId)
+                .orElseThrow(() -> new IllegalStateException(
+                        "No hay ningún negocio configurado para la cuenta de Instagram " + instagramAccountId));
+    }
+
+    /**
+     * Credenciales de Instagram del negocio, cargadas manualmente desde el
+     * panel (mismo patrón que WooCommerce/Flow - ver Tenant.instagramAccountId).
+     * accessToken debe ser un token de larga duración (60 días); expiresAt lo
+     * usa InstagramTokenRefreshJob para renovarlo antes de que venza.
+     */
+    public Tenant fijarCredencialesInstagram(Long id, String instagramAccountId, String accessToken, Instant expiresAt) {
+        Tenant tenant = tenantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
+        tenant.setInstagramAccountId(instagramAccountId);
+        tenant.setInstagramAccessToken(accessToken);
+        tenant.setInstagramTokenExpiresAt(expiresAt);
+        return tenantRepository.save(tenant);
+    }
+
+    /** Actualiza solo el token de Instagram tras un refresh exitoso (ver InstagramTokenRefreshJob). */
+    public void actualizarTokenInstagram(Tenant tenant, String nuevoAccessToken, Instant nuevoVencimiento) {
+        tenant.setInstagramAccessToken(nuevoAccessToken);
+        tenant.setInstagramTokenExpiresAt(nuevoVencimiento);
+        tenantRepository.save(tenant);
+    }
+
+    /** Tenants con Instagram configurado cuyo token vence antes de la fecha dada (ver InstagramTokenRefreshJob). */
+    public List<Tenant> listarConTokenInstagramPorVencer(Instant antesDe) {
+        return tenantRepository.findByInstagramAccountIdIsNotNullAndInstagramTokenExpiresAtBefore(antesDe);
+    }
+
+    /**
      * Carga un tenant de prueba en el arranque si la base está vacía, para no
      * perder el comportamiento de pruebas que teníamos con el contexto
      * hardcodeado. TODO: sacar esto una vez que exista el panel real.

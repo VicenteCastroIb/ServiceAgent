@@ -50,6 +50,8 @@ export interface Tenant {
   panelUsername: string | null;
   wooCommerceConfigurado: boolean;
   flowConfigurado: boolean;
+  instagramAccountId: string | null;
+  instagramConfigurado: boolean;
   createdAt: string;
 }
 
@@ -296,4 +298,16 @@ export function fijarCredencialesFlow(
 
 export function listarOrdenesPago(tenantId: number): Promise<PaymentOrder[]> {
   return request<PaymentOrder[]>(`/admin/tenants/${tenantId}/pagos/ordenes`);
+}
+
+// --- Instagram (Graph API directa de Meta) ---
+
+export function fijarCredencialesInstagram(
+  tenantId: number,
+  input: { instagramAccountId: string; accessToken: string }
+): Promise<Tenant> {
+  return request<Tenant>(`/admin/tenants/${tenantId}/instagram/credenciales`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
 }

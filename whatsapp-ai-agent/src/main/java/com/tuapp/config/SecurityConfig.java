@@ -1,6 +1,7 @@
 package com.tuapp.config;
 
 import com.tuapp.security.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,9 +42,13 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final String allowedOrigins;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(
+            JwtAuthFilter jwtAuthFilter,
+            @Value("${panel.allowed-origins:http://localhost:3000}") String allowedOrigins) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.allowedOrigins = allowedOrigins;
     }
 
     @Bean
@@ -54,6 +60,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/webhooks/**").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        // Healthcheck de Railway/Render (ver application.properties, Actuator
+                        // solo expone "health" - nada sensible queda público acá).
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -77,14 +86,20 @@ public class SecurityConfig {
     }
 
     /**
-     * Solo el origen del panel Next.js puede llamar a la API desde el
-     * navegador. TODO: agregar el dominio real de producción cuando exista.
+     * Solo el/los origen(es) del panel Next.js pueden llamar a la API desde
+     * el navegador. panel.allowed-origins acepta una lista separada por comas
+     * (ver PANEL_ALLOWED_ORIGINS en .env/.env.example) - default
+     * localhost:3000 para desarrollo local; en producción se carga la URL
+     * real del panel desplegado (Railway/Render).
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origen -> !origen.isBlank())
+                .toList());
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

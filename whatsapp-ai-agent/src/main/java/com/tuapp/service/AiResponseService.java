@@ -72,8 +72,11 @@ public class AiResponseService {
         this.paymentService = paymentService;
     }
 
+    private static final String MENSAJE_ERROR_TECNICO =
+            "Estamos con un problema técnico en este momento. En breve te contacta alguien del local para ayudarte.";
+
     /**
-     * Genera la respuesta para un mensaje entrante de un cliente.
+     * Genera la respuesta para un mensaje entrante de un cliente de WhatsApp.
      *
      * @param numeroNegocio número de WhatsApp del NEGOCIO (to), usado para
      *                      resolver qué tenant/contexto corresponde.
@@ -83,21 +86,45 @@ public class AiResponseService {
      * @return el texto a responder por WhatsApp.
      */
     public String generarRespuesta(String numeroNegocio, String numeroCliente, String mensaje) {
-        Tenant tenant = null;
+        Tenant tenant;
         try {
             tenant = tenantService.resolverPorNumeroWhatsapp(numeroNegocio);
-            return generarRespuestaInterno(tenant, numeroCliente, mensaje);
         } catch (Exception e) {
-            // Si falla resolver el tenant o el proveedor de IA (sin crédito, caído,
-            // rate limit, etc.) no dejamos el webhook en 500: respondemos algo
-            // razonable y derivamos a humano para que igual lo atiendan.
-            log.error("Falló generarRespuesta para negocio={} cliente={}: {}",
+            // Si falla resolver el tenant (no debería pasar en producción con
+            // números dedicados) no dejamos el webhook en 500: respondemos algo
+            // razonable y derivamos a humano para que igual lo atiendan. Sin
+            // tenant resuelto el handoff queda sin negocio asociado, visible
+            // solo para el admin.
+            log.error("Falló resolver tenant por WhatsApp para negocio={} cliente={}: {}",
                     numeroNegocio, numeroCliente, e.getMessage(), e);
-            // tenant puede seguir siendo null acá si justo falló resolverlo -
-            // el handoff queda sin tenant asociado, visible solo para el admin.
-            Long tenantId = tenant != null ? tenant.getId() : null;
-            handoffService.derivarAHumano(tenantId, numeroCliente, "error técnico del agente de IA: " + e.getMessage());
-            return "Estamos con un problema técnico en este momento. En breve te contacta alguien del local para ayudarte.";
+            handoffService.derivarAHumano(null, numeroCliente, "error técnico del agente de IA: " + e.getMessage());
+            return MENSAJE_ERROR_TECNICO;
+        }
+        return generarRespuestaParaTenant(tenant, numeroCliente, mensaje);
+    }
+
+    /**
+     * Igual que {@link #generarRespuesta} pero para un tenant ya resuelto por
+     * el canal correspondiente (usado por Instagram, donde el tenant se
+     * resuelve por la cuenta de Instagram en vez de por número de WhatsApp -
+     * ver InstagramWebhookController). idCliente es el identificador de
+     * conversación de ese canal (numeroCliente de WhatsApp, o "instagram:"
+     * + IGSID para Instagram) - se usa igual para derivar_a_humano,
+     * agendar_cita, etc., ya que esos servicios ya son agnósticos al canal.
+     *
+     * @return el texto a responder al cliente por ese canal.
+     */
+    public String generarRespuestaParaTenant(Tenant tenant, String idCliente, String mensaje) {
+        try {
+            return generarRespuestaInterno(tenant, idCliente, mensaje);
+        } catch (Exception e) {
+            // Sin crédito en el proveedor de IA, caído, rate limit, etc. - no
+            // dejamos el webhook en 500: respondemos algo razonable y
+            // derivamos a humano para que igual lo atiendan.
+            log.error("Falló generarRespuesta para tenant={} cliente={}: {}",
+                    tenant.getId(), idCliente, e.getMessage(), e);
+            handoffService.derivarAHumano(tenant.getId(), idCliente, "error técnico del agente de IA: " + e.getMessage());
+            return MENSAJE_ERROR_TECNICO;
         }
     }
 
@@ -179,8 +206,8 @@ public class AiResponseService {
 
     private String construirSystemPrompt(Tenant tenant) {
         StringBuilder prompt = new StringBuilder("""
-                Sos el agente de atención por WhatsApp de %s. Respondé SIEMPRE en español \
-                de Chile, de forma breve (whatsapp, no un correo), usando el tono indicado abajo.
+                Sos el agente de atención por WhatsApp e Instagram de %s. Respondé SIEMPRE en español \
+                de Chile, de forma breve (un chat, no un correo), usando el tono indicado abajo.
                 Respondé solo con información del contexto del negocio. Si no sabés algo, decilo \
                 y ofrecé derivar a un humano en vez de inventar.
                 Usá la herramienta derivar_a_humano cuando corresponda según sus instrucciones.

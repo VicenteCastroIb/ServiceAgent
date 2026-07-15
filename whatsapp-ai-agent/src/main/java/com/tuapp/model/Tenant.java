@@ -102,6 +102,26 @@ public class Tenant {
     /** URL de retorno tras pagar en Flow (opcional). Si no se carga, se usa wooCommerceUrl o una página genérica propia. */
     private String paymentReturnUrl;
 
+    /**
+     * Canal Instagram (doc secciones 3 y 5.1: "Instagram vía Graph API directa
+     * de Meta", incluido desde el plan Básico). instagramAccountId es el id
+     * de la cuenta profesional de Instagram del negocio - lo manda Meta en
+     * cada webhook entrante (entry.id) y se usa para resolver el tenant, igual
+     * que whatsappNumber para WhatsApp. El access token se obtiene fuera de
+     * esta app (Meta App del dueño del negocio o de la plataforma, según cómo
+     * se conecte) y se carga acá manualmente desde el panel - mismo patrón
+     * simple que WooCommerce/Flow (doc sección 11: no hay flujo OAuth propio
+     * en v1). Es de vida corta (60 días) - InstagramTokenRefreshJob lo
+     * refresca antes de que venza usando instagramTokenExpiresAt.
+     */
+    @Column(unique = true)
+    private String instagramAccountId;
+
+    @JsonIgnore
+    private String instagramAccessToken;
+
+    private Instant instagramTokenExpiresAt;
+
     private Instant createdAt;
 
     /** Para que el panel sepa si ya está configurado, sin exponer las claves reales. */
@@ -114,6 +134,12 @@ public class Tenant {
     @Transient
     public boolean isFlowConfigurado() {
         return notBlank(flowApiKey) && notBlank(flowSecretKey);
+    }
+
+    /** Para que el panel sepa si ya está configurado, sin exponer el token real. */
+    @Transient
+    public boolean isInstagramConfigurado() {
+        return notBlank(instagramAccountId) && notBlank(instagramAccessToken);
     }
 
     private static boolean notBlank(String valor) {
