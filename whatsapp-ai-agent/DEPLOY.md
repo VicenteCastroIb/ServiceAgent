@@ -1,11 +1,11 @@
 # Deploy en Railway
 
-Dos servicios separados en el mismo proyecto de Railway, apuntando ambos a este mismo repo (monorepo), cada uno con su propio "Root Directory":
+El repo está organizado como monorepo: `backend/` (Spring Boot), `frontend/panel/` (panel de administración, Next.js) y `frontend/landing/` (sitio de marketing, Next.js — todavía sin Dockerfile/railway.json propios, ver nota al final). Dos servicios separados en el mismo proyecto de Railway, apuntando ambos a este mismo repo, cada uno con su propio "Root Directory":
 
 | Servicio  | Root Directory   | Dockerfile               | Puerto interno |
 |-----------|-------------------|---------------------------|----------------|
-| Backend   | `/`               | `Dockerfile`               | `PORT` (Railway lo inyecta, `application.properties` ya lo respeta) |
-| Frontend  | `/panel-frontend` | `panel-frontend/Dockerfile`| `PORT` (idem, `server.js` de Next standalone lo respeta) |
+| Backend   | `/backend`               | `Dockerfile`               | `PORT` (Railway lo inyecta, `application.properties` ya lo respeta) |
+| Frontend (panel) | `/frontend/panel` | `Dockerfile`| `PORT` (idem, `server.js` de Next standalone lo respeta) |
 | Postgres  | (plugin de Railway, no un servicio del repo) | - | - |
 
 Railway detecta el `Dockerfile` de cada carpeta automáticamente (también hay un `railway.json` en cada una fijando el healthcheck). No hace falta tocar nada de esos dos archivos salvo que cambie el puerto o la ruta de salud.
@@ -13,10 +13,10 @@ Railway detecta el `Dockerfile` de cada carpeta automáticamente (también hay u
 ## 1. Crear el proyecto
 
 1. Crear cuenta en [railway.com](https://railway.com) (tiene un trial con crédito gratis, después es pago por uso - para este tamaño de proyecto sale unos pocos dólares al mes).
-2. "New Project" → "Deploy from GitHub repo" → elegir este repo (hay que subirlo a GitHub primero si todavía no está — `git add mvnw mvnw.cmd .mvn Dockerfile panel-frontend/Dockerfile railway.json panel-frontend/railway.json .dockerignore panel-frontend/.dockerignore` y commitear todo lo de hoy).
+2. "New Project" → "Deploy from GitHub repo" → elegir este repo (hay que subirlo a GitHub primero si todavía no está — `git add backend/mvnw backend/mvnw.cmd backend/.mvn backend/Dockerfile backend/railway.json backend/.dockerignore frontend/panel/Dockerfile frontend/panel/railway.json frontend/panel/.dockerignore` y commitear todo lo de hoy).
 3. Agregar el plugin de Postgres ("New" → "Database" → "PostgreSQL") dentro del mismo proyecto. Railway genera automáticamente las variables `DATABASE_URL`, `PGUSER`, `PGPASSWORD`, etc. — hay que mapearlas a las que usa este backend (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`), ver checklist abajo.
-4. Agregar el servicio del backend apuntando a este repo con Root Directory `/`.
-5. Agregar el servicio del frontend apuntando a este mismo repo con Root Directory `/panel-frontend`.
+4. Agregar el servicio del backend apuntando a este repo con Root Directory `/backend`.
+5. Agregar el servicio del frontend apuntando a este mismo repo con Root Directory `/frontend/panel`.
 
 ## 2. Variables de entorno — Backend
 
@@ -70,3 +70,4 @@ Cargar en el servicio backend, pestaña "Variables":
 - Dominio propio en vez del subdominio `*.up.railway.app` (Railway lo soporta, es un paso aparte en la pestaña "Settings" de cada servicio).
 - Verificación de negocio ante Meta para levantar el límite de 2 números de WhatsApp sin SpA (doc sección 10).
 - Backups de Postgres (Railway hace snapshots automáticos en los planes pagos, pero vale la pena confirmarlo antes de tener clientes reales con datos).
+- `frontend/landing` (el sitio de marketing) todavía no tiene Dockerfile ni railway.json propios — se arman con el mismo patrón que `frontend/panel` cuando llegue el momento de desplegarlo.

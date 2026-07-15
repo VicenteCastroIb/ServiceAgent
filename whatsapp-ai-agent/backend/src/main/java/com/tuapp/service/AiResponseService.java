@@ -234,6 +234,13 @@ public class AiResponseService {
                     de cada producto (no el nombre) y la cantidad pedida, y mandale el link que \
                     te devuelva la tool. No inventes productos ni precios que no estén en esta lista:
                     %s
+
+                    Antes de generar el link de pago (una sola vez, no en cada mensaje), fijate si \
+                    en esa misma lista hay algún otro producto que combine bien con lo que el \
+                    cliente ya eligió (ej: un accesorio a juego, algo del mismo rubro) y ofreceselo \
+                    de forma breve, como haría un vendedor del local, no como una promoción \
+                    genérica. Si el cliente no muestra interés o no hay ningún producto que \
+                    realmente tenga sentido ofrecer, no insistas y armá el carrito con lo que pidió.
                     """.formatted(listarCatalogoParaPrompt(tenant)));
         }
 
