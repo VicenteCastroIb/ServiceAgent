@@ -21,3 +21,15 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Entrada de cada burbuja en los mockups de WhatsApp animados (ver useReproduccionChat). */
+@keyframes mensaje-chat-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -121,6 +121,7 @@ export default function AgendamientoPage() {
           <div className="flex justify-center">
             <WhatsAppMockup
               negocio="Barbería Norte"
+              animado
               mensajes={[
                 { de: "cliente", texto: "hola, queda cupo para un corte hoy?", hora: "16:20" },
                 { de: "bot", texto: "¡Hola! Sí 💈 Hoy me queda a las 18:00 o 19:30. ¿Cuál te sirve?", hora: "16:20" },

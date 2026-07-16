@@ -103,6 +103,7 @@ export default function EcommercePage() {
             <FloatingChip emoji="🔋" title="Filtro Pulsar NS200" subtitle="$6.490" className="right-[-2.5rem] bottom-24" />
             <WhatsAppMockup
               negocio="Moto Parts"
+              animado
               mensajes={[
                 { de: "cliente", texto: "hola, tienen filtro de aceite para una pulsar ns 200?", hora: "20:11" },
                 { de: "bot", texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇", hora: "20:11" },

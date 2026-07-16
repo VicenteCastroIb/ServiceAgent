@@ -23,7 +23,7 @@ export default function ConversationSection({
     <section className="mx-auto max-w-6xl px-6 py-20">
       <div className={`flex flex-col items-center gap-12 lg:flex-row ${reverse ? "lg:flex-row-reverse" : ""}`}>
         <div className="flex justify-center lg:w-1/2">
-          <WhatsAppMockup negocio={negocio} mensajes={mensajes} />
+          <WhatsAppMockup negocio={negocio} mensajes={mensajes} animado />
         </div>
         <div className="lg:w-1/2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">

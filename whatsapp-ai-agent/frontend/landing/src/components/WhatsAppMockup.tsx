@@ -1,3 +1,7 @@
+"use client";
+
+import { useReproduccionChat } from "@/lib/useReproduccionChat";
+
 export interface ProductoChat {
   emoji: string;
   nombre: string;
@@ -18,6 +22,14 @@ interface WhatsAppMockupProps {
   inicial?: string;
   mensajes: MensajeChat[];
   escribiendo?: boolean;
+  /**
+   * Si es true, en vez de mostrar todos los mensajes de una, los va
+   * revelando de a uno (con el indicador "escribiendo..." antes de cada
+   * respuesta del bot) apenas el mockup entra en pantalla, y hace loop.
+   * Pensado para mockups de marketing en la landing (ver useReproduccionChat).
+   * Ignora el prop `escribiendo` mientras está activo (lo maneja solo).
+   */
+  animado?: boolean;
   className?: string;
 }
 
@@ -26,12 +38,16 @@ export default function WhatsAppMockup({
   inicial,
   mensajes,
   escribiendo = false,
+  animado = false,
   className = "",
 }: WhatsAppMockupProps) {
   const letra = inicial ?? negocio.charAt(0).toUpperCase();
+  const { contenedorRef, mensajesVisibles, escribiendo: escribiendoAnimado } = useReproduccionChat(mensajes, animado);
+  const mostrarEscribiendo = animado ? escribiendoAnimado : escribiendo;
 
   return (
     <div
+      ref={contenedorRef}
       className={`w-[280px] shrink-0 overflow-hidden rounded-[2.5rem] border-[10px] border-slate-950 bg-slate-950 shadow-2xl sm:w-[300px] ${className}`}
     >
       <div className="overflow-hidden rounded-[1.75rem]">
@@ -54,11 +70,14 @@ export default function WhatsAppMockup({
 
         {/* Mensajes */}
         <div className="flex min-h-[260px] flex-col gap-2 bg-[#ECE5DD] px-3 py-4">
-          {mensajes.map((mensaje, i) => (
-            <MessageBubble key={i} mensaje={mensaje} />
+          {mensajesVisibles.map((mensaje, i) => (
+            <MessageBubble key={i} mensaje={mensaje} animado={animado} />
           ))}
-          {escribiendo && (
-            <div className="flex w-fit items-center gap-1 self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2.5 shadow-sm">
+          {mostrarEscribiendo && (
+            <div
+              className="flex w-fit items-center gap-1 self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2.5 shadow-sm"
+              style={animado ? { animation: "mensaje-chat-in 0.25s ease-out" } : undefined}
+            >
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]" />
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]" />
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400" />
@@ -78,13 +97,17 @@ export default function WhatsAppMockup({
   );
 }
 
-function MessageBubble({ mensaje }: { mensaje: MensajeChat }) {
+function MessageBubble({ mensaje, animado }: { mensaje: MensajeChat; animado?: boolean }) {
   const esCliente = mensaje.de === "cliente";
+  const estiloEntrada = animado ? { animation: "mensaje-chat-in 0.25s ease-out" } : undefined;
 
   if (mensaje.producto) {
     const p = mensaje.producto;
     return (
-      <div className={`flex max-w-[85%] flex-col ${esCliente ? "self-end items-end" : "self-start items-start"}`}>
+      <div
+        className={`flex max-w-[85%] flex-col ${esCliente ? "self-end items-end" : "self-start items-start"}`}
+        style={estiloEntrada}
+      >
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
           <div className="flex h-24 items-center justify-center bg-slate-100 text-4xl">{p.emoji}</div>
           <div className="px-3 py-2">
@@ -104,6 +127,7 @@ function MessageBubble({ mensaje }: { mensaje: MensajeChat }) {
       className={`max-w-[80%] rounded-2xl px-3 py-2 text-[13px] leading-snug shadow-sm ${
         esCliente ? "self-end rounded-br-sm bg-[#DCF8C6] text-slate-800" : "self-start rounded-bl-sm bg-white text-slate-800"
       }`}
+      style={estiloEntrada}
     >
       <p className="whitespace-pre-line">{mensaje.texto}</p>
       <p className={`mt-1 flex items-center gap-1 text-[10px] text-slate-400 ${esCliente ? "justify-end" : ""}`}>

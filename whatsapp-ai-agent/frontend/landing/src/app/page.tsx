@@ -147,6 +147,7 @@ export default function HomePage() {
             />
             <WhatsAppMockup
               negocio="Estética Bella"
+              animado
               mensajes={[
                 { de: "cliente", texto: "hasta qué hora atienden hoy?", hora: "13:05" },
                 {
@@ -184,6 +185,7 @@ export default function HomePage() {
             <div className="flex justify-center">
               <WhatsAppMockup
                 negocio="Óptica Vista"
+                animado
                 mensajes={[
                   { de: "cliente", texto: "Hola! tienen hora para mañana?", hora: "21:47" },
                   {
@@ -240,6 +242,7 @@ export default function HomePage() {
             <div className="order-1 flex justify-center lg:order-2">
               <WhatsAppMockup
                 negocio="Moto Parts"
+                animado
                 mensajes={[
                   { de: "cliente", texto: "hola, tienen filtro de aceite para una pulsar ns 200?", hora: "20:11" },
                   { de: "bot", texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇", hora: "20:11" },
