@@ -126,8 +126,12 @@ export default function AgendamientoPage() {
                 { de: "cliente", texto: "hola, queda cupo para un corte hoy?", hora: "16:20" },
                 { de: "bot", texto: "¡Hola! Sí 💈 Hoy me queda a las 18:00 o 19:30. ¿Cuál te sirve?", hora: "16:20" },
                 { de: "cliente", texto: "a las 7 y media", hora: "16:21" },
+                {
+                  de: "bot",
+                  texto: "Genial, quedaste agendado para las 19:30 💈 Te mando un recordatorio antes.",
+                  hora: "16:21",
+                },
               ]}
-              escribiendo
             />
           </div>
         </div>
@@ -242,6 +246,12 @@ export default function AgendamientoPage() {
               de: "bot",
               texto: "Sí, tenemos convenio con el edificio de al lado 🅿️ ¿Quieres que te agende una hora?",
               hora: "13:06",
+            },
+            { de: "cliente", texto: "sí, mañana a las 15:00", hora: "13:07" },
+            {
+              de: "bot",
+              texto: "Listo, quedaste agendada para mañana 15:00 💅 Te mando un recordatorio antes.",
+              hora: "13:07",
             },
           ]}
         />

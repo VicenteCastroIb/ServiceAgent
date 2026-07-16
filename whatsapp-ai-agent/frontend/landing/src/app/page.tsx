@@ -161,6 +161,12 @@ export default function HomePage() {
                   texto: "Sí, tenemos convenio con el edificio de al lado 🅿️ ¿Quieres que te agende una hora?",
                   hora: "13:06",
                 },
+                { de: "cliente", texto: "sí, mañana a las 15:00", hora: "13:07" },
+                {
+                  de: "bot",
+                  texto: "Listo, quedaste agendada para mañana 15:00 💅 Te mando un recordatorio antes.",
+                  hora: "13:07",
+                },
               ]}
             />
           </div>
@@ -192,6 +198,12 @@ export default function HomePage() {
                     de: "bot",
                     texto: "¡Hola! Sí 🙂 Para examen de vista tengo a las 11:30 o 16:00. ¿Cuál te acomoda?",
                     hora: "21:47",
+                  },
+                  { de: "cliente", texto: "a las 16:00 porfa", hora: "21:48" },
+                  {
+                    de: "bot",
+                    texto: "Perfecto, tu hora quedó confirmada para mañana 16:00 👓 Te esperamos.",
+                    hora: "21:48",
                   },
                 ]}
               />
@@ -245,9 +257,9 @@ export default function HomePage() {
                 animado
                 mensajes={[
                   { de: "cliente", texto: "hola, tienen filtro de aceite para una pulsar ns 200?", hora: "20:11" },
-                  { de: "bot", texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇", hora: "20:11" },
                   {
                     de: "bot",
+                    texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇",
                     hora: "20:11",
                     producto: {
                       emoji: "🛵",
@@ -256,6 +268,12 @@ export default function HomePage() {
                       precio: "$6.490",
                       dominio: "MOTOPARTS.CL",
                     },
+                  },
+                  { de: "cliente", texto: "tienen para despachar hoy?", hora: "20:12" },
+                  {
+                    de: "bot",
+                    texto: "Sí, si compras antes de las 18:00 te llega hoy mismo 🚀 ¿Te armo el pedido?",
+                    hora: "20:12",
                   },
                 ]}
               />

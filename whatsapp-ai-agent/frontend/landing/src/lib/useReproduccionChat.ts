@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { MensajeChat } from "@/components/WhatsAppMockup";
 
-const PAUSA_ANTES_DE_CLIENTE_MS = 650;
-const PAUSA_ESCRIBIENDO_MS = 1100;
-const PAUSA_ANTES_DE_REINICIAR_MS = 2600;
+const PAUSA_ANTES_DE_CLIENTE_MS = 1100;
+const PAUSA_ESCRIBIENDO_MS = 1900;
+const PAUSA_ANTES_DE_REINICIAR_MS = 15000;
 
 /**
  * Revela los mensajes de un WhatsAppMockup de a uno, simulando una

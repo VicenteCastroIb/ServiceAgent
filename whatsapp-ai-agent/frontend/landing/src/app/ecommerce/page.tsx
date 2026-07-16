@@ -106,9 +106,9 @@ export default function EcommercePage() {
               animado
               mensajes={[
                 { de: "cliente", texto: "hola, tienen filtro de aceite para una pulsar ns 200?", hora: "20:11" },
-                { de: "bot", texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇", hora: "20:11" },
                 {
                   de: "bot",
+                  texto: "¡Hola! Sí 🙌 El original sale $6.490, te lo dejo acá 👇",
                   hora: "20:11",
                   producto: {
                     emoji: "🛵",
@@ -117,6 +117,12 @@ export default function EcommercePage() {
                     precio: "$6.490",
                     dominio: "MOTOPARTS.CL",
                   },
+                },
+                { de: "cliente", texto: "tienen para despachar hoy?", hora: "20:12" },
+                {
+                  de: "bot",
+                  texto: "Sí, si compras antes de las 18:00 te llega hoy mismo 🚀 ¿Te armo el pedido?",
+                  hora: "20:12",
                 },
               ]}
             />
@@ -224,9 +230,9 @@ export default function EcommercePage() {
           reverse
           mensajes={[
             { de: "cliente", texto: "necesito un cargador rápido para moto", hora: "11:02" },
-            { de: "bot", texto: "Tengo este que se vende harto para eso 🔌", hora: "11:02" },
             {
               de: "bot",
+              texto: "Tengo este que se vende harto para eso 🔌",
               hora: "11:02",
               producto: {
                 emoji: "🔌",
@@ -237,6 +243,11 @@ export default function EcommercePage() {
               },
             },
             { de: "cliente", texto: "dale, lo llevo", hora: "11:03" },
+            {
+              de: "bot",
+              texto: "¡Genial! 🙌 Te dejo el link de pago, apenas confirmes te lo despachamos.",
+              hora: "11:03",
+            },
           ]}
         />
       </div>

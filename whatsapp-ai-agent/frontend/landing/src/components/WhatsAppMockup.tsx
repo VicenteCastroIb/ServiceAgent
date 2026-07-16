@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useReproduccionChat } from "@/lib/useReproduccionChat";
 
 export interface ProductoChat {
@@ -45,10 +46,20 @@ export default function WhatsAppMockup({
   const { contenedorRef, mensajesVisibles, escribiendo: escribiendoAnimado } = useReproduccionChat(mensajes, animado);
   const mostrarEscribiendo = animado ? escribiendoAnimado : escribiendo;
 
+  const mensajesRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll al último mensaje, como en un chat real, para que el
+  // teléfono nunca cambie de tamaño aunque se acumulen mensajes.
+  useEffect(() => {
+    const nodo = mensajesRef.current;
+    if (!nodo) return;
+    nodo.scrollTo({ top: nodo.scrollHeight, behavior: "smooth" });
+  }, [mensajesVisibles.length, mostrarEscribiendo]);
+
   return (
     <div
       ref={contenedorRef}
-      className={`w-[280px] shrink-0 overflow-hidden rounded-[2.5rem] border-[10px] border-slate-950 bg-slate-950 shadow-2xl sm:w-[300px] ${className}`}
+      className={`w-[300px] shrink-0 overflow-hidden rounded-[2.5rem] border-[10px] border-slate-950 bg-slate-950 shadow-2xl ${className}`}
     >
       <div className="overflow-hidden rounded-[1.75rem]">
         {/* Header del chat */}
@@ -68,8 +79,11 @@ export default function WhatsAppMockup({
           </div>
         </div>
 
-        {/* Mensajes */}
-        <div className="flex min-h-[260px] flex-col gap-2 bg-[#ECE5DD] px-3 py-4">
+        {/* Mensajes - alto fijo, hace scroll solo como un chat real */}
+        <div
+          ref={mensajesRef}
+          className="flex h-[420px] flex-col gap-2 overflow-y-auto bg-[#ECE5DD] px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {mensajesVisibles.map((mensaje, i) => (
             <MessageBubble key={i} mensaje={mensaje} animado={animado} />
           ))}
@@ -102,6 +116,8 @@ function MessageBubble({ mensaje, animado }: { mensaje: MensajeChat; animado?: b
   const estiloEntrada = animado ? { animation: "mensaje-chat-in 0.25s ease-out" } : undefined;
 
   if (mensaje.producto) {
+    // Soporta texto + foto de producto en el mismo mensaje (el bot manda la
+    // ficha con una frase a modo de caption, como haría un vendedor real).
     const p = mensaje.producto;
     return (
       <div
@@ -116,6 +132,11 @@ function MessageBubble({ mensaje, animado }: { mensaje: MensajeChat; animado?: b
             <p className="mt-0.5 text-xs font-semibold text-emerald-700">{p.precio}</p>
             <p className="mt-1 text-[9px] tracking-wide text-slate-400 uppercase">{p.dominio}</p>
           </div>
+          {mensaje.texto && (
+            <p className="whitespace-pre-line border-t border-slate-100 px-3 py-2 text-[13px] leading-snug text-slate-800">
+              {mensaje.texto}
+            </p>
+          )}
         </div>
         <p className="mt-1 text-[10px] text-slate-400">{mensaje.hora}</p>
       </div>
