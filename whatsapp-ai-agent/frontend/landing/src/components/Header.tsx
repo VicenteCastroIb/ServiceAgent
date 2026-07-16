@@ -40,10 +40,12 @@ export default function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-4">
-          {/* Placeholder: apunta al login real del panel una vez desplegado. */}
-          <Link href="#" className="hidden text-sm font-medium text-slate-300 hover:text-white sm:block">
+          <a
+            href={`${process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000"}/login`}
+            className="hidden text-sm font-medium text-slate-300 hover:text-white sm:block"
+          >
             Entrar
-          </Link>
+          </a>
           <Link
             href="/precios"
             className="rounded-[14px] bg-[#0f172b] px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-slate-800"

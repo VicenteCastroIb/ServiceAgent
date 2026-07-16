@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { FormEvent, Suspense, useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useRequireAuth } from "@/lib/useRequireAuth";
 import { esAdminSegunToken } from "@/lib/auth";
 import {
@@ -10,16 +10,22 @@ import {
   ApiError,
   buscarTenant,
   fijarCredencialesInstagram,
+  iniciarConexionInstagram,
   Tenant,
 } from "@/lib/api";
 import TenantSubNav from "@/components/TenantSubNav";
 
-export default function EditarTenantPage() {
+function EditarTenantForm() {
   const listo = useRequireAuth();
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const id = Number(params.id);
   const esAdmin = esAdminSegunToken();
+
+  const resultadoOAuthInstagram = searchParams.get("instagram"); // "conectado" | "error" | null
+  const [conectandoInstagram, setConectandoInstagram] = useState(false);
+  const [errorConexionInstagram, setErrorConexionInstagram] = useState<string | null>(null);
 
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [businessContext, setBusinessContext] = useState("");
@@ -85,6 +91,20 @@ export default function EditarTenantPage() {
       setErrorInstagram(err instanceof ApiError ? err.message : "No se pudieron guardar las credenciales.");
     } finally {
       setGuardandoInstagram(false);
+    }
+  }
+
+  async function onConectarInstagram() {
+    setConectandoInstagram(true);
+    setErrorConexionInstagram(null);
+    try {
+      const { url } = await iniciarConexionInstagram(id);
+      window.location.href = url;
+    } catch (err) {
+      setErrorConexionInstagram(
+        err instanceof ApiError ? err.message : "No se pudo iniciar la conexión con Instagram."
+      );
+      setConectandoInstagram(false);
     }
   }
 
@@ -187,10 +207,38 @@ export default function EditarTenantPage() {
         <p className="mb-3 text-xs text-gray-500">
           {tenant.instagramConfigurado
             ? `Conectado (cuenta ${tenant.instagramAccountId}). El bot responde los DM dentro de las 24 horas desde el último mensaje del cliente - Instagram no admite recordatorios proactivos.`
-            : "Todavía no está conectado. El bot no responde DM de Instagram hasta cargar la cuenta y el token acá."}
-          {!esAdmin && " Solo el admin puede cargar o cambiar estas credenciales."}
+            : "Todavía no está conectado. El bot no responde DM de Instagram hasta conectar la cuenta."}
         </p>
+
+        {resultadoOAuthInstagram === "conectado" && (
+          <p className="mb-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+            ¡Instagram conectado con éxito!
+          </p>
+        )}
+        {resultadoOAuthInstagram === "error" && (
+          <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+            No se pudo completar la conexión con Instagram. Probá de nuevo.
+          </p>
+        )}
+
+        {!tenant.instagramConfigurado && (
+          <div className="mb-4">
+            <button
+              onClick={onConectarInstagram}
+              disabled={conectandoInstagram}
+              className="rounded-md bg-[#E1306C] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+            >
+              {conectandoInstagram ? "Conectando..." : "Conectar con Instagram"}
+            </button>
+            {errorConexionInstagram && <p className="mt-2 text-sm text-red-600">{errorConexionInstagram}</p>}
+          </div>
+        )}
+
         {esAdmin && (
+          <>
+            <p className="mb-2 text-xs text-gray-400">
+              O cargá las credenciales a mano (avanzado, solo admin):
+            </p>
           <form onSubmit={onGuardarInstagram} className="space-y-2">
             <input
               value={instagramAccountId}
@@ -217,8 +265,17 @@ export default function EditarTenantPage() {
             {mensajeInstagram && <p className="text-sm text-green-600">{mensajeInstagram}</p>}
             {errorInstagram && <p className="text-sm text-red-600">{errorInstagram}</p>}
           </form>
+          </>
         )}
       </section>
     </div>
+  );
+}
+
+export default function EditarTenantPage() {
+  return (
+    <Suspense fallback={null}>
+      <EditarTenantForm />
+    </Suspense>
   );
 }

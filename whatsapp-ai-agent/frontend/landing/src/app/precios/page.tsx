@@ -4,6 +4,7 @@ import PricingCards, { type PlanPrecio } from "@/components/PricingCards";
 import ComparisonTable from "@/components/ComparisonTable";
 import CTABanner from "@/components/CTABanner";
 import { ACCENT_HOME } from "@/lib/accents";
+import { whatsappSalesLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Precios — ServiceAgent",
@@ -26,7 +27,10 @@ const PLANES: PlanPrecio[] = [
       "Soporte de lunes a viernes, horario oficina",
     ],
     ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "/registro?plan=BASICO",
+    ctaHref: whatsappSalesLink("Hola! Quiero contratar el plan Básico de ServiceAgent para mi negocio."),
+    ctaExterna: true,
+    secondaryCtaLabel: "Prefiero registrarme yo mismo",
+    secondaryCtaHref: "/registro?plan=BASICO",
   },
   {
     nombre: "Pro",
@@ -43,7 +47,10 @@ const PLANES: PlanPrecio[] = [
     ],
     destacado: true,
     ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "/registro?plan=PRO",
+    ctaHref: whatsappSalesLink("Hola! Quiero contratar el plan Pro de ServiceAgent para mi negocio."),
+    ctaExterna: true,
+    secondaryCtaLabel: "Prefiero registrarme yo mismo",
+    secondaryCtaHref: "/registro?plan=PRO",
   },
   {
     nombre: "Ecommerce",
@@ -122,7 +129,11 @@ export default function PreciosPage() {
         title="Empezá a atender con ServiceAgent"
         subtitle="Sin tarjeta para probar, sin instalar nada y sin dejar a tus clientes esperando."
         accent={ACCENT_HOME}
-        primaryHref="/registro?plan=BASICO"
+        primaryLabel="Hablar por WhatsApp"
+        primaryHref={whatsappSalesLink("Hola! Quiero saber más sobre ServiceAgent para mi negocio.")}
+        primaryExterna
+        secondaryLabel="Registrarme yo mismo"
+        secondaryHref="/registro?plan=BASICO"
       />
     </>
   );

@@ -13,6 +13,9 @@ export interface PlanPrecio {
   destacado?: boolean;
   ctaLabel: string;
   ctaHref: string;
+  ctaExterna?: boolean;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
 }
 
 interface PricingCardsProps {
@@ -105,17 +108,42 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
                 ))}
               </ul>
 
-              <Link
-                href={plan.ctaHref}
-                className={`mt-8 block rounded-[14px] px-6 py-3 text-center text-sm font-semibold transition ${
-                  plan.destacado
-                    ? "text-white hover:brightness-110"
-                    : "border border-slate-200 text-slate-900 hover:border-slate-300"
-                }`}
-                style={plan.destacado ? { backgroundImage: accent.gradient } : undefined}
-              >
-                {plan.ctaLabel}
-              </Link>
+              {plan.ctaExterna ? (
+                <a
+                  href={plan.ctaHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`mt-8 block rounded-[14px] px-6 py-3 text-center text-sm font-semibold transition ${
+                    plan.destacado
+                      ? "text-white hover:brightness-110"
+                      : "border border-slate-200 text-slate-900 hover:border-slate-300"
+                  }`}
+                  style={plan.destacado ? { backgroundImage: accent.gradient } : undefined}
+                >
+                  {plan.ctaLabel}
+                </a>
+              ) : (
+                <Link
+                  href={plan.ctaHref}
+                  className={`mt-8 block rounded-[14px] px-6 py-3 text-center text-sm font-semibold transition ${
+                    plan.destacado
+                      ? "text-white hover:brightness-110"
+                      : "border border-slate-200 text-slate-900 hover:border-slate-300"
+                  }`}
+                  style={plan.destacado ? { backgroundImage: accent.gradient } : undefined}
+                >
+                  {plan.ctaLabel}
+                </Link>
+              )}
+
+              {plan.secondaryCtaLabel && plan.secondaryCtaHref && (
+                <Link
+                  href={plan.secondaryCtaHref}
+                  className="mt-3 block text-center text-xs text-slate-400 underline underline-offset-2 hover:text-slate-600"
+                >
+                  {plan.secondaryCtaLabel}
+                </Link>
+              )}
             </div>
           );
         })}

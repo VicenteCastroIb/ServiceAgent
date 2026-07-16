@@ -1,7 +1,13 @@
 package com.tuapp.controller;
 
+import com.tuapp.model.ChannelType;
+import com.tuapp.model.MessageDirection;
+import com.tuapp.model.MessageSender;
+import com.tuapp.model.Tenant;
 import com.tuapp.service.AiResponseService;
+import com.tuapp.service.ConversationService;
 import com.tuapp.service.HandoffService;
+import com.tuapp.service.TenantService;
 import com.twilio.security.RequestValidator;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Message;
@@ -43,14 +49,20 @@ public class WebhookController {
     private final RequestValidator requestValidator;
     private final AiResponseService aiResponseService;
     private final HandoffService handoffService;
+    private final TenantService tenantService;
+    private final ConversationService conversationService;
 
     public WebhookController(
             @Value("${twilio.auth-token}") String authToken,
             AiResponseService aiResponseService,
-            HandoffService handoffService) {
+            HandoffService handoffService,
+            TenantService tenantService,
+            ConversationService conversationService) {
         this.requestValidator = new RequestValidator(authToken);
         this.aiResponseService = aiResponseService;
         this.handoffService = handoffService;
+        this.tenantService = tenantService;
+        this.conversationService = conversationService;
     }
 
     @PostMapping(value = "/whatsapp", produces = MediaType.APPLICATION_XML_VALUE)
@@ -75,6 +87,13 @@ public class WebhookController {
         String incomingBody = params.getOrDefault("Body", "");
         log.info("Mensaje de WhatsApp recibido de {} para {}: {}", from, to, incomingBody);
 
+        // Resuelto en paralelo a AiResponseService (que hace lo mismo
+        // internamente) solo para poder persistir el historial - ver
+        // Javadoc de la clase. Nunca debe alterar el flujo de respuesta al
+        // cliente, por eso queda envuelto en su propio try/catch silencioso.
+        Tenant tenant = resolverTenantSilencioso(to);
+        registrarMensajeSilencioso(tenant, from, MessageDirection.IN, MessageSender.CLIENTE, incomingBody);
+
         if (handoffService.estaPausada(from)) {
             // Ya se derivó a un humano: el bot no contesta más en esta conversación,
             // la sigue el dueño desde el panel (doc, sección 4).
@@ -83,11 +102,38 @@ public class WebhookController {
         }
 
         String replyText = aiResponseService.generarRespuesta(to, from, incomingBody);
+        registrarMensajeSilencioso(tenant, from, MessageDirection.OUT, MessageSender.BOT, replyText);
+
         Message message = new Message.Builder(replyText).build();
         MessagingResponse twiml = new MessagingResponse.Builder()
                 .message(message)
                 .build();
 
         return ResponseEntity.ok(twiml.toXml());
+    }
+
+    private Tenant resolverTenantSilencioso(String numeroNegocio) {
+        try {
+            return tenantService.resolverPorNumeroWhatsapp(numeroNegocio);
+        } catch (Exception e) {
+            // No se loguea como error: AiResponseService.generarRespuesta ya
+            // loguea y maneja este mismo caso (número sin tenant asociado) -
+            // acá solo significa que este mensaje puntual no queda en el
+            // historial del panel.
+            return null;
+        }
+    }
+
+    private void registrarMensajeSilencioso(
+            Tenant tenant, String clientContact, MessageDirection direction, MessageSender sender, String content) {
+        if (tenant == null) {
+            return;
+        }
+        try {
+            conversationService.registrarMensaje(tenant, ChannelType.WHATSAPP, clientContact, direction, sender, content);
+        } catch (Exception e) {
+            log.warn("No se pudo persistir el mensaje ({}) de {} para tenant {}: {}",
+                    direction, clientContact, tenant.getId(), e.getMessage());
+        }
     }
 }

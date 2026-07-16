@@ -8,9 +8,8 @@ import lombok.Setter;
 import java.time.Instant;
 
 /**
- * Mensaje individual dentro de una Conversation (entrante o saliente).
- *
- * TODO: dirección (in/out), autor (cliente/bot/humano), contenido, timestamps.
+ * Mensaje individual dentro de una Conversation (entrante o saliente), para
+ * la bandeja del panel (ver ConversationService/ConversationController).
  */
 @Entity
 @Table(name = "messages")
@@ -26,6 +25,12 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
+
+    @Enumerated(EnumType.STRING)
+    private MessageDirection direction;
+
+    @Enumerated(EnumType.STRING)
+    private MessageSender sender;
 
     @Column(columnDefinition = "TEXT")
     private String content;

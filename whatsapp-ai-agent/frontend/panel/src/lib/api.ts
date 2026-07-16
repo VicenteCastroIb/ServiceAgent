@@ -392,3 +392,12 @@ export function fijarCredencialesInstagram(
     body: JSON.stringify(input),
   });
 }
+
+// Self-service (doc sección 12): devuelve la URL de autorización de Meta a
+// la que hay que redirigir al navegador (window.location.href), no un
+// resultado final - la conexión se completa en el callback del backend.
+export function iniciarConexionInstagram(tenantId: number): Promise<{ url: string }> {
+  return request(`/admin/tenants/${tenantId}/instagram/oauth/iniciar`, {
+    method: "POST",
+  });
+}

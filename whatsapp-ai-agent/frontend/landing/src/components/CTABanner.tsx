@@ -7,6 +7,8 @@ interface CTABannerProps {
   accent: Accent;
   primaryLabel?: string;
   primaryHref?: string;
+  /** true para links externos (ej. wa.me) - se abren en pestaña nueva en vez de navegación interna de Next. */
+  primaryExterna?: boolean;
   secondaryLabel?: string;
   secondaryHref?: string;
 }
@@ -17,6 +19,7 @@ export default function CTABanner({
   accent,
   primaryLabel = "Quiero ServiceAgent",
   primaryHref = "/precios",
+  primaryExterna = false,
   secondaryLabel,
   secondaryHref,
 }: CTABannerProps) {
@@ -29,12 +32,23 @@ export default function CTABanner({
         <h2 className="font-heading text-[28px] font-semibold text-white sm:text-[38px] sm:leading-[1.2]">{title}</h2>
         <p className="mx-auto mt-4 max-w-xl text-white/90">{subtitle}</p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href={primaryHref}
-            className="rounded-[14px] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-          >
-            {primaryLabel}
-          </Link>
+          {primaryExterna ? (
+            <a
+              href={primaryHref}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-[14px] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+            >
+              {primaryLabel}
+            </a>
+          ) : (
+            <Link
+              href={primaryHref}
+              className="rounded-[14px] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+            >
+              {primaryLabel}
+            </Link>
+          )}
           {secondaryLabel && secondaryHref && (
             <Link
               href={secondaryHref}

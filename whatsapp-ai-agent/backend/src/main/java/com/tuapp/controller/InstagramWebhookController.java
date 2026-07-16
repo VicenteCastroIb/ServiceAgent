@@ -2,8 +2,12 @@ package com.tuapp.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tuapp.model.ChannelType;
+import com.tuapp.model.MessageDirection;
+import com.tuapp.model.MessageSender;
 import com.tuapp.model.Tenant;
 import com.tuapp.service.AiResponseService;
+import com.tuapp.service.ConversationService;
 import com.tuapp.service.HandoffService;
 import com.tuapp.service.InstagramMessagingService;
 import com.tuapp.service.TenantService;
@@ -55,6 +59,7 @@ public class InstagramWebhookController {
     private final HandoffService handoffService;
     private final AiResponseService aiResponseService;
     private final InstagramMessagingService instagramMessagingService;
+    private final ConversationService conversationService;
     private final ObjectMapper objectMapper;
 
     public InstagramWebhookController(
@@ -64,6 +69,7 @@ public class InstagramWebhookController {
             HandoffService handoffService,
             AiResponseService aiResponseService,
             InstagramMessagingService instagramMessagingService,
+            ConversationService conversationService,
             ObjectMapper objectMapper) {
         this.verifyToken = verifyToken;
         this.appSecret = appSecret;
@@ -71,6 +77,7 @@ public class InstagramWebhookController {
         this.handoffService = handoffService;
         this.aiResponseService = aiResponseService;
         this.instagramMessagingService = instagramMessagingService;
+        this.conversationService = conversationService;
         this.objectMapper = objectMapper;
     }
 
@@ -145,6 +152,8 @@ public class InstagramWebhookController {
         try {
             Tenant tenant = tenantService.resolverPorInstagramAccountId(instagramAccountId);
 
+            registrarMensajeSilencioso(tenant, idCliente, MessageDirection.IN, MessageSender.CLIENTE, texto);
+
             if (handoffService.estaPausada(idCliente)) {
                 log.info("Conversación de Instagram con {} está pausada (handoff activo) - no se responde automático", idCliente);
                 return;
@@ -152,8 +161,21 @@ public class InstagramWebhookController {
 
             String respuesta = aiResponseService.generarRespuestaParaTenant(tenant, idCliente, texto);
             instagramMessagingService.enviarMensaje(tenant, igsid, respuesta);
+            registrarMensajeSilencioso(tenant, idCliente, MessageDirection.OUT, MessageSender.BOT, respuesta);
         } catch (Exception e) {
             log.error("Error respondiendo mensaje de Instagram de {} (cuenta {})", igsid, instagramAccountId, e);
+        }
+    }
+
+    private void registrarMensajeSilencioso(
+            Tenant tenant, String clientContact, MessageDirection direction, MessageSender sender, String content) {
+        try {
+            conversationService.registrarMensaje(tenant, ChannelType.INSTAGRAM, clientContact, direction, sender, content);
+        } catch (Exception e) {
+            // Best effort (ver Javadoc de ConversationService) - un fallo acá
+            // nunca debe frenar la respuesta al cliente de Instagram.
+            log.warn("No se pudo persistir el mensaje ({}) de {} para tenant {}: {}",
+                    direction, clientContact, tenant.getId(), e.getMessage());
         }
     }
 
