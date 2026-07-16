@@ -61,6 +61,23 @@ export interface Handoff {
   motivo: string;
 }
 
+export interface ConversationSummary {
+  id: number;
+  channel: "WHATSAPP" | "INSTAGRAM";
+  clientContact: string;
+  lastMessageAt: string | null;
+  tenantId: number;
+  businessName: string;
+}
+
+export interface ConversationMessage {
+  id: number;
+  direction: "IN" | "OUT";
+  sender: "CLIENTE" | "BOT" | "HUMANO";
+  content: string;
+  sentAt: string;
+}
+
 export interface TenantSubscription {
   id: number;
   paymentMethod: "MANUAL" | "FLOW_AUTOMATICO";
@@ -185,6 +202,23 @@ export function actualizarOwnerEmail(id: number, ownerEmail: string): Promise<Te
   return request<Tenant>(`/admin/tenants/${id}/owner-email`, {
     method: "PUT",
     body: JSON.stringify({ ownerEmail }),
+  });
+}
+
+// --- Bandeja de conversaciones (modo híbrido, doc sección 2) ---
+
+export function listarConversaciones(): Promise<ConversationSummary[]> {
+  return request<ConversationSummary[]>("/admin/conversations");
+}
+
+export function listarMensajesConversacion(conversationId: number): Promise<ConversationMessage[]> {
+  return request<ConversationMessage[]>(`/admin/conversations/${conversationId}/mensajes`);
+}
+
+export function responderConversacion(conversationId: number, texto: string): Promise<ConversationMessage> {
+  return request<ConversationMessage>(`/admin/conversations/${conversationId}/responder`, {
+    method: "POST",
+    body: JSON.stringify({ texto }),
   });
 }
 

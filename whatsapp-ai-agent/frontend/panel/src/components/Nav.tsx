@@ -29,6 +29,9 @@ export default function Nav() {
           <Link href="/tenants" className={linkClass("/tenants")}>
             Negocios
           </Link>
+          <Link href="/conversaciones" className={linkClass("/conversaciones")}>
+            Conversaciones
+          </Link>
           <Link href="/handoffs" className={linkClass("/handoffs")}>
             Conversaciones pausadas
           </Link>
