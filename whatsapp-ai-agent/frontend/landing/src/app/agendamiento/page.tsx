@@ -1,81 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import WhatsAppMockup from "@/components/WhatsAppMockup";
+import ChatCard from "@/components/ChatCard";
 import RubrosStrip from "@/components/RubrosStrip";
 import ComparisonSection from "@/components/ComparisonSection";
 import StepsSection from "@/components/StepsSection";
 import FeatureGrid from "@/components/FeatureGrid";
 import ConversationSection from "@/components/ConversationSection";
-import PricingCards, { type PlanPrecio } from "@/components/PricingCards";
 import FAQAccordion from "@/components/FAQAccordion";
 import CTABanner from "@/components/CTABanner";
-import { ACCENT_AGENDAMIENTO } from "@/lib/accents";
-import { BanIcon, BellIcon, CalendarIcon, ChatIcon, CheckShieldIcon, ClockIcon, RepeatIcon, UsersIcon } from "@/lib/icons";
+import { ACCENT_DUO_GREEN, TEXT_GRADIENT } from "@/lib/accents";
 
 export const metadata: Metadata = {
   title: "Agendamiento por WhatsApp con IA — ServiceAgent",
-  description: "El asistente que ofrece tus horas libres, confirma la cita y manda el recordatorio, todo por WhatsApp.",
+  description: "El asistente que ofrece tus horas libres, confirma la cita y envía el recordatorio, todo por WhatsApp.",
 };
 
 const RUBROS = ["Estéticas", "Dentistas", "Peluquerías", "Barberías", "Spas", "Kinesiólogos"];
-
-const PLANES: PlanPrecio[] = [
-  {
-    nombre: "Básico",
-    precioMensual: 19990,
-    precioAnual: 199900,
-    descripcion: "Para partir a atender y agendar por WhatsApp.",
-    features: [
-      "Asistente de WhatsApp con IA que agenda solo",
-      "Citas ilimitadas",
-      "Tu número de WhatsApp incluido",
-      "Panel con agenda, clientes y conversaciones",
-      "Reagendar y cancelar por el mismo WhatsApp",
-      "Horarios, servicios y duración configurables",
-      "Soporte de lunes a viernes, horario oficina",
-    ],
-    ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "/precios",
-  },
-  {
-    nombre: "Pro",
-    precioMensual: 24990,
-    precioAnual: 249900,
-    descripcion: "Para negocios con más volumen y más automatización.",
-    features: [
-      "Todo lo del plan Básico",
-      "Recordatorios automáticos con confirmación de cita",
-      "Varios profesionales o boxes, cada uno con su agenda",
-      "Notificaciones por email de cada cita",
-      "Reportes: no-shows evitados, citas por semana, horas peak",
-      "Tu asistente atiende 24/7; soporte prioritario para vos",
-    ],
-    destacado: true,
-    ctaLabel: "Quiero ServiceAgent",
-    ctaHref: "/precios",
-  },
-];
 
 const FAQ_ITEMS = [
   {
     pregunta: "¿Cómo sabe el bot mis horarios disponibles?",
     respuesta:
-      "Vos cargás tu disponibilidad semanal por profesional o box desde el panel: días, horario de atención y duración de cada cita. El bot solo ofrece esos cupos libres, nunca inventa uno.",
+      "Tú cargas tu disponibilidad semanal por profesional o box desde el panel: días, horario de atención y duración de cada cita. El bot solo ofrece esos cupos libres, nunca inventa uno.",
   },
   {
-    pregunta: "¿Manda recordatorios a mis clientes?",
+    pregunta: "¿Envía recordatorios a mis clientes?",
     respuesta:
-      "Sí, en el plan Pro. Manda un recordatorio automático antes de cada cita para bajar los no-shows, sin que vos tengas que acordarte de escribirle a nadie.",
+      "Sí, en el plan Pro. Envía un recordatorio automático antes de cada cita para bajar los no-shows, sin que tengas que acordarte de escribirle a nadie.",
   },
   {
     pregunta: "¿Qué pasa si el cliente quiere algo que el bot no maneja?",
     respuesta:
-      "Deriva la conversación a un humano y te avisa. Vos podés responder desde el panel, tomando el control de esa conversación puntual, mientras el resto se sigue agendando solo.",
+      "Deriva la conversación a una persona y te avisa. Puedes responder desde el panel, tomando el control de esa conversación puntual, mientras el resto se sigue agendando solo.",
   },
   {
     pregunta: "¿Sirve para mi rubro?",
-    respuesta:
-      "Sirve para cualquier negocio que atienda con hora agendada: estéticas, dentistas, peluquerías, barberías, talleres, kinesiólogos y más.",
+    respuesta: "Sirve para cualquier negocio que atienda con hora agendada: estéticas, dentistas, peluquerías, barberías, talleres, kinesiólogos y más.",
   },
 ];
 
@@ -83,149 +43,151 @@ export default function AgendamientoPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[radial-gradient(120%_120%_at_15%_0%,#f0fdfa_0%,#99f6e4_45%,#5eead4_100%)]">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:py-28">
-          <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 text-xs font-medium text-teal-800 ring-1 ring-teal-900/10">
-              <CalendarIcon width={14} height={14} /> Agendamiento por WhatsApp con IA
+      <section className="relative overflow-hidden">
+        <div className="bg-grid-fade absolute inset-0" />
+        <div className="relative mx-auto flex max-w-[1240px] flex-wrap items-center gap-12 px-5 py-[clamp(56px,8vw,88px)] sm:px-10">
+          <div className="min-w-[300px] flex-[1.1_1_400px]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/8 px-3.5 py-1.5 text-xs font-semibold tracking-[0.04em] text-green-light">
+              AGENDAMIENTO POR WHATSAPP CON IA
             </span>
-            <h1 className="mt-5 font-heading text-[36px] leading-[1.1] font-semibold tracking-[-0.5px] text-slate-900 sm:text-[48px] sm:leading-[1.15]">
+            <h1 className="mt-[22px] text-[clamp(32px,4.2vw,50px)] leading-[1.1] font-extrabold tracking-[-0.03em] text-ink">
               Tu agenda{" "}
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: ACCENT_AGENDAMIENTO.gradient }}>
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: TEXT_GRADIENT }}>
                 se llena sola
               </span>
               , sin que muevas un dedo.
             </h1>
-            <p className="mt-6 max-w-md text-[17px] leading-[27px] text-slate-600">
-              El asistente con inteligencia artificial que atiende por WhatsApp, ofrece tus horas libres,
-              confirma la cita y manda el recordatorio. Las 24 horas, también cuando vos no podés.
+            <p className="mt-[22px] max-w-[460px] text-base leading-relaxed text-ink/65">
+              El asistente con IA que atiende por WhatsApp, ofrece tus horas libres, confirma la cita y envía
+              el recordatorio. Las 24 horas, también cuando tú no puedes.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/precios"
-                className="rounded-[14px] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-900/10 transition hover:brightness-110"
-                style={{ backgroundImage: ACCENT_AGENDAMIENTO.gradient }}
+                href="/registro"
+                className="rounded-[10px] bg-green px-[26px] py-[13px] text-[15px] font-semibold text-white shadow-[0_10px_28px_rgba(185,134,47,0.3)] transition hover:bg-green-light"
               >
-                Quiero ServiceAgent
+                Empieza gratis
               </Link>
               <Link
                 href="#conversacion"
-                className="rounded-[14px] border-[1.25px] border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-300"
+                className="rounded-[10px] border border-ink/15 px-[26px] py-[13px] text-[15px] font-semibold text-ink transition hover:border-ink/30"
               >
-                Demo, mirá cómo conversa
+                Ver cómo conversa
               </Link>
             </div>
-            <p className="mt-5 text-sm text-teal-900/70">Sin tarjeta. Sin contrato. Sin instalar nada.</p>
+            <p className="mt-5 text-[13px] text-ink/45">Sin tarjeta &nbsp;·&nbsp; Sin contrato &nbsp;·&nbsp; Sin instalar nada</p>
           </div>
 
-          <div className="flex justify-center">
-            <WhatsAppMockup
+          <div className="relative flex min-w-[300px] flex-[0.9_1_340px] justify-center" style={{ height: 420 }}>
+            <div
+              aria-hidden
+              className="absolute top-[40%] left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-green/12 blur-[100px]"
+            />
+            <ChatCard
               negocio="Barbería Norte"
-              animado
+              canal="whatsapp"
+              notaFinal="Cita agendada por IA"
+              className="relative self-center"
               mensajes={[
-                { de: "cliente", texto: "hola, queda cupo para un corte hoy?", hora: "16:20" },
-                { de: "bot", texto: "¡Hola! Sí 💈 Hoy me queda a las 18:00 o 19:30. ¿Cuál te sirve?", hora: "16:20" },
-                { de: "cliente", texto: "a las 7 y media", hora: "16:21" },
-                {
-                  de: "bot",
-                  texto: "Genial, quedaste agendado para las 19:30 💈 Te mando un recordatorio antes.",
-                  hora: "16:21",
-                },
+                { de: "cliente", texto: "hola, ¿queda cupo para corte y barba hoy?" },
+                { de: "bot", texto: "¡Hola! Sí 💈 Tengo con Diego a las 18:00 o con Marco a las 19:30. ¿Cuál prefieres?" },
+                { de: "cliente", texto: "con Marco, a las 7 y media" },
+                { de: "bot", texto: "Perfecto, quedas agendado con Marco hoy 19:30 💈" },
               ]}
             />
           </div>
         </div>
       </section>
 
-      <RubrosStrip rubros={RUBROS} />
+      <RubrosStrip label="Pensado para negocios con hora agendada:" rubros={RUBROS} />
 
       <ComparisonSection
-        title="Agendar a mano te cuesta plata"
-        subtitle="Cada mensaje sin responder es una hora que no se reservó. Mirá el antes y el después."
+        title="Agendar a mano te cuesta dinero"
+        subtitle="Cada mensaje sin responder es una hora que no se reservó."
         problemas={[
           "Mensajes que llegan a medianoche y nadie responde hasta el otro día.",
           "Horas que se pierden porque el cliente no alcanzó a confirmar.",
-          "La libreta o el Excel que solo vos entendés y que hay que llenar a mano.",
-          "Sillas vacías por gente que se olvidó de su hora.",
+          "La libreta o el Excel que solo tú entiendes y que hay que llenar a mano.",
+          "Sillas vacías por gente que olvidó su hora.",
         ]}
         beneficios={[
           "Responde al instante, a cualquier hora, todos los días.",
-          "Ofrece los cupos libres y deja la cita confirmada al toque.",
+          "Ofrece los cupos libres y deja la cita confirmada de inmediato.",
           "Todo queda agendado solo, sin libreta ni Excel.",
           "Recordatorio automático antes de cada hora: menos olvidos.",
         ]}
-        accent={ACCENT_AGENDAMIENTO}
+        accent={ACCENT_DUO_GREEN}
       />
 
       <StepsSection
-        title="Cómo agenda por vos"
-        subtitle="Sin técnicos, sin instalar nada. Le enseñás tu agenda y se pone a trabajar."
-        accent={ACCENT_AGENDAMIENTO}
+        eyebrow="CÓMO AGENDA POR TI"
+        eyebrowColor="violet"
+        title="Sin técnicos, sin instalar nada"
+        subtitle="Le enseñas tu agenda y se pone a trabajar."
         steps={[
           {
-            icon: <ChatIcon width={20} height={20} />,
-            title: "El cliente escribe",
-            description: "Pregunta por una hora a cualquier momento del día. El bot le responde al toque, como una persona.",
+            numero: 1,
+            titulo: "El cliente escribe",
+            descripcion: "Pregunta por una hora a cualquier momento del día. El bot responde de inmediato, como una persona.",
+            photoLabel: "Foto: celular mostrando una conversación de WhatsApp entrando",
+            color: "green",
           },
           {
-            icon: <CalendarIcon width={20} height={20} />,
-            title: "Ofrece tus cupos libres",
-            description: "Conoce tu agenda y le muestra las horas disponibles. El cliente elige y la cita queda confirmada.",
+            numero: 2,
+            titulo: "Ofrece tus cupos libres",
+            descripcion: "Conoce tu agenda y muestra las horas disponibles. El cliente elige y la cita queda confirmada.",
+            photoLabel: "Foto: agenda o calendario con horas disponibles en una pantalla",
+            color: "violet",
           },
           {
-            icon: <BellIcon width={20} height={20} />,
-            title: "Confirma y recuerda",
-            description: "Manda el recordatorio antes de la hora. Menos olvidos, menos sillas vacías, sin que muevas un dedo.",
+            numero: 3,
+            titulo: "Confirma y recuerda",
+            descripcion: "Envía el recordatorio antes de la hora. Menos olvidos, menos sillas vacías, sin que muevas un dedo.",
+            photoLabel: "Foto: persona recibiendo un recordatorio de cita en el celular",
+            color: "green",
           },
         ]}
       />
 
       <FeatureGrid
+        eyebrow="FUNCIONES"
+        eyebrowColor="green"
         title="Todo lo que hace por tu agenda"
         subtitle="No es un chatbot de respuestas fijas. Es un asistente que entiende, agenda y te ahorra horas."
         features={[
           {
-            icon: <ClockIcon width={20} height={20} />,
             title: "Agenda 24/7",
-            description: "El cliente reserva a la hora que sea, también de noche o un domingo. Tu agenda se llena mientras descansás.",
-            pastel: "bg-teal-50 text-teal-600",
+            description: "El cliente reserva a la hora que sea, también de noche o un domingo. Tu agenda se llena mientras descansas.",
+            photoLabel: "Foto: negocio con celular activo de noche, mostrador cerrado",
+            large: true,
           },
           {
-            icon: <BanIcon width={20} height={20} />,
             title: "Menos no-shows",
-            description: "Recordatorios automáticos antes de cada cita. Menos personas que no llegan y menos plata perdida.",
-            pastel: "bg-orange-50 text-orange-600",
+            description: "Recordatorios automáticos antes de cada cita. Menos personas que no llegan y menos dinero perdido.",
+            photoLabel: "Foto: recordatorio de cita en la pantalla de un celular",
           },
           {
-            icon: <CheckShieldIcon width={20} height={20} />,
             title: "Confirma la cita sola",
-            description: "Ofrece los cupos, toma la reserva y la deja confirmada. Vos solo aparecés a atender.",
-            pastel: "bg-emerald-50 text-emerald-600",
+            description: "Ofrece los cupos, toma la reserva y la deja confirmada. Tú solo apareces a atender.",
+            photoLabel: "Foto: cliente sonriendo al recibir confirmación de su cita",
           },
           {
-            icon: <UsersIcon width={20} height={20} />,
             title: "Te pasa lo que importa",
-            description: "Si el cliente pide algo especial o se complica, te deriva la conversación. Vos decidís cuándo entrar.",
-            pastel: "bg-blue-50 text-blue-600",
+            description: "Si el cliente pide algo especial o se complica, deriva la conversación. Tú decides cuándo intervenir.",
+            photoLabel: "Foto: persona del equipo tomando el control de una conversación",
           },
           {
-            icon: <ChatIcon width={20} height={20} />,
             title: "Conversación natural",
             description: "Nada de 'marca 1 para agendar'. Entiende lo que le escriben y responde con el tono de tu negocio.",
-            pastel: "bg-violet-50 text-violet-600",
-          },
-          {
-            icon: <RepeatIcon width={20} height={20} />,
-            title: "Clientes que vuelven",
-            description: "Después de atender puede recordar la próxima hora o invitar a reservar de nuevo. Más recurrencia, solo.",
-            pastel: "bg-teal-50 text-teal-600",
+            photoLabel: "Foto: persona escribiendo un mensaje relajado en el celular",
           },
         ]}
       />
 
       <div id="conversacion">
         <ConversationSection
-          eyebrow="Conversación real"
+          eyebrow="CONVERSACIÓN REAL"
+          eyebrowColor="violet"
           title="Responde las dudas y termina agendando"
           description="El cliente pregunta por horarios, ubicación o estacionamiento, y el bot aprovecha para invitarlo a reservar. Atiende como tu mejor recepcionista, a cualquier hora."
           checklist={[
@@ -233,64 +195,37 @@ export default function AgendamientoPage() {
             "Cierra la conversación ofreciendo una hora.",
             "Habla con el tono de tu negocio, no como un robot.",
           ]}
-          negocio="Estética Bella"
+          negocio="Estética Ópalo"
+          canal="whatsapp"
+          tinted
           mensajes={[
-            { de: "cliente", texto: "hasta qué hora atienden hoy?", hora: "13:05" },
-            {
-              de: "bot",
-              texto: "Hoy hasta las 19:00 🕖\nEstamos en Av. Providencia 1234. ¿Te ayudo con algo más?",
-              hora: "13:05",
-            },
-            { de: "cliente", texto: "tienen estacionamiento?", hora: "13:06" },
-            {
-              de: "bot",
-              texto: "Sí, tenemos convenio con el edificio de al lado 🅿️ ¿Quieres que te agende una hora?",
-              hora: "13:06",
-            },
-            { de: "cliente", texto: "sí, mañana a las 15:00", hora: "13:07" },
-            {
-              de: "bot",
-              texto: "Listo, quedaste agendada para mañana 15:00 💅 Te mando un recordatorio antes.",
-              hora: "13:07",
-            },
+            { de: "cliente", texto: "hola, ¿hasta qué hora atienden hoy?" },
+            { de: "bot", texto: "Hoy hasta las 19:00 🕖 ¿te ayudo a agendar algo?" },
+            { de: "cliente", texto: "sí, necesito un corte de pelo" },
+            { de: "bot", texto: "Perfecto, tengo mañana a las 11:00 o 15:00. ¿Cuál prefieres?" },
+            { de: "cliente", texto: "a las 15:00" },
+            { de: "bot", texto: "Listo, quedas agendada mañana 15:00 💅" },
           ]}
         />
       </div>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-heading text-[32px] font-semibold text-slate-900 sm:text-[44px] sm:leading-[55px]">
-            Precios claros, sin letra chica
-          </h2>
-          <p className="mt-4 text-slate-500">Pagá mensual o anual (2 meses gratis), tú eliges. Sin contrato ni letra chica.</p>
-        </div>
-
-        <div className="mt-12">
-          <PricingCards planes={PLANES} accent={ACCENT_AGENDAMIENTO} />
-          <p className="mt-6 text-center text-sm text-slate-500">
-            ¿Vendés productos con catálogo?{" "}
-            <Link href="/ecommerce" className="font-medium text-teal-600 underline underline-offset-2">
-              Mirá el plan Ecommerce →
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-heading text-[32px] font-semibold text-slate-900 sm:text-[44px] sm:leading-[55px]">
+      <section className="mx-auto max-w-[820px] px-5 py-[clamp(72px,9vw,110px)] sm:px-10">
+        <div className="text-center">
+          <h2 className="text-[clamp(28px,3.6vw,42px)] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink">
             Preguntas frecuentes
           </h2>
         </div>
         <div className="mt-10">
-          <FAQAccordion items={FAQ_ITEMS} />
+          <FAQAccordion items={FAQ_ITEMS} accentColor="green" />
         </div>
       </section>
 
       <CTABanner
-        title="Dejá que tu WhatsApp llene tu agenda"
-        subtitle="Mientras leés esto, alguien podría estar escribiendo para reservar y nadie le responde. Empecemos hoy."
-        accent={ACCENT_AGENDAMIENTO}
+        title="Deja que tu WhatsApp llene tu agenda"
+        subtitle="Mientras lees esto, alguien podría estar escribiendo para reservar y nadie le responde. Empecemos hoy."
+        accent={ACCENT_DUO_GREEN}
+        primaryLabel="Empieza gratis"
+        primaryHref="/registro"
       />
     </>
   );

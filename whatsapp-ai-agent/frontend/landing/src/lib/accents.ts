@@ -6,23 +6,42 @@ export interface Accent {
   to: string;
 }
 
-export const ACCENT_HOME: Accent = {
-  name: "home",
-  gradient: "linear-gradient(100deg, #059669, #16A34A)",
-  from: "#059669",
-  to: "#16A34A",
+/** Botón/badges sólidos en dorado (antes verde/WhatsApp) — usado en Home y Agendamiento. */
+export const ACCENT_GREEN: Accent = {
+  name: "gold",
+  gradient: "linear-gradient(90deg,#b9862f,#8a5f22)",
+  from: "#b9862f",
+  to: "#8a5f22",
 };
 
-export const ACCENT_AGENDAMIENTO: Accent = {
-  name: "agendamiento",
-  gradient: "linear-gradient(100deg, #0D9488, #16A34A)",
-  from: "#0D9488",
-  to: "#16A34A",
+/** Botón/badges sólidos en rosa pastel (antes violeta/Instagram) — usado en Ecommerce. */
+export const ACCENT_VIOLET: Accent = {
+  name: "pink",
+  gradient: "linear-gradient(90deg,#c9788f,#8a4a5a)",
+  from: "#c9788f",
+  to: "#8a4a5a",
 };
 
-export const ACCENT_ECOMMERCE: Accent = {
-  name: "ecommerce",
-  gradient: "linear-gradient(100deg, #EA580C, #D97706)",
-  from: "#EA580C",
-  to: "#D97706",
+/** Dúo dorado→rosa para tarjetas "Con ServiceAgent" y banners CTA (Home, Agendamiento). */
+export const ACCENT_DUO_GREEN: Accent = {
+  name: "duo-gold",
+  gradient: "linear-gradient(120deg,#b9862f,#c9788f)",
+  from: "#b9862f",
+  to: "#c9788f",
 };
+
+/** Dúo rosa→dorado para tarjetas "Con ServiceAgent" y banners CTA (Ecommerce). */
+export const ACCENT_DUO_VIOLET: Accent = {
+  name: "duo-pink",
+  gradient: "linear-gradient(120deg,#c9788f,#b9862f)",
+  from: "#c9788f",
+  to: "#b9862f",
+};
+
+/** Gradiente de texto (headline hero) — dorado a rosa pastel. */
+export const TEXT_GRADIENT = "linear-gradient(90deg,#b9862f,#c9788f)";
+
+// Mantenidos por compatibilidad con código existente que aún no migró.
+export const ACCENT_HOME = ACCENT_DUO_GREEN;
+export const ACCENT_AGENDAMIENTO = ACCENT_GREEN;
+export const ACCENT_ECOMMERCE = ACCENT_VIOLET;

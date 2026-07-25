@@ -32,6 +32,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
   }
 
   return (
+    <div className="bg-white">
     <article className="mx-auto max-w-2xl px-6 py-16">
       <Link href="/blog" className="text-sm font-medium text-slate-500 transition hover:text-slate-900">
         ← Volver al blog
@@ -82,5 +83,6 @@ export default async function BlogArticlePage({ params }: PageProps) {
         </Link>
       </div>
     </article>
+    </div>
   );
 }

@@ -7,30 +7,33 @@ const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/agendamiento", label: "Agendamiento" },
   { href: "/ecommerce", label: "Ecommerce" },
-  { href: "/precios", label: "Precios" },
-  { href: "/blog", label: "Blog" },
+  { href: "/#precios", label: "Precios" },
 ];
 
 export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/90 backdrop-blur-md">
-      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <LogoMark />
-          <span className="font-heading text-lg font-semibold text-white">ServiceAgent.</span>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-cream/90 backdrop-blur-md">
+      <div className="mx-auto flex h-[76px] max-w-[1240px] flex-wrap items-center justify-between gap-6 px-5 sm:px-10">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          <span className="flex h-[26px] w-[26px] items-center justify-center rounded-lg bg-[linear-gradient(135deg,#b9862f,#c9788f)] text-[13px] font-extrabold text-white">
+            S
+          </span>
+          <span className="text-base font-bold text-ink">
+            ServiceAgent<span className="text-green">.</span>
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="flex flex-wrap items-center gap-7">
           {NAV_LINKS.map((link) => {
             const activo = link.href === "/" ? pathname === "/" : pathname?.startsWith(link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors ${
-                  activo ? "text-emerald-400" : "text-slate-300 hover:text-white"
+                className={`text-[13.5px] font-medium transition-colors ${
+                  activo ? "text-green-light" : "text-ink/65 hover:text-ink"
                 }`}
               >
                 {link.label}
@@ -39,35 +42,21 @@ export default function Header() {
           })}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center gap-5">
           <a
             href={`${process.env.NEXT_PUBLIC_PANEL_URL ?? "http://localhost:3000"}/login`}
-            className="hidden text-sm font-medium text-slate-300 hover:text-white sm:block"
+            className="hidden text-[13.5px] font-medium text-ink/65 hover:text-ink sm:block"
           >
             Entrar
           </a>
           <Link
-            href="/precios"
-            className="rounded-[14px] bg-[#0f172b] px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-slate-800"
+            href="/#precios"
+            className="rounded-full bg-green px-5 py-2.5 text-[13.5px] font-semibold whitespace-nowrap text-white transition hover:bg-green-light"
           >
-            Quiero ServiceAgent
+            Empieza gratis
           </Link>
         </div>
       </div>
     </header>
-  );
-}
-
-function LogoMark() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        d="M12 3C7 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6-.1 1-.4 2.3-1.2 3.4 1.5 0 3-.5 4.2-1.4 1 .3 2.1.4 3.3.4 5 0 9-3.6 9-8S17 3 12 3Z"
-        stroke="#34D399"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="M9 11c0-1.7 1.3-3 3-3" stroke="#34D399" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
   );
 }

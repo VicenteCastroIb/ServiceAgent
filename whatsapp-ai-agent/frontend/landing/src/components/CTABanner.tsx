@@ -24,27 +24,27 @@ export default function CTABanner({
   secondaryHref,
 }: CTABannerProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-16">
+    <section className="mx-auto max-w-[1240px] px-5 pb-[clamp(72px,9vw,100px)] sm:px-10">
       <div
-        className="overflow-hidden rounded-[2rem] px-8 py-14 text-center shadow-2xl sm:px-16"
+        className="rounded-[28px] px-6 py-[clamp(40px,6vw,64px)] text-center shadow-[0_30px_80px_rgba(185,134,47,0.18)] sm:px-10"
         style={{ backgroundImage: accent.gradient }}
       >
-        <h2 className="font-heading text-[28px] font-semibold text-white sm:text-[38px] sm:leading-[1.2]">{title}</h2>
-        <p className="mx-auto mt-4 max-w-xl text-white/90">{subtitle}</p>
+        <h2 className="text-[clamp(26px,3.4vw,38px)] leading-[1.2] font-extrabold tracking-[-0.02em] text-white">{title}</h2>
+        <p className="mx-auto mt-4 max-w-[520px] text-base leading-relaxed text-white/90">{subtitle}</p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           {primaryExterna ? (
             <a
               href={primaryHref}
               target="_blank"
               rel="noreferrer"
-              className="rounded-[14px] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+              className="rounded-xl bg-white px-7 py-3.5 text-[15px] font-bold text-ink transition hover:bg-white/90"
             >
               {primaryLabel}
             </a>
           ) : (
             <Link
               href={primaryHref}
-              className="rounded-[14px] bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+              className="rounded-xl bg-white px-7 py-3.5 text-[15px] font-bold text-ink transition hover:bg-white/90"
             >
               {primaryLabel}
             </Link>
@@ -52,7 +52,7 @@ export default function CTABanner({
           {secondaryLabel && secondaryHref && (
             <Link
               href={secondaryHref}
-              className="rounded-[14px] border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="rounded-xl border border-white/40 px-7 py-3.5 text-[15px] font-semibold text-white transition hover:bg-white/10"
             >
               {secondaryLabel}
             </Link>

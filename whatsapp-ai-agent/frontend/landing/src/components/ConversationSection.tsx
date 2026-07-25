@@ -1,42 +1,51 @@
-import WhatsAppMockup, { type MensajeChat } from "@/components/WhatsAppMockup";
+import ChatCard, { type ChatMensaje } from "@/components/ChatCard";
 
 interface ConversationSectionProps {
   eyebrow: string;
+  eyebrowColor?: "green" | "violet";
   title: string;
   description: string;
   checklist: string[];
   negocio: string;
-  mensajes: MensajeChat[];
+  canal: "whatsapp" | "instagram";
+  mensajes: ChatMensaje[];
   reverse?: boolean;
+  /** Si la sección necesita fondo alterno (algunas "conversación real" lo llevan, otras no). */
+  tinted?: boolean;
 }
 
 export default function ConversationSection({
   eyebrow,
+  eyebrowColor = "green",
   title,
   description,
   checklist,
   negocio,
+  canal,
   mensajes,
   reverse = false,
+  tinted = false,
 }: ConversationSectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
-      <div className={`flex flex-col items-center gap-12 lg:flex-row ${reverse ? "lg:flex-row-reverse" : ""}`}>
-        <div className="flex justify-center lg:w-1/2">
-          <WhatsAppMockup negocio={negocio} mensajes={mensajes} animado />
+    <section className={tinted ? "border-t border-ink/10 bg-cream-alt" : undefined}>
+      <div
+        className={`mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-center gap-12 px-5 py-[clamp(72px,9vw,110px)] sm:px-10`}
+      >
+        <div className={reverse ? "order-2" : "order-1"}>
+          <ChatCard negocio={negocio} canal={canal} mensajes={mensajes} className="mx-auto" />
         </div>
-        <div className="lg:w-1/2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+        <div className={reverse ? "order-1" : "order-2"}>
+          <span className={`text-[12.5px] font-bold tracking-[0.1em] ${eyebrowColor === "green" ? "text-green-light" : "text-violet-light"}`}>
             {eyebrow}
           </span>
-          <h2 className="mt-4 font-heading text-[28px] leading-tight font-semibold text-slate-900 sm:text-[34px]">
+          <h2 className="mt-3.5 text-[clamp(26px,3.2vw,36px)] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">
             {title}
           </h2>
-          <p className="mt-4 text-slate-500">{description}</p>
-          <ul className="mt-5 space-y-3">
+          <p className="mt-3.5 text-[15.5px] leading-relaxed text-ink/60">{description}</p>
+          <ul className="mt-[22px] flex flex-col gap-3">
             {checklist.map((item) => (
-              <li key={item} className="flex items-start gap-2.5 text-sm text-slate-700">
-                <CheckDot />
+              <li key={item} className="flex items-start gap-2.5 text-sm text-ink/75">
+                <span className="text-green-light">✓</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -44,14 +53,5 @@ export default function ConversationSection({
         </div>
       </div>
     </section>
-  );
-}
-
-function CheckDot() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0 text-emerald-500" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.12" />
-      <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

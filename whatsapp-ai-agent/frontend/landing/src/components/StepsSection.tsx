@@ -1,47 +1,53 @@
-import type { Accent } from "@/lib/accents";
-import type { ReactNode } from "react";
+import PhotoSlot from "@/components/PhotoSlot";
 
-interface Step {
-  icon: ReactNode;
-  title: string;
-  description: string;
+export interface Step {
+  numero: number;
+  titulo: string;
+  descripcion: string;
+  photoLabel: string;
+  color: "green" | "violet";
 }
 
 interface StepsSectionProps {
+  eyebrow: string;
+  eyebrowColor?: "green" | "violet";
   title: string;
   subtitle?: string;
   steps: Step[];
-  accent: Accent;
 }
 
-export default function StepsSection({ title, subtitle, steps, accent }: StepsSectionProps) {
+export default function StepsSection({ eyebrow, eyebrowColor = "violet", title, subtitle, steps }: StepsSectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="font-heading text-[32px] font-semibold text-slate-900 sm:text-[44px] sm:leading-[55px]">{title}</h2>
-        {subtitle && <p className="mt-4 text-slate-500">{subtitle}</p>}
-      </div>
+    <section className="border-t border-ink/10 bg-cream-alt">
+      <div className="mx-auto max-w-[1240px] px-5 py-[clamp(72px,9vw,110px)] sm:px-10">
+        <div className="mx-auto max-w-[640px] text-center">
+          <span className={`text-[12.5px] font-bold tracking-[0.1em] ${eyebrowColor === "green" ? "text-green-light" : "text-violet-light"}`}>
+            {eyebrow}
+          </span>
+          <h2 className="mt-3.5 text-[clamp(28px,3.6vw,42px)] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink">
+            {title}
+          </h2>
+          {subtitle && <p className="mt-3.5 text-base leading-relaxed text-ink/55">{subtitle}</p>}
+        </div>
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-3">
-        {steps.map((step, i) => (
-          <div
-            key={step.title}
-            className="relative overflow-hidden rounded-2xl border-t-4 bg-white p-6 shadow-sm ring-1 ring-slate-100"
-            style={{ borderTopColor: accent.from }}
-          >
-            <span className="pointer-events-none absolute -top-3 right-3 font-heading text-6xl font-semibold text-slate-50">
-              {i + 1}
-            </span>
-            <div
-              className="relative mb-4 flex h-11 w-11 items-center justify-center rounded-xl text-white"
-              style={{ backgroundImage: accent.gradient }}
-            >
-              {step.icon}
+        <div className="mt-[52px] grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7">
+          {steps.map((step) => (
+            <div key={step.numero} className="rounded-[20px] border border-ink/10 bg-card p-[22px]">
+              <PhotoSlot label={step.photoLabel} height={150} className="mb-[18px]" />
+              <span
+                className={`flex h-11 w-11 items-center justify-center rounded-xl border text-[17px] font-extrabold ${
+                  step.color === "green"
+                    ? "border-green/30 bg-green/10 text-green-light"
+                    : "border-violet-mid/35 bg-violet/10 text-violet-light"
+                }`}
+              >
+                {step.numero}
+              </span>
+              <h3 className="mt-[18px] text-lg font-bold text-ink">{step.titulo}</h3>
+              <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{step.descripcion}</p>
             </div>
-            <h3 className="relative font-heading text-lg font-semibold text-slate-900">{step.title}</h3>
-            <p className="relative mt-2 text-sm text-slate-500">{step.description}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );

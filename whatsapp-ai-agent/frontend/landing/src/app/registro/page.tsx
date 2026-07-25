@@ -12,10 +12,10 @@ export default function RegistroPage() {
   return (
     <section className="mx-auto max-w-lg px-6 py-16">
       <div className="mb-8 text-center">
-        <h1 className="font-heading text-[32px] leading-[1.15] font-semibold text-slate-900 sm:text-[40px]">
+        <h1 className="font-heading text-[32px] leading-[1.15] font-semibold text-ink sm:text-[40px]">
           Creá tu cuenta
         </h1>
-        <p className="mt-3 text-slate-500">
+        <p className="mt-3 text-ink/55">
           Registrá tu negocio, activá tu suscripción y desde tu panel prendé el asistente para WhatsApp e
           Instagram.
         </p>

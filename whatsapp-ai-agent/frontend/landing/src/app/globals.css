@@ -1,15 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #faf7f1;
+  --foreground: #2b2620;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-hanken);
-  --font-heading: var(--font-bricolage);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-inter);
+
+  /* Rebrand cálido: fondo crema + dúo dorado (antes verde/WhatsApp) / rosa pastel (antes violeta/Instagram). */
+  --color-cream: #faf7f1;
+  --color-cream-alt: #f2ede1;
+  --color-card: #fffdf9;
+  --color-ink: #2b2620;
+
+  --color-green: #b9862f;
+  --color-green-light: #8a5f22;
+  --color-green-lighter: #8a5f22;
+  --color-green-dark: #6b4a1c;
+
+  --color-violet: #c9788f;
+  --color-violet-mid: #c9788f;
+  --color-violet-light: #8a4a5a;
+  --color-violet-dark: #8a4a5a;
 }
 
 body {
@@ -22,7 +38,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Entrada de cada burbuja en los mockups de WhatsApp animados (ver useReproduccionChat). */
+/* Entrada de cada burbuja en los mockups de chat animados (ver useReproduccionChat). */
 @keyframes mensaje-chat-in {
   from {
     opacity: 0;
@@ -31,5 +47,25 @@ html {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Textura de grilla difuminada para el hero de cada página. */
+.bg-grid-fade {
+  background-image:
+    linear-gradient(to right, rgba(43, 38, 32, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(43, 38, 32, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 30%, transparent 100%);
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }

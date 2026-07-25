@@ -25,30 +25,31 @@ interface PricingCardsProps {
 }
 
 export default function PricingCards({ planes, accent, mostrarToggle = true }: PricingCardsProps) {
-  const [periodo, setPeriodo] = useState<"mensual" | "anual">("anual");
+  const [periodo, setPeriodo] = useState<"mensual" | "anual">("mensual");
 
   return (
     <div>
       {mostrarToggle && (
-        <div className="mb-10 flex justify-center">
-          <div className="inline-flex items-center rounded-full bg-slate-100 p-1 text-sm font-medium">
+        <div className="mb-9 flex justify-center">
+          <div className="inline-flex items-center gap-1 rounded-full border border-ink/10 bg-card p-[5px] text-sm font-medium">
             <button
               onClick={() => setPeriodo("mensual")}
-              className={`rounded-full px-4 py-2 transition ${
-                periodo === "mensual" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              className={`rounded-full px-[18px] py-2.5 text-[13.5px] font-semibold transition ${
+                periodo === "mensual" ? "text-white" : "text-ink/55"
               }`}
+              style={periodo === "mensual" ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
             >
               Mensual
             </button>
             <button
               onClick={() => setPeriodo("anual")}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 transition ${
-                periodo === "anual" ? "text-white shadow-sm" : "text-slate-500"
+              className={`flex items-center gap-1.5 rounded-full px-[18px] py-2.5 text-[13.5px] font-semibold transition ${
+                periodo === "anual" ? "text-white" : "text-ink/55"
               }`}
-              style={periodo === "anual" ? { backgroundImage: accent.gradient } : undefined}
+              style={periodo === "anual" ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
             >
               Anual
-              <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px]">2 meses gratis</span>
+              <span className="rounded-full bg-white/25 px-[7px] py-0.5 text-[10px]">2 meses gratis</span>
             </button>
           </div>
         </div>
@@ -65,43 +66,49 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
           return (
             <div
               key={plan.nombre}
-              className={`relative rounded-3xl border p-8 ${plan.destacado ? "border-2 shadow-xl" : "border-slate-200"}`}
-              style={plan.destacado ? { borderColor: accent.from } : undefined}
+              className={`relative rounded-[22px] p-9 ${
+                plan.destacado
+                  ? "border-[1.5px] border-green/50 shadow-[0_25px_70px_rgba(185,134,47,0.14)]"
+                  : "border border-ink/12 bg-card"
+              }`}
+              style={
+                plan.destacado
+                  ? { backgroundImage: "linear-gradient(180deg,rgba(185,134,47,0.10),rgba(201,120,143,0.06))" }
+                  : undefined
+              }
             >
               {plan.destacado && (
                 <span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap text-white"
-                  style={{ backgroundImage: accent.gradient }}
+                  className="absolute -top-[13px] left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white"
+                  style={{ backgroundImage: "linear-gradient(90deg,#b9862f,#c9788f)" }}
                 >
                   Más elegido
                 </span>
               )}
 
-              <p className="text-sm font-medium text-slate-500">{plan.nombre}</p>
+              <p className="text-sm font-semibold text-ink/65">{plan.nombre}</p>
 
               {precio != null ? (
                 <>
-                  <p className="mt-2 flex items-baseline gap-1">
-                    <span className="font-heading text-4xl font-semibold text-slate-900">
+                  <p className="mt-3.5 flex items-baseline gap-1.5">
+                    <span className="text-[38px] font-extrabold tracking-[-0.02em] text-ink">
                       ${formatearPrecio(precio)}
                     </span>
-                    <span className="text-sm text-slate-400">/{periodo === "anual" ? "año" : "mes"}</span>
+                    <span className="text-sm text-ink/45">/{periodo === "anual" ? "año" : "mes"}</span>
                   </p>
-                  {ahorro != null && ahorro > 0 && (
-                    <p className="mt-1 text-xs font-medium text-emerald-600">
-                      Ahorras ${formatearPrecio(ahorro)} al año · 2 meses gratis 🎉
-                    </p>
-                  )}
+                  <p className="mt-1.5 min-h-[18px] text-[12.5px] font-semibold text-green-light">
+                    {ahorro != null && ahorro > 0 ? `Ahorras $${formatearPrecio(ahorro)} al año` : ""}
+                  </p>
                 </>
               ) : (
-                <p className="mt-2 font-heading text-3xl font-semibold text-slate-900">A tu medida</p>
+                <p className="mt-3.5 text-[32px] font-extrabold text-ink">A tu medida</p>
               )}
 
-              <p className="mt-3 text-sm text-slate-500">{plan.descripcion}</p>
+              <p className="mt-3.5 text-sm leading-relaxed text-ink/60">{plan.descripcion}</p>
 
-              <ul className="mt-6 space-y-3">
+              <ul className="mt-6 flex flex-col gap-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm text-slate-700">
+                  <li key={feature} className="flex items-start gap-2.5 text-[13.5px] text-ink/80">
                     <CheckIcon accent={accent} />
                     <span>{feature}</span>
                   </li>
@@ -113,24 +120,20 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
                   href={plan.ctaHref}
                   target="_blank"
                   rel="noreferrer"
-                  className={`mt-8 block rounded-[14px] px-6 py-3 text-center text-sm font-semibold transition ${
-                    plan.destacado
-                      ? "text-white hover:brightness-110"
-                      : "border border-slate-200 text-slate-900 hover:border-slate-300"
+                  className={`mt-7 block rounded-xl px-6 py-3.5 text-center text-[14.5px] font-bold transition ${
+                    plan.destacado ? "text-white" : "border border-ink/15 text-ink hover:border-ink/30"
                   }`}
-                  style={plan.destacado ? { backgroundImage: accent.gradient } : undefined}
+                  style={plan.destacado ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
                 >
                   {plan.ctaLabel}
                 </a>
               ) : (
                 <Link
                   href={plan.ctaHref}
-                  className={`mt-8 block rounded-[14px] px-6 py-3 text-center text-sm font-semibold transition ${
-                    plan.destacado
-                      ? "text-white hover:brightness-110"
-                      : "border border-slate-200 text-slate-900 hover:border-slate-300"
+                  className={`mt-7 block rounded-xl px-6 py-3.5 text-center text-[14.5px] font-bold transition ${
+                    plan.destacado ? "text-white" : "border border-ink/15 text-ink hover:border-ink/30"
                   }`}
-                  style={plan.destacado ? { backgroundImage: accent.gradient } : undefined}
+                  style={plan.destacado ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
                 >
                   {plan.ctaLabel}
                 </Link>
@@ -139,7 +142,7 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
               {plan.secondaryCtaLabel && plan.secondaryCtaHref && (
                 <Link
                   href={plan.secondaryCtaHref}
-                  className="mt-3 block text-center text-xs text-slate-400 underline underline-offset-2 hover:text-slate-600"
+                  className="mt-3 block text-center text-xs text-ink/40 underline underline-offset-2 hover:text-ink/70"
                 >
                   {plan.secondaryCtaLabel}
                 </Link>
@@ -156,10 +159,11 @@ function formatearPrecio(valor: number): string {
   return valor.toLocaleString("es-CL");
 }
 
-function CheckIcon({ accent }: { accent: Accent }) {
+/** El check siempre es dorado, sea cual sea el accent de la página (ver handoff). */
+function CheckIcon(_props: { accent: Accent }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0" aria-hidden="true">
-      <path d="M5 12.5l4.5 4.5L19 7" stroke={accent.from} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 12.5l4.5 4.5L19 7" stroke="#8a5f22" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

@@ -13,6 +13,7 @@ export default function BlogPage() {
   const resto = BLOG_POSTS.filter((post) => !post.destacado);
 
   return (
+    <div className="bg-white">
     <div className="mx-auto max-w-6xl px-6 py-16">
       <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
         Blog
@@ -68,6 +69,7 @@ export default function BlogPage() {
           </Link>
         ))}
       </div>
+    </div>
     </div>
   );
 }

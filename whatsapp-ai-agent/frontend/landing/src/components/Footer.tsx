@@ -1,33 +1,71 @@
 import Link from "next/link";
 
-const FOOTER_LINKS = [
+const PRODUCTO_LINKS = [
   { href: "/agendamiento", label: "Agendamiento" },
   { href: "/ecommerce", label: "Ecommerce" },
-  { href: "/precios", label: "Precios" },
-  { href: "/blog", label: "Blog" },
+  { href: "/#precios", label: "Precios" },
+];
+
+const RECURSOS_LINKS = [
+  { href: "/#faq", label: "Preguntas frecuentes" },
   { href: "#", label: "Contacto" },
+];
+
+const LEGAL_LINKS = [
   { href: "#", label: "Privacidad" },
-  { href: "#", label: "Entrar" },
+  { href: "#", label: "Términos" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-100">
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-6 py-10 sm:flex-row sm:justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="font-heading text-base font-semibold text-slate-900">ServiceAgent.</span>
-        </Link>
+    <footer className="border-t border-ink/10">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-8 px-5 py-14 sm:px-10">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-6 w-6 items-center justify-center rounded-[7px] bg-[linear-gradient(135deg,#b9862f,#c9788f)] text-xs font-extrabold text-white">
+              S
+            </span>
+            <span className="text-[15px] font-bold text-ink">
+              ServiceAgent<span className="text-green">.</span>
+            </span>
+          </div>
+          <p className="mt-3.5 max-w-[260px] text-[13px] leading-relaxed text-ink/45">
+            Agentes de IA para atender WhatsApp e Instagram, 24/7.
+          </p>
+          <div className="mt-5 flex gap-2.5">
+            {["IG", "X", "in"].map((label) => (
+              <span
+                key={label}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-ink/12 text-[11px] font-bold text-ink/60"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
 
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {FOOTER_LINKS.map((link) => (
-            <Link key={link.label} href={link.href} className="text-sm text-slate-500 transition hover:text-slate-900">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <p className="text-xs text-slate-400">© {new Date().getFullYear()} ServiceAgent</p>
+        <FooterColumn title="PRODUCTO" links={PRODUCTO_LINKS} />
+        <FooterColumn title="RECURSOS" links={RECURSOS_LINKS} />
+        <FooterColumn title="LEGAL" links={LEGAL_LINKS} />
+      </div>
+      <div className="border-t border-ink/10 px-5 py-5 text-center sm:px-10">
+        <p className="text-[12.5px] text-ink/40">© {new Date().getFullYear()} ServiceAgent. Todos los derechos reservados.</p>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div>
+      <p className="text-[12.5px] font-bold tracking-[0.04em] text-ink">{title}</p>
+      <div className="mt-4 flex flex-col gap-2.5">
+        {links.map((link) => (
+          <Link key={link.label} href={link.href} className="text-[13.5px] text-ink/50 transition hover:text-ink/80">
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

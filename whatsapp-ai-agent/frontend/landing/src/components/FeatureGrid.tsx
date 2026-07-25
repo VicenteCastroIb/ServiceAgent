@@ -1,34 +1,88 @@
-import type { ReactNode } from "react";
+import PhotoSlot from "@/components/PhotoSlot";
 
-interface Feature {
-  icon: ReactNode;
+export interface Feature {
   title: string;
   description: string;
-  pastel: string;
+  photoLabel: string;
+  /** Card grande (2 unidades) — solo la primera del arreglo debería usar esto. */
+  large?: boolean;
+  /** Pills tipo "● WhatsApp" / "● Instagram" que solo se muestran en la card grande. */
+  badges?: { label: string; color: "green" | "violet" }[];
 }
 
 interface FeatureGridProps {
+  eyebrow: string;
+  eyebrowColor?: "green" | "violet";
   title: string;
   subtitle?: string;
   features: Feature[];
+  /** Gradiente de fondo de la card grande. Por defecto verde→violeta. */
+  largeBg?: string;
 }
 
-export default function FeatureGrid({ title, subtitle, features }: FeatureGridProps) {
+export default function FeatureGrid({
+  eyebrow,
+  eyebrowColor = "green",
+  title,
+  subtitle,
+  features,
+  largeBg = "linear-gradient(135deg,rgba(185,134,47,0.07),rgba(201,120,143,0.06))",
+}: FeatureGridProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="font-heading text-[32px] font-semibold text-slate-900 sm:text-[44px] sm:leading-[55px]">{title}</h2>
-        {subtitle && <p className="mt-4 text-slate-500">{subtitle}</p>}
+    <section id="features" className="mx-auto max-w-[1240px] px-5 py-[clamp(72px,9vw,110px)] sm:px-10">
+      <div className="mx-auto max-w-[640px] text-center">
+        <span className={`text-[12.5px] font-bold tracking-[0.1em] ${eyebrowColor === "green" ? "text-green-light" : "text-violet-light"}`}>
+          {eyebrow}
+        </span>
+        <h2 className="mt-3.5 text-[clamp(28px,3.6vw,42px)] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink">
+          {title}
+        </h2>
+        {subtitle && <p className="mt-3.5 text-base leading-relaxed text-ink/55">{subtitle}</p>}
       </div>
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature) => (
-          <div key={feature.title} className="rounded-2xl border border-slate-100 p-6 transition hover:shadow-md">
-            <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${feature.pastel}`}>{feature.icon}</div>
-            <h3 className="font-heading text-base font-semibold text-slate-900">{feature.title}</h3>
-            <p className="mt-1.5 text-sm text-slate-500">{feature.description}</p>
-          </div>
-        ))}
+      <div className="mt-12 flex flex-wrap gap-[18px]">
+        {features.map((feature) =>
+          feature.large ? (
+            <div
+              key={feature.title}
+              style={{ backgroundImage: largeBg }}
+              className="min-w-[300px] flex-[2_1_480px] rounded-[20px] border border-ink/10 p-6"
+            >
+              <PhotoSlot label={feature.photoLabel} height={160} className="mb-[22px]" />
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <div className="max-w-[340px]">
+                  <h3 className="text-[19px] font-bold text-ink">{feature.title}</h3>
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{feature.description}</p>
+                </div>
+                {feature.badges && (
+                  <div className="flex gap-2.5">
+                    {feature.badges.map((badge) => (
+                      <span
+                        key={badge.label}
+                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                          badge.color === "green"
+                            ? "border-green/30 bg-green/10 text-green-light"
+                            : "border-violet-light/30 bg-violet/10 text-violet-light"
+                        }`}
+                      >
+                        ● {badge.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div
+              key={feature.title}
+              className="min-w-[230px] flex-[1_1_260px] rounded-[20px] border border-ink/10 bg-card p-6"
+            >
+              <PhotoSlot label={feature.photoLabel} height={130} className="mb-[18px]" />
+              <h3 className="text-[17px] font-bold text-ink">{feature.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink/60">{feature.description}</p>
+            </div>
+          ),
+        )}
       </div>
     </section>
   );
