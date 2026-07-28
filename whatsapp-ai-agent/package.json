@@ -1,0 +1,12 @@
+{
+  "name": "whatsapp-ai-agent",
+  "private": true,
+  "description": "Monorepo root: solo orquesta los dev servers de frontend/landing y frontend/panel en paralelo. El backend (Spring Boot) se sigue corriendo aparte (ver DEPLOY.md / README de backend).",
+  "scripts": {
+    "dev": "concurrently -n landing,panel -c blue,magenta \"npm run dev --prefix frontend/landing -- -p 3100\" \"npm run dev --prefix frontend/panel -- -p 3000\"",
+    "install:all": "npm install --prefix frontend/landing && npm install --prefix frontend/panel"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

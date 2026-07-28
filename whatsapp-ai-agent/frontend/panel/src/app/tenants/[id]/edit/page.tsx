@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { esAdminSegunToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 import {
   actualizarContextoTenant,
   actualizarOwnerEmail,
@@ -21,7 +21,7 @@ function EditarTenantForm() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const id = Number(params.id);
-  const esAdmin = esAdminSegunToken();
+  const { esAdmin } = useAuth();
 
   const resultadoOAuthInstagram = searchParams.get("instagram"); // "conectado" | "error" | null
   const [conectandoInstagram, setConectandoInstagram] = useState(false);

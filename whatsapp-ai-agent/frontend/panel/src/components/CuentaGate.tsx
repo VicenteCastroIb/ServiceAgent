@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { esAdminSegunToken, tenantIdSegunToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 import { EstadoCuenta, obtenerEstadoCuenta } from "@/lib/api";
 
 /**
@@ -32,13 +32,15 @@ export default function CuentaGate({ children }: { children: ReactNode }) {
   const [estado, setEstado] = useState<EstadoCuenta | null>(null);
   const [cargando, setCargando] = useState(true);
 
-  const esAdmin = esAdminSegunToken();
-  const tenantId = tenantIdSegunToken();
+  const { esAdmin, tenantId } = useAuth();
   const esPaginaDePagosPropia = tenantId != null && pathname?.startsWith(`/tenants/${tenantId}/pagos`);
 
   useEffect(() => {
     if (esAdmin || tenantId == null || pathname === "/login") {
-      setCargando(false);
+      // No hay nada que cargar - el render de abajo ya devuelve {children}
+      // directo en este caso (línea "if (esAdmin || ...)" más abajo) sin
+      // pasar nunca por el chequeo de "cargando", así que no hace falta
+      // tocar ese estado acá (ver eslint react-hooks/set-state-in-effect).
       return;
     }
     let cancelado = false;
@@ -56,7 +58,6 @@ export default function CuentaGate({ children }: { children: ReactNode }) {
     return () => {
       cancelado = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [esAdmin, tenantId, pathname]);
 
   if (esAdmin || tenantId == null || pathname === "/login" || esPaginaDePagosPropia) {
@@ -79,13 +80,14 @@ function PantallaEstadoCuenta({ estado, tenantId }: { estado: EstadoCuenta; tena
 
   return (
     <div className="mx-auto mt-16 max-w-md text-center">
-      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="text-lg font-semibold text-gray-900">{texto.titulo}</h1>
-        <p className="mt-2 text-sm text-gray-500">{texto.detalle}</p>
+      <div className="rounded-[18px] border border-ink/10 bg-card p-8 shadow-[0_2px_10px_rgba(43,38,32,0.04)]">
+        <h1 className="text-lg font-bold text-ink">{texto.titulo}</h1>
+        <p className="mt-2 text-sm text-ink/55">{texto.detalle}</p>
         {mostrarBotonPagos && (
           <a
             href={`/tenants/${tenantId}/pagos`}
-            className="mt-6 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="mt-6 inline-block rounded-[10px] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(185,134,47,0.25)] transition hover:brightness-105"
+            style={{ backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" }}
           >
             Completar pago
           </a>

@@ -1,0 +1,2102 @@
+[
+  {
+    "name": "Bufanda de lana Gris",
+    "price": 9490,
+    "category": "Accesorios",
+    "subcategory": "Bufandas",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Bufanda de lana Negro",
+    "price": 9490,
+    "category": "Accesorios",
+    "subcategory": "Bufandas",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Bufanda de lana Rojo",
+    "price": 10990,
+    "category": "Accesorios",
+    "subcategory": "Bufandas",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Bufanda tejida a mano Gris",
+    "price": 12490,
+    "category": "Accesorios",
+    "subcategory": "Bufandas",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Bufanda tejida a mano Rojo",
+    "price": 9490,
+    "category": "Accesorios",
+    "subcategory": "Bufandas",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Cinturón de cuero Café - Talla L",
+    "price": 8990,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Cinturón de cuero Café - Talla S",
+    "price": 8990,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Cinturón de cuero Negro - Talla L",
+    "price": 9990,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Cinturón reversible Café - Talla L",
+    "price": 12490,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Cinturón reversible Café - Talla M",
+    "price": 13490,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Cinturón reversible Café - Talla S",
+    "price": 9490,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Cinturón reversible Negro - Talla L",
+    "price": 13990,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Cinturón reversible Negro - Talla M",
+    "price": 14490,
+    "category": "Accesorios",
+    "subcategory": "Cinturones",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Gorro de lana Azul",
+    "price": 7490,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Gorro de lana Negro",
+    "price": 8490,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Gorro trucker Azul",
+    "price": 7990,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Gorro trucker Gris",
+    "price": 7990,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Jockey bordado Azul",
+    "price": 9490,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Jockey bordado Negro",
+    "price": 7490,
+    "category": "Accesorios",
+    "subcategory": "Gorros",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Mochila deportiva Azul",
+    "price": 24990,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Mochila deportiva Negro",
+    "price": 24490,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Mochila notebook Gris",
+    "price": 21490,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Mochila notebook Negro",
+    "price": 25990,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Mochila urbana Gris",
+    "price": 23990,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Mochila urbana Negro",
+    "price": 24490,
+    "category": "Accesorios",
+    "subcategory": "Mochilas",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Botín con cordones Café - Talla 38",
+    "price": 41990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Botín con cordones Café - Talla 40",
+    "price": 39990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 11
+  },
+  {
+    "name": "Botín con cordones Café - Talla 41",
+    "price": 45490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Botín con cordones Negro - Talla 38",
+    "price": 43490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Botín con cordones Negro - Talla 39",
+    "price": 38490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Botín con cordones Negro - Talla 41",
+    "price": 38490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Botín de cuero Café - Talla 38",
+    "price": 35990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Botín de cuero Café - Talla 40",
+    "price": 39490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Botín de cuero Café - Talla 41",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 36
+  },
+  {
+    "name": "Botín de cuero Café - Talla 42",
+    "price": 30990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Botín de cuero Negro - Talla 38",
+    "price": 34990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Botín de cuero Negro - Talla 39",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Botín de cuero Negro - Talla 42",
+    "price": 41990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 25
+  },
+  {
+    "name": "Botín urbano Café - Talla 42",
+    "price": 44990,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Botín urbano Negro - Talla 40",
+    "price": 40490,
+    "category": "Calzado",
+    "subcategory": "Botines",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Zapatilla running Blanco - Talla 38",
+    "price": 39990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Zapatilla running Blanco - Talla 39",
+    "price": 49490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Zapatilla running Blanco - Talla 42",
+    "price": 52490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Zapatilla running Blanco - Talla 43",
+    "price": 34490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Zapatilla running Gris - Talla 39",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Zapatilla running Gris - Talla 42",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Zapatilla running Gris - Talla 43",
+    "price": 36490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Zapatilla running Negro - Talla 38",
+    "price": 51490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Zapatilla running Negro - Talla 41",
+    "price": 35990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Zapatilla running Negro - Talla 43",
+    "price": 39490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Zapatilla running Rojo - Talla 38",
+    "price": 54490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Zapatilla running Rojo - Talla 39",
+    "price": 28490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Zapatilla running Rojo - Talla 40",
+    "price": 30490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Zapatilla running Rojo - Talla 41",
+    "price": 37990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 9
+  },
+  {
+    "name": "Zapatilla running Rojo - Talla 42",
+    "price": 48490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Zapatilla skate Blanco - Talla 39",
+    "price": 37990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Zapatilla skate Blanco - Talla 40",
+    "price": 25990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Zapatilla skate Blanco - Talla 41",
+    "price": 35490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Zapatilla skate Blanco - Talla 42",
+    "price": 52990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Zapatilla skate Blanco - Talla 43",
+    "price": 42990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 38",
+    "price": 51490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 39",
+    "price": 54490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 40",
+    "price": 41490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 41",
+    "price": 34490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 42",
+    "price": 41490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla skate Gris - Talla 43",
+    "price": 37990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Zapatilla skate Negro - Talla 39",
+    "price": 42990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Zapatilla skate Negro - Talla 40",
+    "price": 38990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Zapatilla skate Negro - Talla 41",
+    "price": 32490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Zapatilla skate Negro - Talla 42",
+    "price": 37990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Zapatilla skate Negro - Talla 43",
+    "price": 47990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla skate Rojo - Talla 41",
+    "price": 29990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 39
+  },
+  {
+    "name": "Zapatilla skate Rojo - Talla 42",
+    "price": 42990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla skate Rojo - Talla 43",
+    "price": 38490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Zapatilla training Blanco - Talla 38",
+    "price": 40490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Zapatilla training Blanco - Talla 39",
+    "price": 36490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Zapatilla training Blanco - Talla 40",
+    "price": 34490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Zapatilla training Blanco - Talla 41",
+    "price": 33990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Zapatilla training Blanco - Talla 42",
+    "price": 40990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla training Gris - Talla 38",
+    "price": 27490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Zapatilla training Gris - Talla 39",
+    "price": 32990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Zapatilla training Gris - Talla 40",
+    "price": 50490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Zapatilla training Gris - Talla 41",
+    "price": 49990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla training Negro - Talla 38",
+    "price": 43990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla training Negro - Talla 39",
+    "price": 28490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Zapatilla training Negro - Talla 40",
+    "price": 29990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Zapatilla training Negro - Talla 42",
+    "price": 33990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Zapatilla training Rojo - Talla 39",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Zapatilla training Rojo - Talla 40",
+    "price": 40990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Zapatilla training Rojo - Talla 41",
+    "price": 43990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Zapatilla training Rojo - Talla 43",
+    "price": 50490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Zapatilla urbana Blanco - Talla 38",
+    "price": 26990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 15
+  },
+  {
+    "name": "Zapatilla urbana Blanco - Talla 40",
+    "price": 52990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Zapatilla urbana Blanco - Talla 41",
+    "price": 40490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Zapatilla urbana Gris - Talla 38",
+    "price": 48490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Zapatilla urbana Gris - Talla 39",
+    "price": 41490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 25
+  },
+  {
+    "name": "Zapatilla urbana Gris - Talla 40",
+    "price": 33490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 9
+  },
+  {
+    "name": "Zapatilla urbana Negro - Talla 38",
+    "price": 41990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Zapatilla urbana Negro - Talla 40",
+    "price": 28490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 15
+  },
+  {
+    "name": "Zapatilla urbana Negro - Talla 41",
+    "price": 47490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Zapatilla urbana Negro - Talla 43",
+    "price": 30490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 1
+  },
+  {
+    "name": "Zapatilla urbana Rojo - Talla 38",
+    "price": 32990,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 11
+  },
+  {
+    "name": "Zapatilla urbana Rojo - Talla 39",
+    "price": 51490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Zapatilla urbana Rojo - Talla 43",
+    "price": 40490,
+    "category": "Calzado",
+    "subcategory": "Zapatillas",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Chaqueta cortavientos Azul marino - Talla S",
+    "price": 31490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Chaqueta cortavientos Azul marino - Talla XL",
+    "price": 40490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Chaqueta cortavientos Café - Talla S",
+    "price": 28490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Chaqueta cortavientos Café - Talla XL",
+    "price": 33990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Chaqueta cortavientos Negro - Talla L",
+    "price": 34490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Chaqueta cortavientos Negro - Talla M",
+    "price": 24990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Chaqueta cortavientos Negro - Talla S",
+    "price": 44490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Chaqueta cortavientos Negro - Talla XL",
+    "price": 28990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Chaqueta de cuero sintético Azul marino - Talla L",
+    "price": 46990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 9
+  },
+  {
+    "name": "Chaqueta de cuero sintético Azul marino - Talla S",
+    "price": 42490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Chaqueta de cuero sintético Café - Talla L",
+    "price": 29990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Chaqueta de cuero sintético Café - Talla S",
+    "price": 49490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Chaqueta de cuero sintético Negro - Talla L",
+    "price": 33490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Chaqueta de cuero sintético Negro - Talla S",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Chaqueta de cuero sintético Negro - Talla XL",
+    "price": 24990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Chaqueta denim Azul marino - Talla L",
+    "price": 31990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Chaqueta denim Azul marino - Talla M",
+    "price": 35990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Chaqueta denim Azul marino - Talla XL",
+    "price": 25490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Chaqueta denim Café - Talla L",
+    "price": 36990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Chaqueta denim Café - Talla M",
+    "price": 46990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Chaqueta denim Café - Talla XL",
+    "price": 39990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Chaqueta denim Negro - Talla L",
+    "price": 48490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Chaqueta denim Negro - Talla M",
+    "price": 25490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 11
+  },
+  {
+    "name": "Chaqueta denim Negro - Talla S",
+    "price": 30490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Parka acolchada Azul marino - Talla L",
+    "price": 48490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 9
+  },
+  {
+    "name": "Parka acolchada Azul marino - Talla M",
+    "price": 37990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 39
+  },
+  {
+    "name": "Parka acolchada Azul marino - Talla XL",
+    "price": 32490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Parka acolchada Café - Talla M",
+    "price": 35990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Parka acolchada Café - Talla S",
+    "price": 36490,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Parka acolchada Café - Talla XL",
+    "price": 45990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Parka acolchada Negro - Talla XL",
+    "price": 25990,
+    "category": "Ropa",
+    "subcategory": "Chaquetas",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Jeans regular Azul - Talla 38",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Jeans regular Azul - Talla 40",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Jeans regular Beige - Talla 44",
+    "price": 16490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 25
+  },
+  {
+    "name": "Jeans regular Gris - Talla 38",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Jeans regular Gris - Talla 40",
+    "price": 28490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Jeans regular Gris - Talla 42",
+    "price": 18990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Jeans regular Gris - Talla 44",
+    "price": 17490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Jeans regular Gris - Talla 46",
+    "price": 21490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Jeans regular Negro - Talla 38",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Jeans regular Negro - Talla 40",
+    "price": 16490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Jeans regular Negro - Talla 44",
+    "price": 29490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Jeans regular Negro - Talla 46",
+    "price": 16990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 32
+  },
+  {
+    "name": "Jeans slim Azul - Talla 38",
+    "price": 24490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Jeans slim Azul - Talla 42",
+    "price": 29490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Jeans slim Azul - Talla 46",
+    "price": 24490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Jeans slim Beige - Talla 40",
+    "price": 15990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Jeans slim Gris - Talla 38",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Jeans slim Gris - Talla 40",
+    "price": 21990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Jeans slim Gris - Talla 42",
+    "price": 22990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Jeans slim Gris - Talla 44",
+    "price": 22990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Jeans slim Gris - Talla 46",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Jeans slim Negro - Talla 38",
+    "price": 27490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Jeans slim Negro - Talla 42",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Jeans slim Negro - Talla 44",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Jeans slim Negro - Talla 46",
+    "price": 17990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Pantalón buzo Azul - Talla 38",
+    "price": 19990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Pantalón buzo Azul - Talla 40",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Pantalón buzo Azul - Talla 44",
+    "price": 17490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Pantalón buzo Beige - Talla 44",
+    "price": 28490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Pantalón buzo Beige - Talla 46",
+    "price": 20490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Pantalón buzo Gris - Talla 38",
+    "price": 28990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Pantalón buzo Gris - Talla 40",
+    "price": 16990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 15
+  },
+  {
+    "name": "Pantalón buzo Gris - Talla 44",
+    "price": 23490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 30
+  },
+  {
+    "name": "Pantalón buzo Gris - Talla 46",
+    "price": 18990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 25
+  },
+  {
+    "name": "Pantalón buzo Negro - Talla 38",
+    "price": 28490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Pantalón buzo Negro - Talla 40",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Pantalón buzo Negro - Talla 44",
+    "price": 22990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Pantalón cargo Azul - Talla 40",
+    "price": 16490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Pantalón cargo Azul - Talla 42",
+    "price": 16490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Pantalón cargo Azul - Talla 46",
+    "price": 23990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Pantalón cargo Beige - Talla 38",
+    "price": 21990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Pantalón cargo Beige - Talla 40",
+    "price": 24990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 15
+  },
+  {
+    "name": "Pantalón cargo Beige - Talla 42",
+    "price": 24990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Pantalón cargo Beige - Talla 46",
+    "price": 16990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Pantalón cargo Gris - Talla 40",
+    "price": 23990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Pantalón cargo Gris - Talla 42",
+    "price": 29490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 11
+  },
+  {
+    "name": "Pantalón cargo Gris - Talla 44",
+    "price": 16990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Pantalón cargo Negro - Talla 38",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Pantalón cargo Negro - Talla 40",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Pantalón cargo Negro - Talla 42",
+    "price": 17990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Pantalón cargo Negro - Talla 44",
+    "price": 20490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Pantalón de vestir Azul - Talla 38",
+    "price": 21990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Pantalón de vestir Azul - Talla 40",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Pantalón de vestir Azul - Talla 42",
+    "price": 22990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Pantalón de vestir Azul - Talla 44",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Pantalón de vestir Azul - Talla 46",
+    "price": 15990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Pantalón de vestir Beige - Talla 38",
+    "price": 16990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 15
+  },
+  {
+    "name": "Pantalón de vestir Beige - Talla 40",
+    "price": 21490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Pantalón de vestir Beige - Talla 42",
+    "price": 18490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Pantalón de vestir Beige - Talla 44",
+    "price": 28990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Pantalón de vestir Beige - Talla 46",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Pantalón de vestir Gris - Talla 38",
+    "price": 25490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 36
+  },
+  {
+    "name": "Pantalón de vestir Gris - Talla 40",
+    "price": 17490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Pantalón de vestir Gris - Talla 42",
+    "price": 24490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Pantalón de vestir Gris - Talla 44",
+    "price": 23990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Pantalón de vestir Negro - Talla 38",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Pantalón de vestir Negro - Talla 40",
+    "price": 24990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Pantalón de vestir Negro - Talla 42",
+    "price": 20990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Pantalón de vestir Negro - Talla 44",
+    "price": 18990,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Pantalón de vestir Negro - Talla 46",
+    "price": 19490,
+    "category": "Ropa",
+    "subcategory": "Pantalones",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Polera algodón premium Azul marino - Talla M",
+    "price": 7990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Polera algodón premium Azul marino - Talla XL",
+    "price": 7990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Polera algodón premium Blanco - Talla L",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Polera algodón premium Blanco - Talla M",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 11
+  },
+  {
+    "name": "Polera algodón premium Blanco - Talla XL",
+    "price": 14490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Polera algodón premium Gris - Talla L",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 9
+  },
+  {
+    "name": "Polera algodón premium Gris - Talla XL",
+    "price": 10490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Polera algodón premium Negro - Talla M",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Polera algodón premium Negro - Talla XL",
+    "price": 11490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Polera algodón premium Verde oliva - Talla L",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 36
+  },
+  {
+    "name": "Polera algodón premium Verde oliva - Talla M",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Polera algodón premium Verde oliva - Talla S",
+    "price": 10490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 19
+  },
+  {
+    "name": "Polera algodón premium Verde oliva - Talla XL",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Polera básica Azul marino - Talla L",
+    "price": 9990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 0
+  },
+  {
+    "name": "Polera básica Azul marino - Talla S",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Polera básica Azul marino - Talla XL",
+    "price": 13990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 10
+  },
+  {
+    "name": "Polera básica Blanco - Talla L",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Polera básica Blanco - Talla M",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Polera básica Blanco - Talla S",
+    "price": 12990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Polera básica Blanco - Talla XL",
+    "price": 7990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 5
+  },
+  {
+    "name": "Polera básica Gris - Talla M",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 38
+  },
+  {
+    "name": "Polera básica Gris - Talla S",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Polera básica Gris - Talla XL",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Polera básica Negro - Talla L",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Polera básica Negro - Talla S",
+    "price": 12990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Polera básica Negro - Talla XL",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Polera básica Verde oliva - Talla M",
+    "price": 10490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Polera básica Verde oliva - Talla XL",
+    "price": 13990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Polera cuello redondo Azul marino - Talla L",
+    "price": 12490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Polera cuello redondo Azul marino - Talla M",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Polera cuello redondo Azul marino - Talla XL",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Polera cuello redondo Blanco - Talla L",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 8
+  },
+  {
+    "name": "Polera cuello redondo Blanco - Talla M",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Polera cuello redondo Blanco - Talla S",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Polera cuello redondo Blanco - Talla XL",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Polera cuello redondo Gris - Talla L",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Polera cuello redondo Gris - Talla M",
+    "price": 14490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Polera cuello redondo Gris - Talla S",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Polera cuello redondo Gris - Talla XL",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Polera cuello redondo Negro - Talla L",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Polera cuello redondo Negro - Talla M",
+    "price": 13490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Polera cuello redondo Verde oliva - Talla L",
+    "price": 12990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Polera cuello redondo Verde oliva - Talla XL",
+    "price": 13990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Polera estampada Azul marino - Talla L",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Polera estampada Azul marino - Talla S",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Polera estampada Azul marino - Talla XL",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Polera estampada Blanco - Talla M",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 34
+  },
+  {
+    "name": "Polera estampada Blanco - Talla S",
+    "price": 12490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Polera estampada Blanco - Talla XL",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Polera estampada Gris - Talla M",
+    "price": 12990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Polera estampada Gris - Talla S",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Polera estampada Gris - Talla XL",
+    "price": 14490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 3
+  },
+  {
+    "name": "Polera estampada Negro - Talla L",
+    "price": 12990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 17
+  },
+  {
+    "name": "Polera estampada Negro - Talla S",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Polera estampada Verde oliva - Talla M",
+    "price": 9490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 31
+  },
+  {
+    "name": "Polera estampada Verde oliva - Talla S",
+    "price": 12490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 20
+  },
+  {
+    "name": "Polera estampada Verde oliva - Talla XL",
+    "price": 8990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Polera oversize Azul marino - Talla L",
+    "price": 13990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Polera oversize Azul marino - Talla S",
+    "price": 13490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Polera oversize Azul marino - Talla XL",
+    "price": 8490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 14
+  },
+  {
+    "name": "Polera oversize Blanco - Talla M",
+    "price": 13490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Polera oversize Blanco - Talla S",
+    "price": 13990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Polera oversize Gris - Talla M",
+    "price": 14490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 40
+  },
+  {
+    "name": "Polera oversize Gris - Talla S",
+    "price": 11990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Polera oversize Gris - Talla XL",
+    "price": 12490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Polera oversize Negro - Talla L",
+    "price": 10490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Polera oversize Negro - Talla M",
+    "price": 10990,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 6
+  },
+  {
+    "name": "Polera oversize Negro - Talla XL",
+    "price": 12490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Polera oversize Verde oliva - Talla XL",
+    "price": 14490,
+    "category": "Ropa",
+    "subcategory": "Poleras",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Vestido casual Blanco - Talla L",
+    "price": 33990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 7
+  },
+  {
+    "name": "Vestido casual Blanco - Talla M",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Vestido casual Blanco - Talla S",
+    "price": 31490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Vestido casual Estampado floral - Talla M",
+    "price": 25990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 2
+  },
+  {
+    "name": "Vestido casual Estampado floral - Talla S",
+    "price": 23490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 37
+  },
+  {
+    "name": "Vestido casual Negro - Talla L",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 22
+  },
+  {
+    "name": "Vestido casual Negro - Talla M",
+    "price": 26490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 4
+  },
+  {
+    "name": "Vestido casual Negro - Talla S",
+    "price": 30490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 21
+  },
+  {
+    "name": "Vestido de fiesta Blanco - Talla L",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 35
+  },
+  {
+    "name": "Vestido de fiesta Blanco - Talla M",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 25
+  },
+  {
+    "name": "Vestido de fiesta Blanco - Talla S",
+    "price": 27490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 26
+  },
+  {
+    "name": "Vestido de fiesta Estampado floral - Talla L",
+    "price": 27490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 32
+  },
+  {
+    "name": "Vestido de fiesta Estampado floral - Talla S",
+    "price": 28490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 39
+  },
+  {
+    "name": "Vestido de fiesta Negro - Talla L",
+    "price": 18990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 27
+  },
+  {
+    "name": "Vestido de fiesta Negro - Talla M",
+    "price": 23990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 16
+  },
+  {
+    "name": "Vestido de fiesta Negro - Talla S",
+    "price": 29990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 36
+  },
+  {
+    "name": "Vestido de fiesta Rojo - Talla M",
+    "price": 23990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 23
+  },
+  {
+    "name": "Vestido de fiesta Rojo - Talla S",
+    "price": 17990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 33
+  },
+  {
+    "name": "Vestido largo playero Blanco - Talla L",
+    "price": 20490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 18
+  },
+  {
+    "name": "Vestido largo playero Estampado floral - Talla L",
+    "price": 31990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 28
+  },
+  {
+    "name": "Vestido largo playero Estampado floral - Talla M",
+    "price": 27990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 29
+  },
+  {
+    "name": "Vestido largo playero Negro - Talla L",
+    "price": 23490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 39
+  },
+  {
+    "name": "Vestido largo playero Negro - Talla M",
+    "price": 30990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 24
+  },
+  {
+    "name": "Vestido largo playero Negro - Talla S",
+    "price": 21990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 12
+  },
+  {
+    "name": "Vestido largo playero Rojo - Talla L",
+    "price": 26990,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 13
+  },
+  {
+    "name": "Vestido largo playero Rojo - Talla S",
+    "price": 27490,
+    "category": "Ropa",
+    "subcategory": "Vestidos",
+    "stockQuantity": 25
+  }
+]

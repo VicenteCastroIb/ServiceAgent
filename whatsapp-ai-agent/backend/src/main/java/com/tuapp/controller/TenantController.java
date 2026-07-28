@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -92,13 +93,17 @@ public class TenantController {
     }
 
     @PutMapping("/{id}/owner-email")
-    public ResponseEntity<Tenant> actualizarOwnerEmail(
+    public ResponseEntity<?> actualizarOwnerEmail(
             @PathVariable Long id,
             @Valid @RequestBody ActualizarOwnerEmailRequest request) {
         if (!PanelAuth.puedeAcceder(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(tenantService.actualizarOwnerEmail(id, request.ownerEmail()));
+        try {
+            return ResponseEntity.ok(tenantService.actualizarOwnerEmail(id, request.ownerEmail()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/plan")
@@ -136,7 +141,11 @@ public class TenantController {
             @NotBlank String whatsappNumber,
             @NotBlank String businessContext,
             String panelUsername,
-            String panelPassword) {
+            // Sin @NotBlank (es opcional, ver "tieneClave" en crear()), pero
+            // si se manda debe cumplir el mismo mínimo que el registro
+            // self-service (RegistroController) - @Size no exige presencia,
+            // solo valida longitud cuando el valor no es null.
+            @Size(min = 8, max = 100) String panelPassword) {
     }
 
     public record ActualizarContextoRequest(@NotBlank String businessContext) {
@@ -149,6 +158,11 @@ public class TenantController {
     public record ActualizarOwnerEmailRequest(@Email String ownerEmail) {
     }
 
-    public record FijarCredencialesRequest(@NotBlank String panelUsername, @NotBlank String panelPassword) {
+    public record FijarCredencialesRequest(
+            @NotBlank String panelUsername,
+            @NotBlank @Size(min = 8, max = 100) String panelPassword) {
+    }
+
+    public record ErrorResponse(String mensaje) {
     }
 }

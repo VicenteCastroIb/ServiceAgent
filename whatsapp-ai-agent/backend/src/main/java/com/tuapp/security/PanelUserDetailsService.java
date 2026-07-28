@@ -36,13 +36,13 @@ public class PanelUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         if (adminUsername.equals(username)) {
-            return new PanelUserDetails(username, adminPasswordHash, null, "ADMIN");
+            return new PanelUserDetails(username, adminPasswordHash, null, 0, "ADMIN");
         }
 
         Tenant tenant = tenantRepository.findByPanelUsername(username)
                 .filter(t -> t.getPanelPasswordHash() != null)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        return new PanelUserDetails(username, tenant.getPanelPasswordHash(), tenant.getId(), "TENANT");
+        return new PanelUserDetails(username, tenant.getPanelPasswordHash(), tenant.getId(), tenant.getTokenVersion(), "TENANT");
     }
 }

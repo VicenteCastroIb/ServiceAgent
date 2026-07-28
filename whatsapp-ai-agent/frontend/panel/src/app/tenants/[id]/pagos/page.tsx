@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { esAdminSegunToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 import {
   ApiError,
   buscarTenant,
@@ -42,7 +42,7 @@ export default function PagosPage() {
   const listo = useRequireAuth();
   const params = useParams<{ id: string }>();
   const tenantId = Number(params.id);
-  const esAdmin = esAdminSegunToken();
+  const { esAdmin } = useAuth();
 
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [ordenes, setOrdenes] = useState<PaymentOrder[] | null>(null);

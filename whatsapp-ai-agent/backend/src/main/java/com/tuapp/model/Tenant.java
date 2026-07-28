@@ -1,6 +1,7 @@
 package com.tuapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tuapp.security.EncryptedStringConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -71,6 +72,18 @@ public class Tenant {
     private String panelPasswordHash;
 
     /**
+     * Se incrementa cada vez que se resetean las credenciales del panel de
+     * este negocio (ver TenantService.fijarCredencialesPanel). Va embebido en
+     * el JWT de login de este tenant (ver JwtService.generarTokenTenant) y se
+     * revalida contra este valor en cada request (ver JwtAuthFilter) - así,
+     * un JWT ya emitido deja de servir inmediatamente después de un reset de
+     * credenciales, sin tener que esperar a que expire solo (por defecto a
+     * los 60 minutos). Si el tenant se borra directamente, el JWT también
+     * deja de servir porque la fila entera desaparece.
+     */
+    private int tokenVersion = 0;
+
+    /**
      * Credenciales del plan Catálogo/Ecommerce (doc secciones 3, 5.1 y 5.3),
      * propias de cada comercio - no son secretos nuestros, son las claves del
      * comercio con SU tienda WooCommerce y SU cuenta de Flow. Por eso el
@@ -83,20 +96,41 @@ public class Tenant {
      * tan sensibles pero se ocultan igual por consistencia y porque el
      * frontend no los necesita de vuelta (solo confirma que están cargados
      * vía isWooCommerceConfigurado()/isFlowConfigurado()).
+     *
+     * @Convert(EncryptedStringConverter) en las credenciales reales (consumer
+     * key/secret, api key/secret key): @JsonIgnore solo las saca de las
+     * respuestas de la API, no protege nada si la base (o un backup) se
+     * filtra - con esto quedan cifradas en la columna misma (AES-256-GCM, ver
+     * la clase). wooCommerceUrl no se cifra: no es un secreto, es la URL
+     * pública de la tienda.
+     *
+     * columnDefinition TEXT en los campos cifrados: el valor guardado es
+     * base64(iv + ciphertext + tag), más largo que el texto plano original -
+     * con el VARCHAR(255) por defecto de Hibernate, un token ya largo de por
+     * sí (ej. un access token de Instagram) se hubiera truncado en silencio al
+     * guardar.
      */
     @JsonIgnore
     private String wooCommerceUrl;
 
     @JsonIgnore
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String wooCommerceConsumerKey;
 
     @JsonIgnore
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String wooCommerceConsumerSecret;
 
     @JsonIgnore
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String flowApiKey;
 
     @JsonIgnore
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String flowSecretKey;
 
     /** URL de retorno tras pagar en Flow (opcional). Si no se carga, se usa wooCommerceUrl o una página genérica propia. */
@@ -113,22 +147,40 @@ public class Tenant {
      * simple que WooCommerce/Flow (doc sección 11: no hay flujo OAuth propio
      * en v1). Es de vida corta (60 días) - InstagramTokenRefreshJob lo
      * refresca antes de que venza usando instagramTokenExpiresAt.
+     *
+     * instagramAccountId NO se cifra a propósito: es @Column(unique = true) y
+     * se busca por igualdad (InstagramWebhookController resuelve el tenant
+     * por este campo en cada mensaje entrante) - EncryptedStringConverter usa
+     * un IV aleatorio por valor, así que un mismo id cifrado dos veces da
+     * ciphertexts distintos y rompería tanto la unicidad como la búsqueda.
+     * instagramAccessToken sí es un secreto real (permite postear/leer como
+     * la cuenta de Instagram del negocio) y no se busca por igualdad en
+     * ningún lado, así que se cifra sin este problema.
      */
     @Column(unique = true)
     private String instagramAccountId;
 
     @JsonIgnore
+    @Convert(converter = EncryptedStringConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String instagramAccessToken;
 
     private Instant instagramTokenExpiresAt;
 
     /**
-     * Email del dueño del negocio, para notificarle cuando una conversación
-     * se deriva a humano (doc sección 4, ver OwnerNotificationService). Lo
-     * carga el propio dueño o el admin desde el panel - opcional: mientras no
-     * esté cargado, el handoff se sigue viendo en el panel pero no se manda
-     * ningún email.
+     * Email del dueño del negocio: para notificarle cuando una conversación
+     * se deriva a humano (doc sección 4, ver OwnerNotificationService), y
+     * también el que se usa como billingEmail al iniciar su suscripción en
+     * Flow (ver SubscriptionBillingService). Único a propósito (nulo
+     * permitido: varios tenants sin email cargado no chocan entre sí, la
+     * mayoría de las bases de datos tratan NULL como distinto de NULL en una
+     * constraint unique) - un mismo email en dos tenants distintos hacía que
+     * SubscriptionBillingService.procesarNotificacionPago no pudiera saber
+     * con certeza a cuál de los dos pertenecía un cobro de Flow (ver
+     * TenantService.registrarSelfService/actualizarOwnerEmail, que validan
+     * esto antes de guardar).
      */
+    @Column(unique = true)
     private String ownerEmail;
 
     private Instant createdAt;

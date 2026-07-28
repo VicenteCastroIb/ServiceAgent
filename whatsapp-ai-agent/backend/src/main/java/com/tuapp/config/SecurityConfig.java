@@ -29,11 +29,23 @@ import java.util.List;
  * contra cada request (RequestValidator con el auth token de Twilio), no un
  * login de sesión - Twilio no puede completar un login interactivo.
  *
- * /admin/** requiere un JWT válido (header "Authorization: Bearer &lt;token&gt;",
- * emitido por AuthController tras /auth/login). La API es 100% stateless (sin
- * sesión de cookies): por eso CSRF está deshabilitado por completo - CSRF
- * protege sesiones de cookies de navegador, no tokens Bearer - y se habilita
- * CORS solo para el origen del panel.
+ * /admin/** requiere un JWT válido, que el panel manda en una cookie httpOnly
+ * (ver AuthController.login/JwtService.COOKIE_NAME) o, para otros clientes,
+ * en el header "Authorization: Bearer &lt;token&gt;". La API sigue siendo 100%
+ * stateless (sin HttpSession, ver SessionCreationPolicy.STATELESS más abajo):
+ * la cookie es solo el transporte del JWT, no una sesión de servidor. CSRF
+ * de Spring Security sigue deshabilitado a propósito - ese mecanismo asume
+ * sesión de servidor (Synchronizer Token Pattern) y acá no la hay - pero
+ * ahora que SÍ hay una cookie de autenticación, la protección real contra
+ * CSRF pasa a depender de dos cosas que ya existen: (1) todo /admin/** exige
+ * un body JSON (@RequestBody), y un <form> HTML cross-site no puede mandar
+ * Content-Type "application/json"; (2) CORS abajo restringe el origen a los
+ * de panel.allowed-origins, así que ni siquiera pasa el preflight de un
+ * fetch cross-site con ese content-type. Si en el futuro se agrega algún
+ * endpoint de escritura que acepte form-urlencoded o multipart, hay que
+ * revisar esto de nuevo.
+ * CORS solo se habilita para el origen del panel, con credentials
+ * (allowCredentials) para que el navegador mande/reciba la cookie.
  *
  * Login: PanelUserDetailsService resuelve tanto al admin (ve todos los
  * tenants) como al dueño de cada negocio (ve solo el suyo, filtrado en cada
@@ -61,6 +73,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/webhooks/**").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        // Cerrar sesión debe funcionar incluso con cookie vencida/ausente
+                        // (ver AuthController.logout) - no requiere saber quién sos.
+                        .requestMatchers("/auth/logout").permitAll()
                         // Alta self-service de un negocio nuevo (RegistroController, doc
                         // sección 12). Único endpoint público de escritura de la API -
                         // tiene su propio rate limiting por IP porque no hay JWT que lo
@@ -107,6 +122,11 @@ public class SecurityConfig {
                 .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Requerido para que el navegador mande/reciba la cookie httpOnly del
+        // JWT en requests cross-origin (panel y backend en orígenes
+        // distintos). Con allowCredentials=true, setAllowedOrigins NO puede
+        // ser "*" - ya no lo es, es una lista explícita (panel.allowed-origins).
+        config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

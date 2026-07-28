@@ -1,7 +1,9 @@
 package com.tuapp.controller;
 
+import com.tuapp.security.RateLimiter;
 import com.tuapp.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+
 /**
  * Webhooks propios de Flow (plan Catálogo, ver PaymentService y doc secciones
  * 3, 5.1 y 5.3). Público a nivel de Spring Security (ver SecurityConfig,
@@ -19,16 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
  * confiamos en el estado que venga en el request: solo usamos el token para
  * encontrar la orden y consultamos el estado real llamando de vuelta a Flow
  * con nuestras propias credenciales firmadas (ver PaymentService.procesarConfirmacion).
+ *
+ * Rate limit global (no por IP - mismo motivo que FlowBillingWebhookController:
+ * quien llama acá es la infraestructura de Flow, servidor a servidor, no el
+ * navegador de cada cliente). Este endpoint ya es barato para un token
+ * desconocido (procesarConfirmacion corta con un SELECT antes de llamar a
+ * Flow), pero igual se limita como defensa en profundidad contra un loop que
+ * sature la base con lecturas.
  */
 @Slf4j
 @RestController
 @RequestMapping("/webhooks/flow")
 public class FlowWebhookController {
 
-    private final PaymentService paymentService;
+    private static final int MAX_LLAMADAS_POR_MINUTO = 1000;
 
-    public FlowWebhookController(PaymentService paymentService) {
+    private final PaymentService paymentService;
+    private final RateLimiter rateLimiter;
+
+    public FlowWebhookController(PaymentService paymentService, RateLimiter rateLimiter) {
         this.paymentService = paymentService;
+        this.rateLimiter = rateLimiter;
     }
 
     /**
@@ -39,6 +54,10 @@ public class FlowWebhookController {
      */
     @PostMapping("/confirmacion/{tenantId}")
     public ResponseEntity<Void> confirmacion(@PathVariable Long tenantId, @RequestParam String token) {
+        if (!rateLimiter.permitir("flow:confirmacion", MAX_LLAMADAS_POR_MINUTO, Duration.ofMinutes(1))) {
+            log.warn("Rate limit excedido en /webhooks/flow/confirmacion (tenantId={})", tenantId);
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+        }
         paymentService.procesarConfirmacion(tenantId, token);
         return ResponseEntity.ok().build();
     }

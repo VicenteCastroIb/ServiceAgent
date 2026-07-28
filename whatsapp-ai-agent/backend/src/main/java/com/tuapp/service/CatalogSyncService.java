@@ -7,6 +7,7 @@ import com.tuapp.model.Tenant;
 import com.tuapp.model.TenantPlan;
 import com.tuapp.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -154,6 +156,15 @@ public class CatalogSyncService {
         producto.setPrice(parsePrecio(nodo.path("price").asText("")));
         producto.setPurchaseUrl(textoONull(nodo.path("permalink")));
 
+        // WooCommerce no distingue categoría/subcategoría en el endpoint de
+        // productos (son todas "categories" planas, sin jerarquía resuelta) -
+        // se usa la primera como category (ver Javadoc de Product). subcategory
+        // no se toca acá: si el dueño ya la había cargado a mano, se conserva.
+        JsonNode categorias = nodo.path("categories");
+        if (categorias.isArray() && !categorias.isEmpty()) {
+            producto.setCategory(textoONull(categorias.get(0).path("name")));
+        }
+
         JsonNode imagenes = nodo.path("images");
         producto.setImageUrl(imagenes.isArray() && !imagenes.isEmpty()
                 ? textoONull(imagenes.get(0).path("src")) : null);
@@ -198,5 +209,92 @@ public class CatalogSyncService {
 
     public List<Product> listarProductosActivos(Tenant tenant) {
         return productRepository.findByTenantAndActiveTrue(tenant);
+    }
+
+    /** Ver AiResponseService: decide si el catálogo completo entra en el prompt o si hay que usar buscar_productos. */
+    public long contarProductosActivos(Tenant tenant) {
+        return productRepository.countByTenantAndActiveTrue(tenant);
+    }
+
+    /** Categorías activas del tenant (para orientar al modelo antes de que llame a buscar_productos). */
+    public List<String> listarCategorias(Tenant tenant) {
+        return productRepository.listarCategoriasDistintas(tenant);
+    }
+
+    /**
+     * Búsqueda filtrada del catálogo (ver AiResponseService.ejecutarBuscarProductos)
+     * para catálogos grandes: en vez de volcar todos los productos al prompt,
+     * el modelo llama a esta tool con categoría/subcategoría/texto para traer
+     * solo lo relevante. limite acota cuántas filas puede traer como máximo -
+     * si el filtro queda demasiado amplio, se corta ahí en vez de mandarle al
+     * modelo un catálogo entero disfrazado de "búsqueda".
+     */
+    public List<Product> buscarProductos(Tenant tenant, String categoria, String subcategoria, String texto, int limite) {
+        return productRepository.buscar(
+                tenant,
+                blankANull(categoria),
+                blankANull(subcategoria),
+                blankANull(texto),
+                PageRequest.of(0, limite));
+    }
+
+    private String blankANull(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor.trim();
+    }
+
+    /**
+     * Alta manual de un producto (ver CatalogController) - para negocios sin
+     * tienda online (WooCommerce) que igual quieren usar el catálogo del plan
+     * Catálogo, o para completar/corregir productos puntuales entre
+     * sincronizaciones. externalId queda null (no viene de WooCommerce), así
+     * que una sincronización posterior nunca lo toca ni lo desactiva (ver
+     * sincronizar/desactivarNoVistos, que solo operan sobre externalId != null).
+     */
+    @Transactional
+    public Product crearProductoManual(Tenant tenant, String name, BigDecimal price, String category, String subcategory, Integer stockQuantity) {
+        Product producto = new Product();
+        producto.setTenant(tenant);
+        producto.setName(name);
+        producto.setPrice(price);
+        producto.setCategory(blankANull(category));
+        producto.setSubcategory(blankANull(subcategory));
+        producto.setStockQuantity(stockQuantity);
+        producto.setActive(true);
+        producto.setUpdatedAt(Instant.now());
+        return productRepository.save(producto);
+    }
+
+    /**
+     * Edita un producto ya existente de este tenant (manual o sincronizado -
+     * si es sincronizado, la próxima sincronización puede pisar name/price/etc.
+     * con lo que traiga WooCommerce, pero subcategory nunca lo toca la
+     * sincronización, ver Javadoc de Product).
+     *
+     * @throws NoSuchElementException si el producto no existe o no es de este tenant.
+     */
+    @Transactional
+    public Product actualizarProducto(Tenant tenant, Long productId, String name, BigDecimal price, String category, String subcategory, Integer stockQuantity, boolean active) {
+        Product producto = productRepository.findById(productId)
+                .filter(p -> p.getTenant().getId().equals(tenant.getId()))
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado: " + productId));
+        producto.setName(name);
+        producto.setPrice(price);
+        producto.setCategory(blankANull(category));
+        producto.setSubcategory(blankANull(subcategory));
+        producto.setStockQuantity(stockQuantity);
+        producto.setActive(active);
+        producto.setUpdatedAt(Instant.now());
+        return productRepository.save(producto);
+    }
+
+    /**
+     * @throws NoSuchElementException si el producto no existe o no es de este tenant.
+     */
+    @Transactional
+    public void eliminarProducto(Tenant tenant, Long productId) {
+        Product producto = productRepository.findById(productId)
+                .filter(p -> p.getTenant().getId().equals(tenant.getId()))
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado: " + productId));
+        productRepository.delete(producto);
     }
 }

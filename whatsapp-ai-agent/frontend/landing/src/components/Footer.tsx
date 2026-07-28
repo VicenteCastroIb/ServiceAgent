@@ -12,8 +12,8 @@ const RECURSOS_LINKS = [
 ];
 
 const LEGAL_LINKS = [
-  { href: "#", label: "Privacidad" },
-  { href: "#", label: "Términos" },
+  { href: "/privacidad", label: "Privacidad" },
+  { href: "/terminos", label: "Términos" },
 ];
 
 export default function Footer() {

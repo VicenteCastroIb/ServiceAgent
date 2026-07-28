@@ -35,6 +35,15 @@ public class TenantSubscription {
     @JoinColumn(name = "tenant_id", unique = true)
     private Tenant tenant;
 
+    /**
+     * Email de facturación en Flow. Único a propósito (ver Tenant.ownerEmail,
+     * de donde normalmente sale este valor): SubscriptionBillingService.
+     * procesarNotificacionPago matchea el cobro entrante de Flow contra esta
+     * columna, así que dos tenants con el mismo billingEmail harían ese match
+     * ambiguo - la unicidad se valida en
+     * SubscriptionBillingService.iniciarSuscripcion antes de guardar.
+     */
+    @Column(unique = true)
     private String billingEmail;
 
     private String flowCustomerId;

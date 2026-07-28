@@ -149,6 +149,22 @@ class TenantServiceTest {
     }
 
     @Test
+    void fijarCredencialesPanel_incrementaTokenVersionParaInvalidarJwtsAnteriores() {
+        // Ver JwtAuthFilter/JwtService.generarTokenTenant: un JWT ya emitido
+        // para este tenant debe dejar de autenticar apenas se resetean sus
+        // credenciales, sin esperar a que expire solo.
+        Tenant t = tenant(1L);
+        t.setTokenVersion(3);
+        when(tenantRepository.findById(1L)).thenReturn(Optional.of(t));
+        when(passwordEncoder.encode(any())).thenReturn("hash");
+        when(tenantRepository.save(any(Tenant.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Tenant resultado = tenantService.fijarCredencialesPanel(1L, "dueno1", "miPasswordSecreta");
+
+        assertThat(resultado.getTokenVersion()).isEqualTo(4);
+    }
+
+    @Test
     void actualizarContexto_tiraExcepcionSiElTenantNoExiste() {
         when(tenantRepository.findById(404L)).thenReturn(Optional.empty());
 
@@ -245,5 +261,74 @@ class TenantServiceTest {
         assertThatThrownBy(() -> tenantService.registrarSelfService(
                 "Negocio nuevo", "dueno@negocio.cl", "dueno-nuevo", "miPasswordSecreta", TenantPlan.BASICO))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void registrarSelfService_tiraExcepcionSiElEmailYaExiste() {
+        // El email debe ser único porque también se usa como billingEmail al
+        // iniciar la suscripción en Flow - si dos tenants lo compartieran, un
+        // cobro de Flow no podría matchearse sin ambigüedad (ver
+        // SubscriptionBillingService.procesarNotificacionPago).
+        when(tenantRepository.findByPanelUsername("dueno-nuevo")).thenReturn(Optional.empty());
+        when(tenantRepository.findByOwnerEmail("dueno@negocio.cl")).thenReturn(Optional.of(tenant(1L)));
+
+        assertThatThrownBy(() -> tenantService.registrarSelfService(
+                "Negocio nuevo", "dueno@negocio.cl", "dueno-nuevo", "miPasswordSecreta", TenantPlan.BASICO))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(tenantRepository, never()).save(any());
+    }
+
+    @Test
+    void registrarSelfService_traduceCarreraDeEmailDuplicadoAExcepcionDeNegocio() {
+        when(tenantRepository.findByPanelUsername("dueno-nuevo")).thenReturn(Optional.empty());
+        when(tenantRepository.findByOwnerEmail("dueno@negocio.cl")).thenReturn(Optional.empty());
+        when(tenantRepository.save(any(Tenant.class))).thenThrow(new DataIntegrityViolationException("duplicate key"));
+
+        assertThatThrownBy(() -> tenantService.registrarSelfService(
+                "Negocio nuevo", "dueno@negocio.cl", "dueno-nuevo", "miPasswordSecreta", TenantPlan.BASICO))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    // ---- actualizarOwnerEmail ----
+
+    @Test
+    void actualizarOwnerEmail_tiraExcepcionSiOtroTenantYaLoUsa() {
+        Tenant t = tenant(1L);
+        Tenant otro = tenant(2L);
+        when(tenantRepository.findById(1L)).thenReturn(Optional.of(t));
+        when(tenantRepository.findByOwnerEmail("repetido@negocio.cl")).thenReturn(Optional.of(otro));
+
+        assertThatThrownBy(() -> tenantService.actualizarOwnerEmail(1L, "repetido@negocio.cl"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(tenantRepository, never()).save(any());
+    }
+
+    @Test
+    void actualizarOwnerEmail_permiteGuardarSiElEmailEsDelMismoTenant() {
+        Tenant t = tenant(1L);
+        t.setOwnerEmail("mismo@negocio.cl");
+        when(tenantRepository.findById(1L)).thenReturn(Optional.of(t));
+        when(tenantRepository.findByOwnerEmail("mismo@negocio.cl")).thenReturn(Optional.of(t));
+        when(tenantRepository.save(any(Tenant.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Tenant resultado = tenantService.actualizarOwnerEmail(1L, "mismo@negocio.cl");
+
+        assertThat(resultado.getOwnerEmail()).isEqualTo("mismo@negocio.cl");
+    }
+
+    @Test
+    void actualizarOwnerEmail_normalizaVacioANullEnVezDeCadenaVacia() {
+        // "" no debe guardarse tal cual: dos tenants con ownerEmail="" chocarían
+        // contra la constraint unique de la columna (a diferencia de NULL, que
+        // la mayoría de las bases no considera un duplicado de sí mismo).
+        Tenant t = tenant(1L);
+        when(tenantRepository.findById(1L)).thenReturn(Optional.of(t));
+        when(tenantRepository.save(any(Tenant.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Tenant resultado = tenantService.actualizarOwnerEmail(1L, "");
+
+        assertThat(resultado.getOwnerEmail()).isNull();
     }
 }

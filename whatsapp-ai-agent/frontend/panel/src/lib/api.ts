@@ -1,5 +1,3 @@
-import { clearToken, getToken } from "./auth";
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 export class ApiError extends Error {
@@ -11,19 +9,20 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
 
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  // credentials:"include" en vez de un header Authorization armado a mano: el
+  // JWT viaja en una cookie httpOnly (ver AuthController), así que el propio
+  // navegador la adjunta - este código nunca ve ni maneja el token.
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers, credentials: "include" });
 
   if (response.status === 401) {
-    // El token expiró o es inválido: se limpia y se manda a login.
-    clearToken();
-    if (typeof window !== "undefined") {
+    // Sin sesión vigente. No hay nada que "limpiar" del lado del cliente (la
+    // cookie es httpOnly, invisible para JS) - solo redirigir a login, salvo
+    // que ya estemos ahí (evita una navegación redundante que además pisaba
+    // el mensaje de error de credenciales incorrectas en /auth/login).
+    if (typeof window !== "undefined" && window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
     throw new ApiError(401, "No autenticado");
@@ -126,12 +125,22 @@ export interface Product {
   id: number;
   name: string;
   price: number;
+  category: string | null;
+  subcategory: string | null;
   externalId: number | null;
   imageUrl: string | null;
   purchaseUrl: string | null;
   stockQuantity: number | null;
   active: boolean;
   updatedAt: string | null;
+}
+
+export interface ProductoInput {
+  name: string;
+  price: number;
+  category?: string;
+  subcategory?: string;
+  stockQuantity?: number;
 }
 
 export interface ReporteAgendamiento {
@@ -155,12 +164,29 @@ export interface PaymentOrder {
   confirmedAt: string | null;
 }
 
-export async function login(username: string, password: string): Promise<string> {
-  const data = await request<{ token: string }>("/auth/login", {
+export interface SesionInfo {
+  esAdmin: boolean;
+  tenantId: number | null;
+}
+
+// Ya no devuelve el JWT: el backend lo deja en una cookie httpOnly (ver
+// AuthController.login) y esto solo trae los datos de UI (esAdmin/tenantId,
+// ver AuthProvider en auth-context.tsx).
+export function login(username: string, password: string): Promise<SesionInfo> {
+  return request<SesionInfo>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
-  return data.token;
+}
+
+// Lo consulta AuthProvider al cargar la app para saber si hay sesión vigente
+// (reemplaza la decodificación del JWT que antes hacía el frontend).
+export function obtenerSesion(): Promise<SesionInfo> {
+  return request<SesionInfo>("/auth/me");
+}
+
+export function cerrarSesion(): Promise<void> {
+  return request<void>("/auth/logout", { method: "POST" });
 }
 
 export function listarTenants(): Promise<Tenant[]> {
@@ -363,6 +389,33 @@ export function sincronizarCatalogo(tenantId: number): Promise<{ productosSincro
 
 export function listarProductos(tenantId: number): Promise<Product[]> {
   return request<Product[]>(`/admin/tenants/${tenantId}/catalogo/productos`);
+}
+
+// Alta manual del catálogo (sin necesidad de tienda WooCommerce) - ver
+// CatalogController.crearProducto/actualizarProducto/eliminarProducto.
+
+export function crearProducto(tenantId: number, input: ProductoInput): Promise<Product> {
+  return request<Product>(`/admin/tenants/${tenantId}/catalogo/productos`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function actualizarProducto(
+  tenantId: number,
+  productId: number,
+  input: ProductoInput & { active: boolean }
+): Promise<Product> {
+  return request<Product>(`/admin/tenants/${tenantId}/catalogo/productos/${productId}`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
+export function eliminarProducto(tenantId: number, productId: number): Promise<void> {
+  return request<void>(`/admin/tenants/${tenantId}/catalogo/productos/${productId}`, {
+    method: "DELETE",
+  });
 }
 
 // --- Pagos del tenant a sus propios clientes (Semana 6) ---

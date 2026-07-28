@@ -10,6 +10,7 @@ import com.tuapp.model.TenantSubscription;
 import com.tuapp.repository.TenantSubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -59,11 +59,12 @@ import java.util.stream.Collectors;
  *    procesarNotificacionPago, que consulta el pago real (nunca confía en el
  *    request entrante) y actualiza el estado.
  *
- * Nota pendiente de validar con el negocio real: la notificación de cobro
- * (urlCallback) no trae el id del tenant, así que se matchea por
- * billingEmail contra el pagador informado por Flow. Si no hay un match único
- * se loguea para revisión manual en vez de arriesgar actualizar el tenant
- * equivocado - preferible eso a un bug de facturación.
+ * La notificación de cobro (urlCallback) no trae el id del tenant, así que se
+ * matchea por billingEmail contra el pagador informado por Flow - por eso
+ * billingEmail (y Tenant.ownerEmail, de donde normalmente sale) son únicos a
+ * nivel de base de datos: iniciarSuscripcion rechaza explícitamente un email
+ * ya usado por otro tenant, así que para cuando llega una notificación de
+ * cobro el match contra billingEmail es siempre único, sin ambigüedad.
  */
 @Slf4j
 @Service
@@ -143,10 +144,20 @@ public class SubscriptionBillingService {
      * Paso 1: crea al tenant como cliente en Flow y devuelve la URL a la que
      * hay que mandar al dueño del negocio para que registre su tarjeta
      * (nunca vemos el número de tarjeta nosotros).
+     *
+     * @throws BillingException si ese email ya es el billingEmail de OTRO
+     *                           tenant - debe ser único porque
+     *                           procesarNotificacionPago lo usa para resolver
+     *                           a qué tenant pertenece cada cobro entrante de
+     *                           Flow (ver Javadoc de la clase).
      */
     @Transactional
     public String iniciarSuscripcion(Tenant tenant, String email) {
         exigirConfigurado();
+        tenantSubscriptionRepository.findByBillingEmailAndTenant_IdNot(email, tenant.getId())
+                .ifPresent(otra -> {
+                    throw new BillingException("Ese email ya está siendo usado como email de facturación por otro negocio.");
+                });
         String planId = planIdParaPlan(tenant.getPlan());
 
         TenantSubscription suscripcion = tenantSubscriptionRepository.findByTenant(tenant)
@@ -162,7 +173,14 @@ public class SubscriptionBillingService {
         }
         suscripcion.setStatus(BillingStatus.PENDIENTE_TARJETA);
         suscripcion.setUpdatedAt(Instant.now());
-        tenantSubscriptionRepository.save(suscripcion);
+        try {
+            tenantSubscriptionRepository.save(suscripcion);
+        } catch (DataIntegrityViolationException e) {
+            // Carrera con otro iniciarSuscripcion simultáneo que tomó el
+            // mismo email entre el chequeo de arriba y este save - mismo
+            // criterio que TenantService.registrarSelfService.
+            throw new BillingException("Ese email ya está siendo usado como email de facturación por otro negocio.");
+        }
 
         return registrarTarjeta(tenant.getId(), customerId);
     }
@@ -284,9 +302,17 @@ public class SubscriptionBillingService {
     }
 
     /**
-     * Paso 4: notificación de Flow (urlCallback del plan) cuando se cobra un
-     * período. Igual que con PaymentService: nunca se confía en el request
-     * entrante, siempre se confirma con payment/getStatus.
+     * Paso 4: notificación de Flow (urlCallback del plan) cuando se cobra (o
+     * se intenta cobrar y falla) un período. Igual que con PaymentService:
+     * nunca se confía en el request entrante, siempre se confirma con
+     * payment/getStatus.
+     * <p>
+     * status 2 (pagado) -&gt; ACTIVA. status 3 (rechazado) -&gt; MOROSA
+     * automático (antes solo se podía marcar a mano con marcarMorosa()) -
+     * ver AiResponseService.puedeUsarBot, que corta el bot para tenants
+     * MOROSA/CANCELADA. status 4 (anulado) se trata igual que rechazado: la
+     * suscripción dejó de estar cubierta. status 1 (pendiente) no cambia
+     * nada todavía - Flow puede reintentar el cobro.
      */
     @Transactional
     public void procesarNotificacionPago(String token) {
@@ -311,34 +337,68 @@ public class SubscriptionBillingService {
 
         int status = respuesta.path("status").asInt(-1);
         String payer = respuesta.path("payer").asText("");
-        if (status != 2 || payer.isBlank()) {
-            log.info("Notificación de cobro de suscripción sin pago confirmado (status={}, payer={})", status, payer);
+        if (payer.isBlank()) {
+            log.info("Notificación de cobro de suscripción sin payer informado por Flow (status={}) - no se puede resolver el tenant, revisar manualmente.", status);
             return;
         }
 
-        List<TenantSubscription> candidatos = tenantSubscriptionRepository.findByBillingEmail(payer);
-        if (candidatos.size() != 1) {
-            log.warn("No se pudo determinar de forma única qué tenant pagó (email={}, matches={}) - revisar manualmente en el panel de Flow.",
-                    payer, candidatos.size());
+        // billingEmail es único (ver TenantSubscription/iniciarSuscripcion) -
+        // a lo sumo un tenant puede matchear, sin ambigüedad posible.
+        TenantSubscription suscripcion = tenantSubscriptionRepository.findByBillingEmail(payer).orElse(null);
+        if (suscripcion == null) {
+            log.warn("Notificación de cobro de Flow sin ningún tenant asociado a ese email (email={}) - revisar manualmente en el panel de Flow.",
+                    payer);
             return;
         }
 
-        TenantSubscription suscripcion = candidatos.get(0);
-        suscripcion.setStatus(BillingStatus.ACTIVA);
-        suscripcion.setLastPaymentAt(Instant.now());
-        // Nuestros planes son mensuales de punta a punta (interval=3, ver
-        // crearPlanSiNoExiste) - +1 mes desde hoy es una aproximación
-        // razonable de hasta cuándo queda cubierta la suscripción. Si en el
-        // futuro se necesita la fecha exacta del período, hay que parsearla
-        // del invoice devuelto por Flow en vez de esta aproximación.
-        suscripcion.setPaidUntil(LocalDate.now().plusMonths(1));
-        suscripcion.setUpdatedAt(Instant.now());
-        tenantSubscriptionRepository.save(suscripcion);
-        log.info("Pago de suscripción confirmado para tenant {}", suscripcion.getTenant().getId());
+        if (status == 2) {
+            suscripcion.setStatus(BillingStatus.ACTIVA);
+            suscripcion.setLastPaymentAt(Instant.now());
+            // Nuestros planes son mensuales de punta a punta (interval=3, ver
+            // crearPlanSiNoExiste) - +1 mes desde hoy es una aproximación
+            // razonable de hasta cuándo queda cubierta la suscripción. Si en
+            // el futuro se necesita la fecha exacta del período, hay que
+            // parsearla del invoice devuelto por Flow en vez de esta
+            // aproximación.
+            suscripcion.setPaidUntil(LocalDate.now().plusMonths(1));
+            suscripcion.setUpdatedAt(Instant.now());
+            tenantSubscriptionRepository.save(suscripcion);
+            log.info("Pago de suscripción confirmado para tenant {}", suscripcion.getTenant().getId());
+        } else if (status == 3 || status == 4) {
+            suscripcion.setStatus(BillingStatus.MOROSA);
+            suscripcion.setUpdatedAt(Instant.now());
+            tenantSubscriptionRepository.save(suscripcion);
+            log.warn("Cobro de suscripción rechazado/anulado (status={}) para tenant {} - marcado MOROSA automáticamente",
+                    status, suscripcion.getTenant().getId());
+            ownerNotificationService.notificarCobroSuscripcionFallido(suscripcion.getTenant());
+        } else {
+            log.info("Notificación de cobro de suscripción sin resolución final todavía (status={}, payer={})", status, payer);
+        }
     }
 
     public TenantSubscription buscarPorTenant(Tenant tenant) {
         return tenantSubscriptionRepository.findByTenant(tenant).orElse(null);
+    }
+
+    /**
+     * true si el bot de IA puede seguir respondiendo automático a los
+     * clientes de este tenant (ver AiResponseService, único lugar que llama
+     * a esto - WebhookController e InstagramWebhookController pasan siempre
+     * por ahí). Antes de este chequeo, un tenant MOROSA o CANCELADA seguía
+     * recibiendo el servicio indefinidamente: CuentaGate.tsx solo bloqueaba
+     * el PANEL, nunca el bot real.
+     * <p>
+     * Un tenant SIN ninguna TenantSubscription cargada (ej. alta manual
+     * directa por TenantService.crear(), sin pasar por self-service ni por
+     * registrarPagoManual) no se bloquea - se asume que su facturación se
+     * coordina fuera del sistema (primeros pilotos, doc sección 10). El corte
+     * automático aplica solo a partir de que existe un registro de
+     * suscripción y ese registro dice explícitamente MOROSA/CANCELADA.
+     */
+    public boolean puedeUsarBot(Tenant tenant) {
+        return tenantSubscriptionRepository.findByTenant(tenant)
+                .map(s -> s.getStatus() != BillingStatus.MOROSA && s.getStatus() != BillingStatus.CANCELADA)
+                .orElse(true);
     }
 
     /** Marca la suscripción como morosa manualmente (uso admin, mientras no haya notificación automática de cobro fallido documentada - ver clase). */

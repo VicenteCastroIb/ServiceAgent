@@ -14,6 +14,9 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
 
     Optional<Tenant> findByPanelUsername(String panelUsername);
 
+    /** Para validar unicidad de ownerEmail (ver TenantService.registrarSelfService/actualizarOwnerEmail). */
+    Optional<Tenant> findByOwnerEmail(String ownerEmail);
+
     Optional<Tenant> findByInstagramAccountId(String instagramAccountId);
 
     /** Para InstagramTokenRefreshJob: tenants con token cargado que vence antes de la fecha dada. */

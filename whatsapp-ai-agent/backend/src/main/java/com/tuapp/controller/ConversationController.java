@@ -58,7 +58,19 @@ public class ConversationController {
 
     @GetMapping
     public List<ConversationView> listar() {
-        Tenant tenant = PanelAuth.esAdmin() ? null : tenantService.buscarPorId(PanelAuth.tenantIdActual()).orElse(null);
+        if (PanelAuth.esAdmin()) {
+            return conversationService.listar(null).stream().map(ConversationView::de).toList();
+        }
+        // OJO: no reemplazar por "buscarPorId(...).orElse(null)" pasado
+        // directo a conversationService.listar() - ConversationService trata
+        // null como "admin, devolver todo". Si el tenant de este JWT ya no
+        // existe (borrado, o dato corrupto), eso filtraría las conversaciones
+        // de TODOS los negocios a un dueño común. Acá se corta explícito con
+        // lista vacía en ese caso.
+        Tenant tenant = tenantService.buscarPorId(PanelAuth.tenantIdActual()).orElse(null);
+        if (tenant == null) {
+            return List.of();
+        }
         return conversationService.listar(tenant).stream().map(ConversationView::de).toList();
     }
 

@@ -1,0 +1,88 @@
+name: CI
+
+# Red de seguridad mínima antes de mergear a dev/main: corre los tests del
+# backend y el build/lint de panel y landing en cada push/PR. No despliega
+# nada - el deploy sigue siendo el flujo normal de Railway (ver DEPLOY.md).
+
+on:
+  push:
+    branches: [main, dev, test]
+  pull_request:
+    branches: [main, dev, test]
+
+jobs:
+  backend:
+    name: Backend (tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: whatsapp-ai-agent/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      # Sin DB_URL/DB_USERNAME/DB_PASSWORD: usa el H2 en memoria default de
+      # application.properties (ver .env.example) - los tests no necesitan
+      # Postgres real. jwt.secret/app.encryption-key no tienen default a
+      # propósito (fail-fast en producción, ver application.properties), así
+      # que acá se cargan valores dummy solo para que el contexto de Spring
+      # levante en los tests.
+      - name: Run tests
+        env:
+          JWT_SECRET: ci-dummy-secret-not-for-prod-AAAAAAAAAAAAAAAAAAAAAAA=
+          APP_ENCRYPTION_KEY: ci-dummy-key-not-for-prod-BBBBBBBBBBBBBBBBBBBBB=
+          TWILIO_ACCOUNT_SID: ACdummy
+          TWILIO_AUTH_TOKEN: dummy
+          TWILIO_WHATSAPP_NUMBER: "+10000000000"
+          ANTHROPIC_API_KEY: sk-ant-dummy
+          PANEL_USERNAME: ci-admin
+          PANEL_PASSWORD: ci-dummy-password
+        run: ./mvnw -B test
+
+  panel:
+    name: Panel (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: whatsapp-ai-agent/frontend/panel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: whatsapp-ai-agent/frontend/panel/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - name: Build
+        env:
+          # Valor dummy: alcanza para validar que el build no rompe. El valor
+          # real se carga como variable del servicio en Railway (ver DEPLOY.md).
+          NEXT_PUBLIC_API_URL: https://api.example.com
+        run: npm run build
+
+  landing:
+    name: Landing (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: whatsapp-ai-agent/frontend/landing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: whatsapp-ai-agent/frontend/landing/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - name: Build
+        env:
+          NEXT_PUBLIC_API_URL: https://api.example.com
+          NEXT_PUBLIC_WHATSAPP_SALES_NUMBER: "56900000000"
+          NEXT_PUBLIC_PANEL_URL: https://panel.example.com
+          NEXT_PUBLIC_SITE_URL: https://example.com
+        run: npm run build

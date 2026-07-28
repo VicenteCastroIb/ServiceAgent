@@ -7,7 +7,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <!-- 3.3.2 traía CVE-2024-38816 (alta, DoS en spring-webmvc, fix en
+             3.3.4), CVE-2024-38809 (media, spring-web, fix en 3.3.3) y
+             CVE-2025-22235 (matcher de endpoints de Actuator, fix en 3.3.11).
+             3.3.11 es la última patch de la misma rama 3.3.x (sin cambios de
+             minor), incluye los tres fixes. -->
+        <version>3.3.11</version>
         <relativePath/>
     </parent>
 

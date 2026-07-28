@@ -14,19 +14,19 @@ export default function TenantSubNav({ tenantId }: { tenantId: number }) {
   ];
 
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-gray-200 pb-3 text-sm">
-      <Link href="/tenants" className="text-gray-500 hover:underline">
+    <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-ink/10 pb-3 text-sm">
+      <Link href="/tenants" className="font-medium text-ink/45 hover:text-ink">
         ← Negocios
       </Link>
-      <span className="text-gray-300">|</span>
+      <span className="text-ink/15">|</span>
       {tabs.map((tab) => (
         <Link
           key={tab.href}
           href={tab.href}
           className={
             pathname === tab.href
-              ? "font-medium text-blue-600"
-              : "text-gray-600 hover:text-blue-600 hover:underline"
+              ? "font-semibold text-green-light"
+              : "text-ink/55 hover:text-ink"
           }
         >
           {tab.label}

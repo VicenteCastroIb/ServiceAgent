@@ -18,18 +18,25 @@ public class PanelUserDetails implements UserDetails {
     private final String username;
     private final String passwordHash;
     private final Long tenantId;
+    private final int tokenVersion;
     private final List<GrantedAuthority> authorities;
 
-    public PanelUserDetails(String username, String passwordHash, Long tenantId, String role) {
+    public PanelUserDetails(String username, String passwordHash, Long tenantId, int tokenVersion, String role) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.tenantId = tenantId;
+        this.tokenVersion = tokenVersion;
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     /** Null si es el admin (ve todos los tenants). */
     public Long getTenantId() {
         return tenantId;
+    }
+
+    /** Sin uso para el admin (siempre 0) - ver Tenant.tokenVersion/JwtService.generarTokenTenant. */
+    public int getTokenVersion() {
+        return tokenVersion;
     }
 
     @Override

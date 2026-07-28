@@ -8,11 +8,15 @@ import com.tuapp.service.CatalogSyncService;
 import com.tuapp.service.TenantService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * API de administración del catálogo (plan Catálogo/Ecommerce, doc secciones
@@ -77,6 +81,65 @@ public class CatalogController {
         return ResponseEntity.ok(catalogSyncService.listarProductos(tenant));
     }
 
+    /**
+     * Alta manual de un producto (doc FAQ de la landing: "si todavía no
+     * tenés tienda online, podés cargar el catálogo manualmente desde el
+     * panel"). Mismo criterio de autorización que /contexto en TenantController
+     * (PanelAuth.puedeAcceder): lo puede hacer el admin o el propio dueño del
+     * negocio, no queda admin-only como las credenciales de WooCommerce/Flow
+     * (esto es contenido del catálogo, no un secreto).
+     */
+    @PostMapping("/productos")
+    public ResponseEntity<?> crearProducto(@PathVariable Long tenantId, @Valid @RequestBody ProductoRequest request) {
+        if (!PanelAuth.puedeAcceder(tenantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Tenant tenant = buscarTenant(tenantId);
+        if (tenant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Product producto = catalogSyncService.crearProductoManual(
+                tenant, request.name(), request.price(), request.category(), request.subcategory(), request.stockQuantity());
+        return ResponseEntity.status(HttpStatus.CREATED).body(producto);
+    }
+
+    @PutMapping("/productos/{productId}")
+    public ResponseEntity<?> actualizarProducto(
+            @PathVariable Long tenantId, @PathVariable Long productId, @Valid @RequestBody ActualizarProductoRequest request) {
+        if (!PanelAuth.puedeAcceder(tenantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Tenant tenant = buscarTenant(tenantId);
+        if (tenant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Product producto = catalogSyncService.actualizarProducto(
+                    tenant, productId, request.name(), request.price(), request.category(),
+                    request.subcategory(), request.stockQuantity(), request.active());
+            return ResponseEntity.ok(producto);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/productos/{productId}")
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long tenantId, @PathVariable Long productId) {
+        if (!PanelAuth.puedeAcceder(tenantId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Tenant tenant = buscarTenant(tenantId);
+        if (tenant == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            catalogSyncService.eliminarProducto(tenant, productId);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     private Tenant buscarTenant(Long tenantId) {
         return tenantService.buscarPorId(tenantId).orElse(null);
     }
@@ -89,5 +152,22 @@ public class CatalogController {
     }
 
     public record ErrorResponse(String mensaje) {
+    }
+
+    public record ProductoRequest(
+            @NotBlank String name,
+            @NotNull @PositiveOrZero BigDecimal price,
+            String category,
+            String subcategory,
+            @PositiveOrZero Integer stockQuantity) {
+    }
+
+    public record ActualizarProductoRequest(
+            @NotBlank String name,
+            @NotNull @PositiveOrZero BigDecimal price,
+            String category,
+            String subcategory,
+            @PositiveOrZero Integer stockQuantity,
+            boolean active) {
     }
 }

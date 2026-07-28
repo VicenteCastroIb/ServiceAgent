@@ -93,17 +93,27 @@ public class TenantService {
      * La contraseña se guarda hasheada (BCrypt) - nunca en texto plano, mismo
      * criterio que fijarCredencialesPanel.
      *
-     * @throws IllegalArgumentException si panelUsername ya está en uso (chequeo
-     *                                   previo + fallback al constraint único de
-     *                                   la base para cubrir la carrera entre
-     *                                   dos registros simultáneos con el mismo
-     *                                   usuario).
+     * @throws IllegalArgumentException si panelUsername u ownerEmail ya están
+     *                                   en uso por otro tenant (chequeo previo
+     *                                   + fallback al constraint único de la
+     *                                   base para cubrir la carrera entre dos
+     *                                   registros simultáneos con el mismo
+     *                                   usuario/email). ownerEmail debe ser
+     *                                   único porque también se usa como
+     *                                   billingEmail al iniciar la suscripción
+     *                                   en Flow (ver SubscriptionBillingService) -
+     *                                   si dos tenants compartieran email, un
+     *                                   cobro de Flow no podría matchearse sin
+     *                                   ambigüedad contra uno solo de los dos.
      */
     @Transactional
     public Tenant registrarSelfService(
             String businessName, String ownerEmail, String panelUsername, String panelPassword, TenantPlan plan) {
         if (tenantRepository.findByPanelUsername(panelUsername).isPresent()) {
             throw new IllegalArgumentException("Ese nombre de usuario ya está en uso.");
+        }
+        if (tenantRepository.findByOwnerEmail(ownerEmail).isPresent()) {
+            throw new IllegalArgumentException("Ese email ya está registrado con otro negocio.");
         }
 
         Tenant tenant = new Tenant();
@@ -118,11 +128,13 @@ public class TenantService {
         try {
             return tenantRepository.save(tenant);
         } catch (DataIntegrityViolationException e) {
-            // Carrera con otro registro simultáneo que tomó el mismo usuario
-            // entre el chequeo de arriba y este save - se traduce al mismo
-            // error de negocio en vez de dejar escapar un 500 con detalle de
-            // la constraint de la base.
-            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso.");
+            // Carrera con otro registro simultáneo que tomó el mismo usuario o
+            // email entre el chequeo de arriba y este save - se traduce al
+            // mismo error de negocio en vez de dejar escapar un 500 con
+            // detalle de la constraint de la base. No se puede distinguir cuál
+            // de los dos constraints únicos chocó desde acá (el driver no lo
+            // expone de forma portable), así que se da un mensaje genérico.
+            throw new IllegalArgumentException("Ese nombre de usuario o email ya está en uso.");
         }
     }
 
@@ -148,12 +160,36 @@ public class TenantService {
         return tenantRepository.save(tenant);
     }
 
-    /** Email del dueño para notificaciones (ver OwnerNotificationService). Puede pasarse null/vacío para borrarlo. */
+    /**
+     * Email del dueño para notificaciones (ver OwnerNotificationService).
+     * Puede pasarse null/vacío para borrarlo - se normaliza a null en ese caso
+     * (no a "", para que dos tenants sin email cargado no choquen contra la
+     * constraint unique de la columna: la mayoría de las bases tratan NULL
+     * como distinto de NULL, pero "" sí colisionaría con otra "").
+     *
+     * @throws IllegalArgumentException si el email ya está en uso por otro
+     *                                   tenant (ver Javadoc de ownerEmail en
+     *                                   Tenant y de registrarSelfService).
+     */
     public Tenant actualizarOwnerEmail(Long id, String ownerEmail) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
-        tenant.setOwnerEmail(ownerEmail);
-        return tenantRepository.save(tenant);
+
+        String nuevoEmail = (ownerEmail != null && !ownerEmail.isBlank()) ? ownerEmail : null;
+        if (nuevoEmail != null) {
+            tenantRepository.findByOwnerEmail(nuevoEmail)
+                    .filter(otro -> !otro.getId().equals(id))
+                    .ifPresent(otro -> {
+                        throw new IllegalArgumentException("Ese email ya está en uso por otro negocio.");
+                    });
+        }
+        tenant.setOwnerEmail(nuevoEmail);
+
+        try {
+            return tenantRepository.save(tenant);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Ese email ya está en uso por otro negocio.");
+        }
     }
 
     /**
@@ -186,12 +222,19 @@ public class TenantService {
      * nuevo que elige su propio usuario/clave, ver registrarSelfService().
      * La contraseña se guarda hasheada (BCrypt), nunca en texto plano (ver
      * PanelUserDetailsService, quien la valida).
+     * <p>
+     * Incrementa tokenVersion: cualquier JWT ya emitido para el login
+     * anterior de este tenant deja de autenticar de inmediato (ver
+     * JwtAuthFilter/JwtService.generarTokenTenant), sin esperar a que expire
+     * solo - importante en particular si este reset es porque se sospecha
+     * que las credenciales anteriores quedaron comprometidas.
      */
     public Tenant fijarCredencialesPanel(Long id, String panelUsername, String panelPassword) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Tenant no encontrado: " + id));
         tenant.setPanelUsername(panelUsername);
         tenant.setPanelPasswordHash(passwordEncoder.encode(panelPassword));
+        tenant.setTokenVersion(tenant.getTokenVersion() + 1);
         return tenantRepository.save(tenant);
     }
 

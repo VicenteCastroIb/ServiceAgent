@@ -1,0 +1,13 @@
+# Sin esto, un checkout en Windows con core.autocrlf=true deja mvnw con
+# terminadores CRLF, lo que rompe su shebang ("#!/bin/sh\r") apenas se
+# ejecuta en Linux (sandbox, CI, o el build multi-stage del Dockerfile, que
+# corre "./mvnw" dentro de una imagen eclipse-temurin) con el error
+# "bad interpreter: No such file or directory". mvnw (y cualquier script de
+# shell futuro) deben quedar siempre en LF, sin importar la config local de
+# git de quien clona - eol=lf fuerza eso en el checkout.
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Los .cmd/.bat sí esperan CRLF en Windows.
+*.cmd text eol=crlf
+*.bat text eol=crlf

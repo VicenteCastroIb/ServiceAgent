@@ -9,7 +9,7 @@ import {
   Tenant,
   TenantSubscription,
 } from "@/lib/api";
-import { esAdminSegunToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 
 const NOMBRE_PLAN: Record<Tenant["plan"], string> = {
   BASICO: "Básico",
@@ -50,7 +50,7 @@ export default function TenantCard({
   eliminando: boolean;
   onEliminar: (tenant: Tenant) => void;
 }) {
-  const esAdmin = esAdminSegunToken();
+  const { esAdmin } = useAuth();
   const [suscripcion, setSuscripcion] = useState<TenantSubscription | null>(null);
   const [cargandoSuscripcion, setCargandoSuscripcion] = useState(true);
   const [editandoPago, setEditandoPago] = useState(false);
@@ -82,19 +82,21 @@ export default function TenantCard({
     }
   }
 
+  const estadoProblema = suscripcion && suscripcion.status !== "ACTIVA";
+
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="flex flex-col justify-between rounded-[16px] border border-ink/10 bg-card p-5 shadow-[0_2px_10px_rgba(43,38,32,0.04)]">
       <div>
         <div className="flex items-start justify-between gap-2">
-          <h2 className="font-semibold">{tenant.businessName}</h2>
-          <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+          <h2 className="font-semibold text-ink">{tenant.businessName}</h2>
+          <span className="shrink-0 rounded-full border border-green/25 bg-green/10 px-2.5 py-0.5 text-[11px] font-bold text-green-light">
             {NOMBRE_PLAN[tenant.plan]}
           </span>
         </div>
-        <p className="mt-1 text-xs text-gray-500">{tenant.whatsappNumber}</p>
-        <p className="mt-2 line-clamp-2 text-sm text-gray-600">{tenant.businessContext}</p>
+        <p className="mt-1 text-xs text-ink/45">{tenant.whatsappNumber}</p>
+        <p className="mt-2.5 line-clamp-2 text-sm leading-relaxed text-ink/65">{tenant.businessContext}</p>
 
-        <div className="mt-3 rounded-md bg-gray-50 p-2 text-xs text-gray-600">
+        <div className="mt-3.5 rounded-[10px] border border-ink/8 bg-cream px-3 py-2.5 text-xs text-ink/60">
           {cargandoSuscripcion && <p>Cargando suscripción...</p>}
           {!cargandoSuscripcion && !suscripcion && <p>Sin pago registrado todavía.</p>}
           {!cargandoSuscripcion && suscripcion && (
@@ -104,8 +106,8 @@ export default function TenantCard({
               {suscripcion.paidUntil
                 ? `vigente hasta ${formatFecha(suscripcion.paidUntil)}`
                 : "sin vigencia registrada"}
-              {suscripcion.status !== "ACTIVA" && (
-                <span className="font-medium text-red-600"> · {NOMBRE_ESTADO[suscripcion.status]}</span>
+              {estadoProblema && (
+                <span className="font-semibold text-error"> · {NOMBRE_ESTADO[suscripcion.status]}</span>
               )}
               <br />
               Suscrito al plan {NOMBRE_PLAN[tenant.plan]} desde {tiempoSuscrito(suscripcion.createdAt)}
@@ -116,51 +118,52 @@ export default function TenantCard({
         {!editandoPago && (
           <button
             onClick={() => setEditandoPago(true)}
-            className="mt-2 text-xs text-blue-600 hover:underline"
+            className="mt-2.5 text-xs font-semibold text-green-light hover:underline"
           >
             Registrar pago manual
           </button>
         )}
         {editandoPago && (
-          <form onSubmit={onGuardarPagoManual} className="mt-2 flex items-center gap-2">
+          <form onSubmit={onGuardarPagoManual} className="mt-2.5 flex items-center gap-2">
             <input
               type="date"
               value={nuevaFecha}
               onChange={(e) => setNuevaFecha(e.target.value)}
               required
-              className="rounded-md border border-gray-300 px-2 py-1 text-xs"
+              className="rounded-md border border-ink/15 bg-card px-2 py-1 text-xs text-ink focus:border-green/50 focus:outline-none"
             />
             <button
               type="submit"
               disabled={guardandoPago}
-              className="rounded-md bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-md px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50"
+              style={{ backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" }}
             >
               {guardandoPago ? "Guardando..." : "Guardar"}
             </button>
             <button
               type="button"
               onClick={() => setEditandoPago(false)}
-              className="text-xs text-gray-500 hover:underline"
+              className="text-xs text-ink/40 hover:underline"
             >
               Cancelar
             </button>
           </form>
         )}
-        {errorPago && <p className="mt-1 text-xs text-red-600">{errorPago}</p>}
+        {errorPago && <p className="mt-1.5 text-xs text-error">{errorPago}</p>}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm">
-        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-          <Link href={`/tenants/${tenant.id}/edit`} className="text-blue-600 hover:underline">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-ink/8 pt-3 text-sm">
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium">
+          <Link href={`/tenants/${tenant.id}/edit`} className="text-ink/55 hover:text-green-light hover:underline">
             Contexto
           </Link>
-          <Link href={`/tenants/${tenant.id}/agendamiento`} className="text-blue-600 hover:underline">
+          <Link href={`/tenants/${tenant.id}/agendamiento`} className="text-ink/55 hover:text-green-light hover:underline">
             Agendamiento
           </Link>
-          <Link href={`/tenants/${tenant.id}/catalogo`} className="text-blue-600 hover:underline">
+          <Link href={`/tenants/${tenant.id}/catalogo`} className="text-ink/55 hover:text-green-light hover:underline">
             Catálogo
           </Link>
-          <Link href={`/tenants/${tenant.id}/pagos`} className="text-blue-600 hover:underline">
+          <Link href={`/tenants/${tenant.id}/pagos`} className="text-ink/55 hover:text-green-light hover:underline">
             Pagos
           </Link>
         </div>
@@ -168,7 +171,7 @@ export default function TenantCard({
           <button
             onClick={() => onEliminar(tenant)}
             disabled={eliminando}
-            className="text-red-600 hover:underline disabled:opacity-50"
+            className="text-xs font-semibold text-error hover:underline disabled:opacity-50"
           >
             {eliminando ? "Eliminando..." : "Eliminar"}
           </button>

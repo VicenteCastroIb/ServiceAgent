@@ -1,0 +1,34 @@
+name: Keep Render backend awake
+
+# El plan free de Render duerme el servicio a los 15 minutos sin tráfico
+# entrante (cold start de 30-60s al despertar) - inaceptable para el webhook
+# de WhatsApp/Instagram, que tiene que responder rápido. Este workflow le
+# pega al healthcheck cada 10 minutos para que nunca llegue a dormirse.
+#
+# RENDER_HEALTHCHECK_URL: se carga como variable del repo (Settings > Secrets
+# and variables > Actions > Variables, no hace falta que sea secreta) con la
+# URL pública del backend en Render + /actuator/health, ej:
+# https://whatsapp-ai-agent-backend.onrender.com/actuator/health
+#
+# Nota de confiabilidad: los cron de GitHub Actions pueden demorarse varios
+# minutos en repos con poca actividad (no es un cron en tiempo real). Si en la
+# práctica ves que el backend igual se duerme, agregá como respaldo un monitor
+# gratis en cron-job.org o UptimeRobot apuntando a la misma URL cada 10 min -
+# ver DEPLOY.md.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping healthcheck
+        run: |
+          if [ -z "${{ vars.RENDER_HEALTHCHECK_URL }}" ]; then
+            echo "RENDER_HEALTHCHECK_URL no está configurada (Settings > Secrets and variables > Actions > Variables) - nada que pinguear todavía."
+            exit 0
+          fi
+          curl -fsS --max-time 20 "${{ vars.RENDER_HEALTHCHECK_URL }}" || echo "Ping falló (puede ser un cold start en curso, no es necesariamente un error real)"

@@ -101,6 +101,51 @@ public class OwnerNotificationService {
         }
     }
 
+    /**
+     * Avisa al DUEÑO del negocio (no al admin) cuando Flow rechaza/anula el
+     * cobro mensual de su suscripción a la plataforma (ver
+     * SubscriptionBillingService.procesarNotificacionPago, que ya marcó la
+     * suscripción MOROSA antes de llamar acá). A partir de ese momento el bot
+     * deja de responder automático en WhatsApp/Instagram (ver
+     * AiResponseService.puedeUsarBot) hasta que actualice su método de pago -
+     * este email es lo único que se lo explica, porque el corte del bot en sí
+     * es silencioso para no exponer el problema de facturación al cliente
+     * final. Best effort, igual que el resto de esta clase.
+     */
+    public void notificarCobroSuscripcionFallido(Tenant tenant) {
+        String destinatario = tenant.getOwnerEmail();
+        if (!habilitado || destinatario == null || destinatario.isBlank()) {
+            log.warn("Suscripción de tenant {} (id={}) quedó MOROSA y no se pudo avisar por email (SMTP no configurado o sin ownerEmail cargado)",
+                    tenant.getBusinessName(), tenant.getId());
+            return;
+        }
+
+        StringBuilder cuerpo = new StringBuilder();
+        cuerpo.append("No pudimos procesar el cobro de tu suscripción mensual.\n\n");
+        cuerpo.append("Mientras no se regularice, el asistente de IA dejó de responder automáticamente ");
+        cuerpo.append("los mensajes de WhatsApp e Instagram de tu negocio - podés seguir viendo y respondiendo ");
+        cuerpo.append("las conversaciones manualmente desde el panel.\n\n");
+        cuerpo.append("Entrá al panel para actualizar tu método de pago y reactivar el servicio.");
+        if (urlPanel != null && !urlPanel.isBlank()) {
+            cuerpo.append("\n\nPanel: ").append(urlPanel);
+        }
+
+        try {
+            SimpleMailMessage mensaje = new SimpleMailMessage();
+            if (remitente != null && !remitente.isBlank()) {
+                mensaje.setFrom(remitente);
+            }
+            mensaje.setTo(destinatario);
+            mensaje.setSubject("No pudimos procesar tu pago - " + tenant.getBusinessName());
+            mensaje.setText(cuerpo.toString());
+            mailSender.send(mensaje);
+            log.info("Notificación de cobro fallido enviada a {} (tenant id={})", destinatario, tenant.getId());
+        } catch (MailException e) {
+            log.warn("No se pudo enviar la notificación de cobro fallido a {} (tenant id={}): {}",
+                    destinatario, tenant.getId(), e.getMessage());
+        }
+    }
+
     private String describirPlan(TenantPlan plan) {
         return plan != null ? plan.name() : "?";
     }

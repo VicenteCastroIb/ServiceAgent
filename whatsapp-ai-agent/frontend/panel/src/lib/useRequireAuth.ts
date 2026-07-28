@@ -2,18 +2,24 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getToken } from "./auth";
+import { useAuth } from "./auth-context";
 
-/** Redirige a /login si no hay token guardado. Devuelve true cuando hay token. */
+/**
+ * Redirige a /login si no hay sesión vigente (según GET /auth/me, resuelto
+ * una vez por AuthProvider - ver auth-context.tsx). Devuelve true recién
+ * cuando se confirmó que hay sesión; false mientras se resuelve /auth/me o
+ * si no hay sesión - mismo contrato que antes (cuando esto miraba
+ * sincrónicamente si había un JWT en localStorage).
+ */
 export function useRequireAuth(): boolean {
   const router = useRouter();
-  const token = typeof window !== "undefined" ? getToken() : null;
+  const { autenticado, cargando } = useAuth();
 
   useEffect(() => {
-    if (!token) {
+    if (!cargando && !autenticado) {
       router.replace("/login");
     }
-  }, [token, router]);
+  }, [cargando, autenticado, router]);
 
-  return !!token;
+  return autenticado && !cargando;
 }

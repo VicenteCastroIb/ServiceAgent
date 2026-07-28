@@ -1,47 +1,109 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { clearToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
+import { cerrarSesion as cerrarSesionEnBackend, listarHandoffs } from "@/lib/api";
+
+const TABS = [
+  { href: "/tenants", label: "Negocios" },
+  { href: "/conversaciones", label: "Conversaciones" },
+  { href: "/handoffs", label: "Pausadas" },
+];
 
 export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { esAdmin, cerrarSesionLocal } = useAuth();
+  const [pausadas, setPausadas] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (pathname === "/login") return;
+    let cancelado = false;
+    listarHandoffs()
+      .then((res) => {
+        if (!cancelado) setPausadas(res.length);
+      })
+      .catch(() => {
+        // Silencioso: es solo un badge informativo, no bloquea nada.
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [pathname]);
 
   if (pathname === "/login") return null;
 
-  function cerrarSesion() {
-    clearToken();
+  function onCerrarSesion() {
+    // Best-effort: el back ya limpia la cookie httpOnly (ver
+    // AuthController.logout); si la llamada falla igual navegamos y
+    // limpiamos el estado local, no queremos dejar a alguien atrapado en el
+    // panel por un problema de red puntual al cerrar sesión.
+    cerrarSesionEnBackend().catch(() => {});
+    cerrarSesionLocal();
     router.push("/login");
   }
 
-  const linkClass = (href: string) =>
-    `px-3 py-2 rounded-md text-sm font-medium ${
-      pathname.startsWith(href)
-        ? "bg-blue-600 text-white"
-        : "text-gray-700 hover:bg-gray-100"
-    }`;
-
   return (
-    <nav className="border-b bg-white">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
-        <div className="flex gap-2">
-          <Link href="/tenants" className={linkClass("/tenants")}>
-            Negocios
+    <nav className="border-b border-ink/10 bg-card">
+      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
+        <div className="flex items-center gap-6">
+          <Link href="/tenants" className="flex items-center gap-2.5">
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-[9px] text-[15px] font-extrabold text-white"
+              style={{ backgroundImage: "linear-gradient(135deg,#b9862f,#c9788f)" }}
+            >
+              S
+            </span>
+            <span className="flex flex-col leading-none">
+              <span className="text-[14.5px] font-bold tracking-[-0.01em] text-ink">ServiceAgent.</span>
+              <span className="text-[10.5px] font-medium tracking-[0.03em] text-ink/40 uppercase">Panel</span>
+            </span>
           </Link>
-          <Link href="/conversaciones" className={linkClass("/conversaciones")}>
-            Conversaciones
-          </Link>
-          <Link href="/handoffs" className={linkClass("/handoffs")}>
-            Conversaciones pausadas
-          </Link>
+
+          <div className="flex items-center gap-1 rounded-full border border-ink/10 bg-cream p-1">
+            {TABS.map((tab) => {
+              const activo = pathname.startsWith(tab.href);
+              return (
+                <Link
+                  key={tab.href}
+                  href={tab.href}
+                  className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition ${
+                    activo ? "text-white" : "text-ink/60 hover:text-ink"
+                  }`}
+                  style={activo ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
+                >
+                  {tab.label}
+                  {tab.href === "/handoffs" && !!pausadas && (
+                    <span
+                      className={`flex h-[17px] min-w-[17px] items-center justify-center rounded-full px-1 text-[10px] font-bold ${
+                        activo ? "bg-white/25 text-white" : "bg-warn-bg text-warn"
+                      }`}
+                    >
+                      {pausadas}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-        <button
-          onClick={cerrarSesion}
-          className="text-sm text-gray-500 hover:text-gray-800"
-        >
-          Cerrar sesión
-        </button>
+
+        <div className="flex items-center gap-4">
+          {esAdmin && (
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-ink/45">
+              <span className="h-1.5 w-1.5 rounded-full bg-green" aria-hidden />
+              Admin
+            </span>
+          )}
+          <button
+            onClick={onCerrarSesion}
+            className="text-[13px] font-semibold text-ink/50 transition hover:text-ink"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </nav>
   );

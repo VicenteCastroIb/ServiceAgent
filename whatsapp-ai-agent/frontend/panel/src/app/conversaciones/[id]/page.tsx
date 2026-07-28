@@ -11,9 +11,9 @@ import {
 } from "@/lib/api";
 
 const ESTILO_BURBUJA: Record<ConversationMessage["sender"], string> = {
-  CLIENTE: "self-start bg-gray-100 text-gray-900",
-  BOT: "self-end bg-blue-50 text-blue-900",
-  HUMANO: "self-end bg-green-600 text-white",
+  CLIENTE: "self-start bg-cream text-ink",
+  BOT: "self-end bg-violet/12 text-violet-light",
+  HUMANO: "self-end text-white",
 };
 
 const NOMBRE_SENDER: Record<ConversationMessage["sender"], string> = {
@@ -62,14 +62,18 @@ export default function ConversacionDetallePage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-160px)] flex-col">
-      <h1 className="mb-4 text-xl font-semibold">Conversación</h1>
+    <div className="flex h-[calc(100vh-200px)] flex-col">
+      <h1 className="mb-4 text-[22px] font-bold tracking-[-0.01em] text-ink">Conversación</h1>
 
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-md border border-gray-200 bg-white p-4">
-        {mensajes?.length === 0 && <p className="text-sm text-gray-500">Todavía no hay mensajes.</p>}
+      <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-[14px] border border-ink/10 bg-card p-4">
+        {mensajes?.length === 0 && <p className="text-sm text-ink/45">Todavía no hay mensajes.</p>}
         {mensajes?.map((m) => (
-          <div key={m.id} className={`flex max-w-[75%] flex-col rounded-lg px-3 py-2 text-sm ${ESTILO_BURBUJA[m.sender]}`}>
-            <span className="mb-0.5 text-[10px] font-medium opacity-70">
+          <div
+            key={m.id}
+            className={`flex max-w-[75%] flex-col rounded-[12px] px-3 py-2 text-sm ${ESTILO_BURBUJA[m.sender]}`}
+            style={m.sender === "HUMANO" ? { backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" } : undefined}
+          >
+            <span className="mb-0.5 text-[10px] font-semibold opacity-70">
               {NOMBRE_SENDER[m.sender]} · {m.sentAt.replace("T", " ").slice(0, 16)}
             </span>
             <span className="whitespace-pre-wrap">{m.content}</span>
@@ -77,19 +81,22 @@ export default function ConversacionDetallePage() {
         ))}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-2 rounded-lg border border-error/20 bg-error-bg px-3 py-2 text-sm text-error">{error}</p>
+      )}
 
       <form onSubmit={onResponder} className="mt-3 flex gap-2">
         <input
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Escribí una respuesta..."
-          className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="flex-1 rounded-[10px] border border-ink/15 bg-card px-3 py-2 text-sm text-ink focus:border-green/50 focus:outline-none"
         />
         <button
           type="submit"
           disabled={enviando || !texto.trim()}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-[10px] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          style={{ backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" }}
         >
           {enviando ? "..." : "Enviar"}
         </button>

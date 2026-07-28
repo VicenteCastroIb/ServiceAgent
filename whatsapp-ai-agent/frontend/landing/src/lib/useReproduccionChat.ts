@@ -24,7 +24,17 @@ const PAUSA_ANTES_DE_REINICIAR_MS = 15000;
  */
 export function useReproduccionChat(mensajes: MensajeChat[], animado: boolean) {
   const contenedorRef = useRef<HTMLDivElement | null>(null);
-  const [visibleCount, setVisibleCount] = useState(animado ? 0 : mensajes.length);
+  // Inicializador perezoso (corre en el render, no en un efecto): si el
+  // usuario prefiere menos movimiento, arranca directo con todos los
+  // mensajes visibles - evita tener que hacer un setState síncrono dentro
+  // del efecto de más abajo solo para este caso (ver eslint
+  // react-hooks/set-state-in-effect).
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (!animado) return mensajes.length;
+    const prefiereMenosMovimiento =
+      typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    return prefiereMenosMovimiento ? mensajes.length : 0;
+  });
   const [escribiendo, setEscribiendo] = useState(false);
 
   useEffect(() => {
@@ -32,10 +42,10 @@ export function useReproduccionChat(mensajes: MensajeChat[], animado: boolean) {
 
     const prefiereMenosMovimiento =
       typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (prefiereMenosMovimiento) {
-      setVisibleCount(mensajes.length);
-      return;
-    }
+    // Ya quedó resuelto por el inicializador de useState de arriba - acá solo
+    // hay que evitar arrancar el loop de timers/observer, sin volver a tocar
+    // el estado.
+    if (prefiereMenosMovimiento) return;
 
     const nodo = contenedorRef.current;
     if (!nodo) return;

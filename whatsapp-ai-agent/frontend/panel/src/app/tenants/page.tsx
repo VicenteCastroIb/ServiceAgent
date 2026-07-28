@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/useRequireAuth";
-import { esAdminSegunToken } from "@/lib/auth";
+import { useAuth } from "@/lib/auth-context";
 import { eliminarTenant, listarTenants, Tenant } from "@/lib/api";
 import TenantCard from "@/components/TenantCard";
 
 export default function TenantsPage() {
   const listo = useRequireAuth();
-  const esAdmin = esAdminSegunToken();
+  const { esAdmin } = useAuth();
   const [tenants, setTenants] = useState<Tenant[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [eliminando, setEliminando] = useState<number | null>(null);
@@ -46,25 +46,35 @@ export default function TenantsPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Negocios</h1>
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-[-0.01em] text-ink">Negocios</h1>
+          <p className="mt-0.5 text-sm text-ink/50">Tiendas y locales con el agente activado.</p>
+        </div>
         {esAdmin && (
           <Link
             href="/tenants/new"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-[10px] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(185,134,47,0.25)] transition hover:brightness-105"
+            style={{ backgroundImage: "linear-gradient(90deg,#b9862f,#8a5f22)" }}
           >
             + Nuevo negocio
           </Link>
         )}
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {tenants?.length === 0 && (
-        <p className="text-sm text-gray-500">Todavía no hay negocios cargados.</p>
+      {error && (
+        <p className="mb-4 rounded-lg border border-error/20 bg-error-bg px-3.5 py-2.5 text-sm text-error">
+          {error}
+        </p>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {tenants?.length === 0 && (
+        <p className="rounded-xl border border-ink/10 bg-card px-4 py-6 text-center text-sm text-ink/50">
+          Todavía no hay negocios cargados.
+        </p>
+      )}
+
+      <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))" }}>
         {tenants?.map((tenant) => (
           <TenantCard
             key={tenant.id}
