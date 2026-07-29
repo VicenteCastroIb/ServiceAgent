@@ -3,6 +3,11 @@ name: CI
 # Red de seguridad mínima antes de mergear a dev/main: corre los tests del
 # backend y el build/lint de panel y landing en cada push/PR. No despliega
 # nada - el deploy sigue siendo el flujo normal de Railway (ver DEPLOY.md).
+#
+# IMPORTANTE: este archivo tiene que vivir en .github/workflows/ de la RAÍZ
+# del repo (acá), no dentro de whatsapp-ai-agent/ - GitHub Actions solo
+# descubre workflows en .github/workflows/ del root, y este proyecto vive en
+# el subdirectorio whatsapp-ai-agent/ (ver working-directory de cada job).
 
 on:
   push:

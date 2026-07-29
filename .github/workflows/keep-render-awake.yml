@@ -5,10 +5,15 @@ name: Keep Render backend awake
 # de WhatsApp/Instagram, que tiene que responder rápido. Este workflow le
 # pega al healthcheck cada 10 minutos para que nunca llegue a dormirse.
 #
+# IMPORTANTE: este archivo tiene que vivir en .github/workflows/ de la RAÍZ
+# del repo (acá) - GitHub Actions solo descubre workflows ahí, no dentro de
+# whatsapp-ai-agent/. Antes vivía mal ubicado y por eso nunca corrió (ver
+# commit que lo movió acá).
+#
 # RENDER_HEALTHCHECK_URL: se carga como variable del repo (Settings > Secrets
 # and variables > Actions > Variables, no hace falta que sea secreta) con la
 # URL pública del backend en Render + /actuator/health, ej:
-# https://whatsapp-ai-agent-backend.onrender.com/actuator/health
+# https://serviceagent-sor2.onrender.com/actuator/health
 #
 # Nota de confiabilidad: los cron de GitHub Actions pueden demorarse varios
 # minutos en repos con poca actividad (no es un cron en tiempo real). Si en la
