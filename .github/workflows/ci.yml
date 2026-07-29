@@ -35,10 +35,20 @@ jobs:
       # propósito (fail-fast en producción, ver application.properties), así
       # que acá se cargan valores dummy solo para que el contexto de Spring
       # levante en los tests.
+      #
+      # IMPORTANTE: ambos valores se decodifican con Base64.getDecoder()
+      # (alfabeto estándar, no URL-safe) - JwtService y EncryptedStringConverter
+      # fallan al arrancar si el valor no es base64 válido (ContextLoads test
+      # lo detectó: "Illegal base64 character 2d", el '-' de un dummy anterior
+      # tipo "ci-dummy-key-..." no es un carácter válido de base64 estándar).
+      # APP_ENCRYPTION_KEY además tiene que decodificar a EXACTAMENTE 32 bytes
+      # (AES-256, ver EncryptedStringConverter). Generados con: openssl rand
+      # -base64 32 - no tienen ningún significado, son solo dummies válidos
+      # para que el contexto de Spring levante en CI.
       - name: Run tests
         env:
-          JWT_SECRET: ci-dummy-secret-not-for-prod-AAAAAAAAAAAAAAAAAAAAAAA=
-          APP_ENCRYPTION_KEY: ci-dummy-key-not-for-prod-BBBBBBBBBBBBBBBBBBBBB=
+          JWT_SECRET: tCefpkCiqeuTLKcREkqDo4iMDBub80ySHVNG0gQ9stU=
+          APP_ENCRYPTION_KEY: q4MeHP9l9BbOLLrBASYDfHXfC1ZY2KgaW15DPoxD7Dw=
           TWILIO_ACCOUNT_SID: ACdummy
           TWILIO_AUTH_TOKEN: dummy
           TWILIO_WHATSAPP_NUMBER: "+10000000000"
