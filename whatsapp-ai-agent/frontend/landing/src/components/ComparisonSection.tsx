@@ -1,4 +1,5 @@
 import type { Accent } from "@/lib/accents";
+import Reveal from "@/components/Reveal";
 
 interface ComparisonSectionProps {
   title: string;
@@ -17,34 +18,38 @@ export default function ComparisonSection({ title, subtitle, problemas, benefici
       </div>
 
       <div className="mt-11 grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
-        <div className="rounded-[20px] border border-ink/10 bg-card p-8">
-          <span className="inline-flex rounded-full border border-ink/12 px-3.5 py-1.5 text-[12.5px] font-semibold text-ink/50">
-            Sin ServiceAgent
-          </span>
-          <ul className="mt-[22px] flex flex-col gap-4">
-            {problemas.map((problema) => (
-              <li key={problema} className="flex items-start gap-2.5 text-[14.5px] leading-relaxed text-ink/65">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full border-[1.5px] border-ink/30" />
-                <span>{problema}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Reveal direccion="izquierda">
+          <div className="rounded-[20px] border border-ink/10 bg-card p-8">
+            <span className="inline-flex rounded-full border border-ink/12 px-3.5 py-1.5 text-[12.5px] font-semibold text-ink/50">
+              Sin ServiceAgent
+            </span>
+            <ul className="mt-[22px] flex flex-col gap-4">
+              {problemas.map((problema) => (
+                <li key={problema} className="flex items-start gap-2.5 text-[14.5px] leading-relaxed text-ink/65">
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full border-[1.5px] border-ink/30" />
+                  <span>{problema}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
 
-        <div
-          className="rounded-[20px] p-8 text-white shadow-[0_20px_60px_rgba(185,134,47,0.18)]"
-          style={{ backgroundImage: accent.gradient }}
-        >
-          <span className="inline-flex rounded-full bg-white/20 px-3.5 py-1.5 text-[12.5px] font-semibold">Con ServiceAgent</span>
-          <ul className="mt-[22px] flex flex-col gap-4">
-            {beneficios.map((beneficio) => (
-              <li key={beneficio} className="flex items-start gap-2.5 text-[14.5px] leading-relaxed font-medium">
-                <span className="mt-0.5 shrink-0">✓</span>
-                <span>{beneficio}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Reveal direccion="derecha" delay={100}>
+          <div
+            className="rounded-[20px] p-8 text-white shadow-[0_20px_60px_rgba(185,134,47,0.18)]"
+            style={{ backgroundImage: accent.gradient }}
+          >
+            <span className="inline-flex rounded-full bg-white/20 px-3.5 py-1.5 text-[12.5px] font-semibold">Con ServiceAgent</span>
+            <ul className="mt-[22px] flex flex-col gap-4">
+              {beneficios.map((beneficio) => (
+                <li key={beneficio} className="flex items-start gap-2.5 text-[14.5px] leading-relaxed font-medium">
+                  <span className="mt-0.5 shrink-0">✓</span>
+                  <span>{beneficio}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Accent } from "@/lib/accents";
+import Reveal from "@/components/Reveal";
 
 export interface PlanPrecio {
   nombre: string;
@@ -56,16 +57,17 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
       )}
 
       <div className={`grid gap-6 ${planes.length >= 3 ? "lg:grid-cols-3" : "sm:grid-cols-2"}`}>
-        {planes.map((plan) => {
+        {planes.map((plan, i) => {
           const precio = periodo === "anual" ? plan.precioAnual : plan.precioMensual;
           const ahorro =
             periodo === "anual" && plan.precioMensual != null && plan.precioAnual != null
               ? plan.precioMensual * 12 - plan.precioAnual
               : null;
+          const direccion = i % 3 === 0 ? "izquierda" : i % 3 === 1 ? "abajo" : "derecha";
 
           return (
+            <Reveal key={plan.nombre} direccion={direccion} delay={i * 80}>
             <div
-              key={plan.nombre}
               className={`relative rounded-[22px] p-9 ${
                 plan.destacado
                   ? "border-[1.5px] border-green/50 shadow-[0_25px_70px_rgba(185,134,47,0.14)]"
@@ -148,6 +150,7 @@ export default function PricingCards({ planes, accent, mostrarToggle = true }: P
                 </Link>
               )}
             </div>
+            </Reveal>
           );
         })}
       </div>
