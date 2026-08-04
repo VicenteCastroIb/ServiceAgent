@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login } from "@/lib/api";
@@ -34,12 +35,7 @@ function LoginForm() {
   return (
     <div className="mx-auto mt-20 max-w-sm">
       <div className="mb-7 flex items-center gap-2.5">
-        <span
-          className="flex h-9 w-9 items-center justify-center rounded-[10px] text-base font-extrabold text-white"
-          style={{ backgroundImage: "linear-gradient(135deg,#b9862f,#c9788f)" }}
-        >
-          S
-        </span>
+        <Image src="/brand/logo.jpg" alt="" width={36} height={36} className="shrink-0" />
         <span className="text-[15px] font-bold tracking-[-0.01em] text-ink">ServiceAgent.</span>
       </div>
 
