@@ -20,7 +20,7 @@ const RUBROS = ["Tiendas de ropa", "Repuestos", "Tecnología", "Ferreterías", "
 const ECOMMERCE_FEATURES = [
   "Todo lo del plan Pro",
   "Catálogo sincronizado con tu tienda",
-  "El bot busca, recomienda y lleva al pago",
+  "El sistema busca, recomienda y lleva al pago",
   "Pensado para catálogos grandes",
 ];
 
@@ -28,11 +28,11 @@ const FAQ_ITEMS = [
   {
     pregunta: "¿Cómo se sincroniza mi catálogo?",
     respuesta:
-      "Conectamos tu tienda (WooCommerce u otra plataforma compatible) y tus productos, precios, fotos y stock quedan disponibles para que el bot los use en cada conversación.",
+      "Conectamos tu tienda (WooCommerce u otra plataforma compatible) y tus productos, precios, fotos y stock quedan disponibles para que el sistema los use en cada conversación.",
   },
   {
     pregunta: "¿Qué pasa si un producto se agota?",
-    respuesta: "El bot responde con el stock real. Si no hay disponible, se lo dice al cliente en vez de venderle algo que no existe.",
+    respuesta: "El sistema responde con el stock real. Si no hay disponible, se lo dice al cliente en vez de venderle algo que no existe.",
   },
   {
     pregunta: "¿Cómo recibo el pago?",
@@ -97,7 +97,7 @@ export default function EcommercePage() {
               mensajes={[
                 { de: "cliente", texto: "hola, tienen un par de poleras y un buzo?" },
                 {
-                  de: "bot",
+                  de: "sistema",
                   texto: "¡Hola! Sí, te dejo lo que tengo disponible 👇",
                   productos: [
                     { nombre: "Polera básica algodón · talla M", precio: "$9.990" },
@@ -106,7 +106,7 @@ export default function EcommercePage() {
                   ],
                 },
                 { de: "cliente", texto: "me llevo las dos poleras y el buzo talla M" },
-                { de: "bot", texto: "¡Genial! 🙌 Total $42.970. Te lo despacho mañana entre 10:00 y 13:00, ¿confirmamos la dirección de siempre?" },
+                { de: "sistema", texto: "¡Genial! 🙌 Total $42.970. Te lo despacho mañana entre 10:00 y 13:00, ¿confirmamos la dirección de siempre?" },
               ]}
             />
           </div>
@@ -144,6 +144,7 @@ export default function EcommercePage() {
             titulo: "El cliente pregunta",
             descripcion: "Por un producto, una marca o algo puntual que necesita. En lenguaje natural, como le hablaría a un vendedor.",
             photoLabel: "Foto: cliente escribiendo por Instagram desde su celular",
+            photoSrc: "/images/features/cliente-instagram.jpg",
             color: "violet",
           },
           {
@@ -151,6 +152,7 @@ export default function EcommercePage() {
             titulo: "Busca en tu catálogo real",
             descripcion: "Encuentra el producto, con precio, foto y stock actualizado. Nunca inventa algo que no tienes.",
             photoLabel: "Foto: productos del catálogo ordenados sobre un mostrador",
+            photoSrc: "/images/features/productos-catalogo-mostrador.jpg",
             color: "green",
           },
           {
@@ -158,6 +160,7 @@ export default function EcommercePage() {
             titulo: "Arma el carrito y cobra",
             descripcion: "Genera el link de pago y se lo envía al cliente. Tú recibes el dinero, listo.",
             photoLabel: "Foto: celular mostrando un link de pago confirmado",
+            photoSrc: "/images/features/link-pago-confirmado.jpg",
             color: "violet",
           },
         ]}
@@ -174,27 +177,32 @@ export default function EcommercePage() {
             title: "Vende 24/7",
             description: "El cliente compra a la hora que sea, también de madrugada. Tu catálogo nunca cierra.",
             photoLabel: "Foto: tienda con celular activo respondiendo pedidos de madrugada",
+            photoSrc: "/images/features/tienda-pedidos-madrugada.jpg",
             large: true,
           },
           {
             title: "Encuentra lo que se pide",
             description: "Busca por nombre, marca o característica dentro de tu catálogo real, no adivina.",
             photoLabel: "Foto: repisa de productos ordenados por categoría",
+            photoSrc: "/images/features/repisa-productos-categoria.jpg",
           },
           {
             title: "Nunca inventa precio o stock",
             description: "Cada respuesta se valida contra tu catálogo sincronizado. Si no hay stock, lo dice.",
             photoLabel: "Foto: etiqueta de precio y stock sobre un producto real",
+            photoSrc: "/images/features/etiqueta-precio-stock.jpg",
           },
           {
             title: "Recomienda productos",
             description: "Sugiere algo que combine con lo que el cliente ya eligió, como lo haría un vendedor del local.",
             photoLabel: "Foto: dos productos combinados, tipo outfit o combo",
+            photoSrc: "/images/features/productos-combinados-combo.jpg",
           },
           {
             title: "Cierra la venta en el chat",
             description: "Arma el carrito y genera el link de pago sin que el cliente salga de WhatsApp.",
             photoLabel: "Foto: celular mostrando un carrito de compra en el chat",
+            photoSrc: "/images/features/carrito-compras-chat.jpg",
           },
         ]}
       />
@@ -247,7 +255,7 @@ export default function EcommercePage() {
           eyebrow="CONVERSACIÓN REAL"
           eyebrowColor="green"
           title="Encuentra el producto exacto y cierra la venta"
-          description="El cliente pregunta por algo puntual y el bot responde con la ficha real: nombre, precio y link de compra, listo para pagar."
+          description="El cliente pregunta por algo puntual y el sistema responde con la ficha real: nombre, precio y link de compra, listo para pagar."
           checklist={[
             "Busca en tu catálogo real, nunca inventa productos.",
             "Responde con nombre, precio y link de compra.",
@@ -259,12 +267,12 @@ export default function EcommercePage() {
           mensajes={[
             { de: "cliente", texto: "necesito un buzo talla L para regalo" },
             {
-              de: "bot",
+              de: "sistema",
               texto: "Tengo este que se vende harto para eso 👕",
               ficha: { titulo: "Buzo canguro frisado · talla L", subtitulo: "Algodón peinado · color gris", precio: "$22.990" },
             },
             { de: "cliente", texto: "perfecto, lo llevo en gris" },
-            { de: "bot", texto: "¡Genial! 🙌 Te dejo el link de pago y coordinamos el despacho para el viernes." },
+            { de: "sistema", texto: "¡Genial! 🙌 Te dejo el link de pago y coordinamos el despacho para el viernes." },
           ]}
         />
       </div>

@@ -1,22 +1,51 @@
+import Image from "next/image";
+
 /**
- * Placeholder para una foto real pendiente de encargar/subir (ver README del
- * handoff de diseño: cada tarjeta de features/steps tiene un "image-slot").
- * Reemplazar por un <Image> de next/image cuando exista el asset final.
+ * Foto de una tarjeta de features/steps. Si `src` viene seteado, renderiza la
+ * imagen real (next/image, recortada con object-cover al alto fijo de la
+ * tarjeta). Si no, muestra el placeholder con la descripción de la foto
+ * pendiente (ver PROMPTS_IMAGENES_LEONARDO.md para encargar la que falte).
  */
 interface PhotoSlotProps {
   label: string;
+  src?: string;
   height?: number;
   className?: string;
+  /**
+   * false = sin esquinas ni borde propios, para ir "a sangre" (edge-to-edge)
+   * pegada a los bordes de una card con overflow-hidden (así el recorte lo
+   * hace la card y la imagen queda más grande / protagonista). Default true.
+   */
+  rounded?: boolean;
 }
 
-export default function PhotoSlot({ label, height = 150, className = "" }: PhotoSlotProps) {
+export default function PhotoSlot({ label, src, height = 150, className = "", rounded = true }: PhotoSlotProps) {
+  const shape = rounded ? "rounded-[14px] border border-ink/8" : "";
+
+  if (src) {
+    return (
+      <div
+        style={{ height }}
+        className={`relative w-full overflow-hidden bg-ink/[0.03] ${shape} ${className}`}
+      >
+        <Image
+          src={src}
+          alt={label.replace(/^Foto:\s*/i, "")}
+          fill
+          sizes="(min-width: 1024px) 520px, 100vw"
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       role="img"
       aria-label={label}
       title={label}
       style={{ height }}
-      className={`flex w-full items-center justify-center rounded-[14px] border border-ink/8 bg-ink/[0.03] px-4 text-center ${className}`}
+      className={`flex w-full items-center justify-center bg-ink/[0.03] px-4 text-center ${shape} ${className}`}
     >
       <div className="flex flex-col items-center gap-2 text-ink/30">
         <ImageIcon />
