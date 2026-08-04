@@ -19,9 +19,9 @@ const RUBROS = ["Estéticas", "Dentistas", "Peluquerías", "Barberías", "Spas",
 
 const FAQ_ITEMS = [
   {
-    pregunta: "¿Cómo sabe el bot mis horarios disponibles?",
+    pregunta: "¿Cómo sabe el sistema mis horarios disponibles?",
     respuesta:
-      "Tú cargas tu disponibilidad semanal por profesional o box desde el panel: días, horario de atención y duración de cada cita. El bot solo ofrece esos cupos libres, nunca inventa uno.",
+      "Tú cargas tu disponibilidad semanal por profesional o box desde el panel: días, horario de atención y duración de cada cita. El sistema solo ofrece esos cupos libres, nunca inventa uno.",
   },
   {
     pregunta: "¿Envía recordatorios a mis clientes?",
@@ -29,7 +29,7 @@ const FAQ_ITEMS = [
       "Sí, en el plan Pro. Envía un recordatorio automático antes de cada cita para bajar los no-shows, sin que tengas que acordarte de escribirle a nadie.",
   },
   {
-    pregunta: "¿Qué pasa si el cliente quiere algo que el bot no maneja?",
+    pregunta: "¿Qué pasa si el cliente quiere algo que el sistema no maneja?",
     respuesta:
       "Deriva la conversación a una persona y te avisa. Puedes responder desde el panel, tomando el control de esa conversación puntual, mientras el resto se sigue agendando solo.",
   },
@@ -90,9 +90,9 @@ export default function AgendamientoPage() {
               className="relative self-center"
               mensajes={[
                 { de: "cliente", texto: "hola, ¿queda cupo para corte y barba hoy?" },
-                { de: "bot", texto: "¡Hola! Sí 💈 Tengo con Diego a las 18:00 o con Marco a las 19:30. ¿Cuál prefieres?" },
+                { de: "sistema", texto: "¡Hola! Sí 💈 Tengo con Diego a las 18:00 o con Marco a las 19:30. ¿Cuál prefieres?" },
                 { de: "cliente", texto: "con Marco, a las 7 y media" },
-                { de: "bot", texto: "Perfecto, quedas agendado con Marco hoy 19:30 💈" },
+                { de: "sistema", texto: "Perfecto, quedas agendado con Marco hoy 19:30 💈" },
               ]}
             />
           </div>
@@ -128,8 +128,9 @@ export default function AgendamientoPage() {
           {
             numero: 1,
             titulo: "El cliente escribe",
-            descripcion: "Pregunta por una hora a cualquier momento del día. El bot responde de inmediato, como una persona.",
+            descripcion: "Pregunta por una hora a cualquier momento del día. El sistema responde de inmediato, como una persona.",
             photoLabel: "Foto: celular mostrando una conversación de WhatsApp entrando",
+            photoSrc: "/images/features/conversacion-wsp-entrando.jpg",
             color: "green",
           },
           {
@@ -137,6 +138,7 @@ export default function AgendamientoPage() {
             titulo: "Ofrece tus cupos libres",
             descripcion: "Conoce tu agenda y muestra las horas disponibles. El cliente elige y la cita queda confirmada.",
             photoLabel: "Foto: agenda o calendario con horas disponibles en una pantalla",
+            photoSrc: "/images/features/agenda-horas-disponibles.jpg",
             color: "violet",
           },
           {
@@ -144,6 +146,7 @@ export default function AgendamientoPage() {
             titulo: "Confirma y recuerda",
             descripcion: "Envía el recordatorio antes de la hora. Menos olvidos, menos sillas vacías, sin que muevas un dedo.",
             photoLabel: "Foto: persona recibiendo un recordatorio de cita en el celular",
+            photoSrc: "/images/features/recordatorio-cita-celular.jpg",
             color: "green",
           },
         ]}
@@ -159,27 +162,32 @@ export default function AgendamientoPage() {
             title: "Agenda 24/7",
             description: "El cliente reserva a la hora que sea, también de noche o un domingo. Tu agenda se llena mientras descansas.",
             photoLabel: "Foto: negocio con celular activo de noche, mostrador cerrado",
+            photoSrc: "/images/features/negocio-noche-mostrador-cerrado.jpg",
             large: true,
           },
           {
             title: "Menos no-shows",
             description: "Recordatorios automáticos antes de cada cita. Menos personas que no llegan y menos dinero perdido.",
             photoLabel: "Foto: recordatorio de cita en la pantalla de un celular",
+            photoSrc: "/images/features/recordatorio-cita-pantalla.jpg",
           },
           {
             title: "Confirma la cita sola",
             description: "Ofrece los cupos, toma la reserva y la deja confirmada. Tú solo apareces a atender.",
             photoLabel: "Foto: cliente sonriendo al recibir confirmación de su cita",
+            photoSrc: "/images/features/cliente-sonriendo-cita.jpg",
           },
           {
             title: "Te pasa lo que importa",
             description: "Si el cliente pide algo especial o se complica, deriva la conversación. Tú decides cuándo intervenir.",
             photoLabel: "Foto: persona del equipo tomando el control de una conversación",
+            photoSrc: "/images/features/persona-equipo-control.jpg",
           },
           {
             title: "Conversación natural",
             description: "Nada de 'marca 1 para agendar'. Entiende lo que le escriben y responde con el tono de tu negocio.",
             photoLabel: "Foto: persona escribiendo un mensaje relajado en el celular",
+            photoSrc: "/images/features/persona-mensaje-relajado.jpg",
           },
         ]}
       />
@@ -189,7 +197,7 @@ export default function AgendamientoPage() {
           eyebrow="CONVERSACIÓN REAL"
           eyebrowColor="violet"
           title="Responde las dudas y termina agendando"
-          description="El cliente pregunta por horarios, ubicación o estacionamiento, y el bot aprovecha para invitarlo a reservar. Atiende como tu mejor recepcionista, a cualquier hora."
+          description="El cliente pregunta por horarios, ubicación o estacionamiento, y el sistema aprovecha para invitarlo a reservar. Atiende como tu mejor recepcionista, a cualquier hora."
           checklist={[
             "Entiende preguntas sueltas, no solo comandos.",
             "Cierra la conversación ofreciendo una hora.",
@@ -200,11 +208,11 @@ export default function AgendamientoPage() {
           tinted
           mensajes={[
             { de: "cliente", texto: "hola, ¿hasta qué hora atienden hoy?" },
-            { de: "bot", texto: "Hoy hasta las 19:00 🕖 ¿te ayudo a agendar algo?" },
+            { de: "sistema", texto: "Hoy hasta las 19:00 🕖 ¿te ayudo a agendar algo?" },
             { de: "cliente", texto: "sí, necesito un corte de pelo" },
-            { de: "bot", texto: "Perfecto, tengo mañana a las 11:00 o 15:00. ¿Cuál prefieres?" },
+            { de: "sistema", texto: "Perfecto, tengo mañana a las 11:00 o 15:00. ¿Cuál prefieres?" },
             { de: "cliente", texto: "a las 15:00" },
-            { de: "bot", texto: "Listo, quedas agendada mañana 15:00 💅" },
+            { de: "sistema", texto: "Listo, quedas agendada mañana 15:00 💅" },
           ]}
         />
       </div>

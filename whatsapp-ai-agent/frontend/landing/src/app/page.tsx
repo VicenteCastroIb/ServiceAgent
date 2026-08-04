@@ -69,7 +69,7 @@ const FAQ_ITEMS = [
       "Se puede, con algunas salvedades técnicas. Lo más simple es usar un número nuevo dedicado solo a tu asistente, así tu número personal queda aparte.",
   },
   {
-    pregunta: "¿El bot suena robótico?",
+    pregunta: "¿El sistema suena robótico?",
     respuesta: "No responde con menús tipo 'marca 1 para...'. Entiende lenguaje natural y contesta con el tono que tú le definas.",
   },
   {
@@ -158,9 +158,9 @@ export default function HomePage() {
               style={{ animation: "float-slow 6.5s ease-in-out infinite", transform: "rotate(-2deg)" }}
               mensajes={[
                 { de: "cliente", texto: "hola! ¿tienen hora para manicure hoy?" },
-                { de: "bot", texto: "¡Hola! Sí 💅 Tengo a las 16:00 o 18:30. ¿Cuál prefieres?" },
+                { de: "sistema", texto: "¡Hola! Sí 💅 Tengo a las 16:00 o 18:30. ¿Cuál prefieres?" },
                 { de: "cliente", texto: "a las 18:30" },
-                { de: "bot", texto: "Listo, quedas agendada hoy 18:30 con Camila 💅" },
+                { de: "sistema", texto: "Listo, quedas agendada hoy 18:30 con Camila 💅" },
                 { de: "cliente", texto: "genial, gracias!" },
               ]}
             />
@@ -172,12 +172,12 @@ export default function HomePage() {
               mensajes={[
                 { de: "cliente", texto: "hola, tienen un radiador para hilux 2018?" },
                 {
-                  de: "bot",
+                  de: "sistema",
                   texto: "¡Sí! Te lo dejo acá 👇",
                   ficha: { titulo: "Radiador Toyota Hilux 2018", subtitulo: "Aluminio · 3 hileras · compatible 2016–2020", precio: "$84.990" },
                 },
                 { de: "cliente", texto: "tienen para instalarlo hoy mismo?" },
-                { de: "bot", texto: "Sí, tráelo antes de las 16:00 y sales con el radiador instalado 🔧" },
+                { de: "sistema", texto: "Sí, tráelo antes de las 16:00 y sales con el radiador instalado 🔧" },
               ]}
             />
           </div>
@@ -197,31 +197,32 @@ export default function HomePage() {
             description:
               "Un mismo asistente atiende WhatsApp e Instagram con la misma memoria del negocio. Nada se pierde entre canales.",
             photoLabel: "Foto: dueño de negocio respondiendo WhatsApp e Instagram desde el celular",
+            photoSrc: "/images/features/omnicanal-real.jpg",
             large: true,
-            badges: [
-              { label: "WhatsApp", color: "green" },
-              { label: "Instagram", color: "violet" },
-            ],
           },
           {
             title: "Respuestas al instante, 24/7",
             description: "Ningún cliente espera. Ni de madrugada, ni un domingo.",
             photoLabel: "Foto: notificación de celular a la madrugada, respondida al instante",
+            photoSrc: "/images/features/respuestas-instante.jpg",
           },
           {
             title: "Deriva a un humano cuando hace falta",
             description: "Si el cliente lo pide o el tema se complica, avisa a tu equipo con todo el contexto.",
             photoLabel: "Foto: persona del equipo tomando una llamada o revisando el panel",
+            photoSrc: "/images/features/derivacion-humano.jpg",
           },
           {
             title: "Se conecta a tu CRM o base de datos",
             description: "Sincroniza catálogo, precios y clientes con las herramientas que ya usas.",
             photoLabel: "Foto: pantalla mostrando integración entre panel y planilla/CRM",
+            photoSrc: "/images/features/integracion-panel-crm.jpg",
           },
           {
             title: "Nunca inventa un precio",
             description: "Cada respuesta se valida contra tu catálogo real. Si no está seguro, no adivina.",
             photoLabel: "Foto: catálogo de productos con precios reales sobre un mostrador",
+            photoSrc: "/images/features/catalogo-productos.jpg",
           },
         ]}
       />
@@ -237,6 +238,7 @@ export default function HomePage() {
             titulo: "Conecta tus canales",
             descripcion: "Vincula tu WhatsApp Business e Instagram en minutos, sin nada técnico de por medio.",
             photoLabel: "Foto: celular vinculando WhatsApp Business e Instagram",
+            photoSrc: "/images/features/conecta-canales.jpg",
             color: "green",
           },
           {
@@ -244,6 +246,7 @@ export default function HomePage() {
             titulo: "Entrena la IA con tu negocio",
             descripcion: "Carga catálogo, precios, horarios y el tono con el que quieres que hable.",
             photoLabel: "Foto: dueño de negocio cargando catálogo y precios en el panel",
+            photoSrc: "/images/features/entrena-ia-negocio.jpg",
             color: "violet",
           },
           {
@@ -251,6 +254,7 @@ export default function HomePage() {
             titulo: "Deja que atienda y venda solo",
             descripcion: "Responde, agenda y cierra ventas 24/7, y te avisa cuando de verdad te necesita.",
             photoLabel: "Foto: negocio funcionando de noche, celular con chat activo sobre el mostrador",
+            photoSrc: "/images/features/deja-atiende-solo.jpg",
             color: "green",
           },
         ]}

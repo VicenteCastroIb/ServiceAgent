@@ -5,6 +5,8 @@ export interface Step {
   titulo: string;
   descripcion: string;
   photoLabel: string;
+  /** Ruta en /public de la foto real. Si no viene, se muestra el placeholder con photoLabel. */
+  photoSrc?: string;
   color: "green" | "violet";
 }
 
@@ -32,19 +34,12 @@ export default function StepsSection({ eyebrow, eyebrowColor = "violet", title, 
 
         <div className="mt-[52px] grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7">
           {steps.map((step) => (
-            <div key={step.numero} className="rounded-[20px] border border-ink/10 bg-card p-[22px]">
-              <PhotoSlot label={step.photoLabel} height={150} className="mb-[18px]" />
-              <span
-                className={`flex h-11 w-11 items-center justify-center rounded-xl border text-[17px] font-extrabold ${
-                  step.color === "green"
-                    ? "border-green/30 bg-green/10 text-green-light"
-                    : "border-violet-mid/35 bg-violet/10 text-violet-light"
-                }`}
-              >
-                {step.numero}
-              </span>
-              <h3 className="mt-[18px] text-lg font-bold text-ink">{step.titulo}</h3>
-              <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{step.descripcion}</p>
+            <div key={step.numero} className="overflow-hidden rounded-[20px] border border-ink/10 bg-card">
+              <PhotoSlot label={step.photoLabel} src={step.photoSrc} height={240} rounded={false} />
+              <div className="p-[22px]">
+                <h3 className="text-lg font-bold text-ink">{step.titulo}</h3>
+                <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{step.descripcion}</p>
+              </div>
             </div>
           ))}
         </div>

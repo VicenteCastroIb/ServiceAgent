@@ -29,7 +29,7 @@ export default function TerminosPage() {
             WhatsApp e Instagram de tu negocio, usando el contexto (catálogo, precios, horarios, tono) que vos
             cargás en el panel. Según el plan contratado, también puede agendar citas, enviar recordatorios y generar
             links de pago. El servicio deriva la conversación a una persona cuando corresponde, y siempre podés
-            pausar el bot y responder manualmente desde el panel (&quot;modo híbrido&quot;).
+            pausar el sistema y responder manualmente desde el panel (&quot;modo híbrido&quot;).
           </p>
         </div>
 

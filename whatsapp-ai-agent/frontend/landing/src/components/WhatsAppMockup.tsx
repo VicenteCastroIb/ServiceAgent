@@ -12,7 +12,7 @@ export interface ProductoChat {
 }
 
 export interface MensajeChat {
-  de: "cliente" | "bot";
+  de: "cliente" | "sistema";
   texto?: string;
   hora: string;
   producto?: ProductoChat;
@@ -26,7 +26,7 @@ interface WhatsAppMockupProps {
   /**
    * Si es true, en vez de mostrar todos los mensajes de una, los va
    * revelando de a uno (con el indicador "escribiendo..." antes de cada
-   * respuesta del bot) apenas el mockup entra en pantalla, y hace loop.
+   * respuesta del sistema) apenas el mockup entra en pantalla, y hace loop.
    * Pensado para mockups de marketing en la landing (ver useReproduccionChat).
    * Ignora el prop `escribiendo` mientras está activo (lo maneja solo).
    */
@@ -116,8 +116,8 @@ function MessageBubble({ mensaje, animado }: { mensaje: MensajeChat; animado?: b
   const estiloEntrada = animado ? { animation: "mensaje-chat-in 0.25s ease-out" } : undefined;
 
   if (mensaje.producto) {
-    // Soporta texto + foto de producto en el mismo mensaje (el bot manda la
-    // ficha con una frase a modo de caption, como haría un vendedor real).
+    // Soporta texto + foto de producto en el mismo mensaje (el sistema manda
+    // la ficha con una frase a modo de caption, como haría un vendedor real).
     const p = mensaje.producto;
     return (
       <div

@@ -4,6 +4,8 @@ export interface Feature {
   title: string;
   description: string;
   photoLabel: string;
+  /** Ruta en /public de la foto real (ej: "/images/features/omnicanal-real.jpg"). Si no viene, se muestra el placeholder con photoLabel. */
+  photoSrc?: string;
   /** Card grande (2 unidades) — solo la primera del arreglo debería usar esto. */
   large?: boolean;
   /** Pills tipo "● WhatsApp" / "● Instagram" que solo se muestran en la card grande. */
@@ -40,46 +42,49 @@ export default function FeatureGrid({
         {subtitle && <p className="mt-3.5 text-base leading-relaxed text-ink/55">{subtitle}</p>}
       </div>
 
-      <div className="mt-12 flex flex-wrap gap-[18px]">
+      <div className="mt-12 flex flex-wrap items-start gap-[18px]">
         {features.map((feature) =>
           feature.large ? (
             <div
               key={feature.title}
-              style={{ backgroundImage: largeBg }}
-              className="min-w-[300px] flex-[2_1_480px] rounded-[20px] border border-ink/10 p-6"
+              className="min-w-[300px] flex-[2_1_480px] overflow-hidden rounded-[20px] border border-ink/10"
             >
-              <PhotoSlot label={feature.photoLabel} height={160} className="mb-[22px]" />
-              <div className="flex flex-wrap items-center justify-between gap-6">
-                <div className="max-w-[340px]">
-                  <h3 className="text-[19px] font-bold text-ink">{feature.title}</h3>
-                  <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{feature.description}</p>
-                </div>
-                {feature.badges && (
-                  <div className="flex gap-2.5">
-                    {feature.badges.map((badge) => (
-                      <span
-                        key={badge.label}
-                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                          badge.color === "green"
-                            ? "border-green/30 bg-green/10 text-green-light"
-                            : "border-violet-light/30 bg-violet/10 text-violet-light"
-                        }`}
-                      >
-                        ● {badge.label}
-                      </span>
-                    ))}
+              <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={220} rounded={false} />
+              <div style={{ backgroundImage: largeBg }} className="p-6">
+                <div className="flex flex-wrap items-center justify-between gap-6">
+                  <div className="max-w-[340px]">
+                    <h3 className="text-[19px] font-bold text-ink">{feature.title}</h3>
+                    <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{feature.description}</p>
                   </div>
-                )}
+                  {feature.badges && (
+                    <div className="flex gap-2.5">
+                      {feature.badges.map((badge) => (
+                        <span
+                          key={badge.label}
+                          className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                            badge.color === "green"
+                              ? "border-green/30 bg-green/10 text-green-light"
+                              : "border-violet-light/30 bg-violet/10 text-violet-light"
+                          }`}
+                        >
+                          ● {badge.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
             <div
               key={feature.title}
-              className="min-w-[230px] flex-[1_1_260px] rounded-[20px] border border-ink/10 bg-card p-6"
+              className="min-w-[230px] flex-[1_1_260px] overflow-hidden rounded-[20px] border border-ink/10 bg-card"
             >
-              <PhotoSlot label={feature.photoLabel} height={130} className="mb-[18px]" />
-              <h3 className="text-[17px] font-bold text-ink">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink/60">{feature.description}</p>
+              <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={180} rounded={false} />
+              <div className="p-6">
+                <h3 className="text-[17px] font-bold text-ink">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink/60">{feature.description}</p>
+              </div>
             </div>
           ),
         )}

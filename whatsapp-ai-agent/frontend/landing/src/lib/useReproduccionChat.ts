@@ -9,7 +9,7 @@ const PAUSA_ANTES_DE_REINICIAR_MS = 15000;
 
 /**
  * Revela los mensajes de un WhatsAppMockup de a uno, simulando una
- * conversación en tiempo real: antes de cada mensaje del bot muestra el
+ * conversación en tiempo real: antes de cada mensaje del sistema muestra el
  * indicador "escribiendo...", y al terminar la lista hace una pausa y
  * reinicia (loop ambiental, pensado para mockups de marketing en la
  * landing).
@@ -73,10 +73,10 @@ export function useReproduccionChat(mensajes: MensajeChat[], animado: boolean) {
       }
 
       const mensaje = mensajes[indice];
-      const esBot = mensaje.de === "bot";
-      const pausa = esBot ? PAUSA_ESCRIBIENDO_MS : PAUSA_ANTES_DE_CLIENTE_MS;
+      const esSistema = mensaje.de === "sistema";
+      const pausa = esSistema ? PAUSA_ESCRIBIENDO_MS : PAUSA_ANTES_DE_CLIENTE_MS;
 
-      if (esBot) setEscribiendo(true);
+      if (esSistema) setEscribiendo(true);
 
       timers.push(
         setTimeout(() => {

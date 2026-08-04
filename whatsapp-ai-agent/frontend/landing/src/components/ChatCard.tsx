@@ -1,11 +1,11 @@
 import type { CSSProperties } from "react";
 
 export interface ChatMensaje {
-  de: "cliente" | "bot";
+  de: "cliente" | "sistema";
   texto?: string;
-  /** Lista de líneas producto/precio dentro del mismo mensaje del bot (ej. varios ítems de un pedido). */
+  /** Lista de líneas producto/precio dentro del mismo mensaje del sistema (ej. varios ítems de un pedido). */
   productos?: { nombre: string; precio: string }[];
-  /** Ficha de un solo producto dentro del mensaje del bot (nombre, detalle y precio). */
+  /** Ficha de un solo producto dentro del mensaje del sistema (nombre, detalle y precio). */
   ficha?: { titulo: string; subtitulo?: string; precio: string };
 }
 
