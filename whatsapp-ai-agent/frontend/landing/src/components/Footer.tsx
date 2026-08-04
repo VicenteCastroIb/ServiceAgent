@@ -23,7 +23,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-8 px-5 py-14 sm:px-10">
         <div>
           <div className="flex items-center gap-2.5">
-            <Image src="/brand/logo.jpg" alt="" width={28} height={28} className="shrink-0" />
+            <Image src="/brand/logo.png" alt="" width={28} height={28} className="shrink-0" />
             <span className="text-[15px] font-bold text-ink">
               ServiceAgent<span className="text-green">.</span>
             </span>

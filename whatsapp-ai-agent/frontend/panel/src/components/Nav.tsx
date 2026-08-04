@@ -51,7 +51,7 @@ export default function Nav() {
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
         <div className="flex items-center gap-6">
           <Link href="/tenants" className="flex items-center gap-2.5">
-            <Image src="/brand/logo.jpg" alt="" width={36} height={36} className="shrink-0" />
+            <Image src="/brand/logo.png" alt="" width={36} height={36} className="shrink-0" />
             <span className="flex flex-col leading-none">
               <span className="text-[14.5px] font-bold tracking-[-0.01em] text-ink">ServiceAgent.</span>
               <span className="text-[10.5px] font-medium tracking-[0.03em] text-ink/40 uppercase">Panel</span>
