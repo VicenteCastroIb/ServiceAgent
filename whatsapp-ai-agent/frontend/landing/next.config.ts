@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 // Backend, para connect-src/CSP de abajo. Misma env var que ya usa el resto
@@ -18,9 +19,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
  * ningún caso de uso legítimo para objetos embebidos ni para que este sitio
  * se embeba en un iframe ajeno (clickjacking).
  */
+// 'unsafe-eval' solo en dev: Next/Turbopack (HMR, React DevTools, stack
+// traces con source maps) usa eval() en modo desarrollo. NUNCA se agrega en
+// producción (next build / next start) - React no usa eval() en prod, así
+// que ahí la CSP se mantiene estricta.
+const isDev = process.env.NODE_ENV !== "production";
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://connect.facebook.net`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://www.facebook.com https://www.google-analytics.com",
   `connect-src 'self' ${API_URL} https://www.google-analytics.com https://region1.google-analytics.com https://www.facebook.com`,
@@ -45,6 +52,12 @@ const nextConfig: NextConfig = {
   // Standalone: junta solo lo necesario para correr (server.js + deps mínimas)
   // en .next/standalone, para una imagen Docker liviana - mismo patrón que frontend/panel.
   output: "standalone",
+  // El monorepo tiene un package-lock.json propio en whatsapp-ai-agent/ además
+  // del de este workspace (frontend/landing/package-lock.json) - sin esto,
+  // Turbopack infiere mal la raíz y tira el warning "multiple lockfiles".
+  turbopack: {
+    root: path.join(__dirname),
+  },
   async headers() {
     return [
       {

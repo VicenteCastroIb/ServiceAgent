@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,9 +18,7 @@ export default function Header() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-cream/90 backdrop-blur-md">
       <div className="mx-auto flex h-[76px] max-w-[1240px] flex-wrap items-center justify-between gap-6 px-5 sm:px-10">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <span className="flex h-[26px] w-[26px] items-center justify-center rounded-lg bg-[linear-gradient(135deg,#b9862f,#c9788f)] text-[13px] font-extrabold text-white">
-            S
-          </span>
+          <Image src="/brand/logo.jpg" alt="" width={34} height={34} priority className="shrink-0" />
           <span className="text-base font-bold text-ink">
             ServiceAgent<span className="text-green">.</span>
           </span>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const PRODUCTO_LINKS = [
@@ -22,9 +23,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-8 px-5 py-14 sm:px-10">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-6 w-6 items-center justify-center rounded-[7px] bg-[linear-gradient(135deg,#b9862f,#c9788f)] text-xs font-extrabold text-white">
-              S
-            </span>
+            <Image src="/brand/logo.jpg" alt="" width={28} height={28} className="shrink-0" />
             <span className="text-[15px] font-bold text-ink">
               ServiceAgent<span className="text-green">.</span>
             </span>
