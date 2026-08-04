@@ -81,21 +81,20 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="bg-grid-fade absolute inset-0" />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-fixed bg-[url('/brand/hero-fondo.jpg')] bg-cover bg-top"
+        />
         <div className="relative mx-auto flex max-w-[1240px] flex-wrap items-center gap-12 px-5 py-[clamp(56px,8vw,88px)] sm:px-10">
-          <div className="min-w-[300px] flex-[1_1_400px]">
-            <div className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/8 px-3.5 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-green" />
-              <span className="text-xs font-semibold tracking-[0.04em] text-green-light">ATIENDE SIN PERDER NI UN CLIENTE</span>
-            </div>
-            <h1 className="mt-[22px] text-[clamp(34px,4.6vw,56px)] leading-[1.06] font-extrabold tracking-[-0.03em] text-ink">
+          <div className="min-w-[300px] flex-[1_1_400px] rounded-[24px] border border-white/25 bg-white/10 p-8 shadow-[0_20px_60px_rgba(43,38,32,0.12)] backdrop-blur-md">
+            <h1 className="mt-[22px] text-[clamp(34px,4.6vw,56px)] leading-[1.06] font-black tracking-[-0.03em] text-white">
               Tu WhatsApp e Instagram,
               <br />
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: TEXT_GRADIENT }}>
                 atendiendo solos.
               </span>
             </h1>
-            <p className="mt-[22px] max-w-[460px] text-base leading-relaxed text-ink/65">
+            <p className="mt-[22px] max-w-[460px] text-base leading-relaxed font-medium text-white/90">
               El asistente con IA que conversa como una persona de tu equipo, no con menús robóticos. Responde
               al instante, agenda tus horas y cierra ventas, las 24 horas.
             </p>
@@ -108,12 +107,12 @@ export default function HomePage() {
               </Link>
               <Link
                 href="#como-funciona"
-                className="rounded-[10px] border border-ink/15 px-[26px] py-[13px] text-[15px] font-semibold text-ink transition hover:border-ink/30"
+                className="rounded-[10px] border border-white/30 px-[26px] py-[13px] text-[15px] font-semibold text-white transition hover:border-white/60"
               >
                 Míralo en acción
               </Link>
             </div>
-            <p className="mt-7 text-[13px] text-ink/45">
+            <p className="mt-7 text-[13px] font-medium text-white/70">
               Sin contrato &nbsp;·&nbsp; Sin tarjeta de crédito &nbsp;·&nbsp; Puesta en marcha en minutos
             </p>
           </div>

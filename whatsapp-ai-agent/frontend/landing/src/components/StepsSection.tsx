@@ -1,4 +1,5 @@
 import PhotoSlot from "@/components/PhotoSlot";
+import Reveal from "@/components/Reveal";
 
 export interface Step {
   numero: number;
@@ -8,6 +9,12 @@ export interface Step {
   /** Ruta en /public de la foto real. Si no viene, se muestra el placeholder con photoLabel. */
   photoSrc?: string;
   color: "green" | "violet";
+}
+
+/** Reparte la animación de entrada: izquierda / abajo (centro) / derecha, cíclico cada 3 cards. */
+function direccionPorPosicion(i: number) {
+  const resto = i % 3;
+  return resto === 0 ? "izquierda" : resto === 1 ? "abajo" : "derecha";
 }
 
 interface StepsSectionProps {
@@ -33,14 +40,16 @@ export default function StepsSection({ eyebrow, eyebrowColor = "violet", title, 
         </div>
 
         <div className="mt-[52px] grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-7">
-          {steps.map((step) => (
-            <div key={step.numero} className="overflow-hidden rounded-[20px] border border-ink/10 bg-card">
-              <PhotoSlot label={step.photoLabel} src={step.photoSrc} height={240} rounded={false} />
-              <div className="p-[22px]">
-                <h3 className="text-lg font-bold text-ink">{step.titulo}</h3>
-                <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{step.descripcion}</p>
+          {steps.map((step, i) => (
+            <Reveal key={step.numero} direccion={direccionPorPosicion(i)} delay={i * 60}>
+              <div className="overflow-hidden rounded-[20px] border border-ink/10 bg-card">
+                <PhotoSlot label={step.photoLabel} src={step.photoSrc} height={240} rounded={false} />
+                <div className="p-[22px]">
+                  <h3 className="text-lg font-bold text-ink">{step.titulo}</h3>
+                  <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{step.descripcion}</p>
+                </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import PhotoSlot from "@/components/PhotoSlot";
+import Reveal from "@/components/Reveal";
 
 export interface Feature {
   title: string;
@@ -10,6 +11,12 @@ export interface Feature {
   large?: boolean;
   /** Pills tipo "● WhatsApp" / "● Instagram" que solo se muestran en la card grande. */
   badges?: { label: string; color: "green" | "violet" }[];
+}
+
+/** Reparte la animación de entrada: izquierda / abajo (centro) / derecha, cíclico cada 3 cards. */
+function direccionPorPosicion(i: number) {
+  const resto = i % 3;
+  return resto === 0 ? "izquierda" : resto === 1 ? "abajo" : "derecha";
 }
 
 interface FeatureGridProps {
@@ -43,49 +50,47 @@ export default function FeatureGrid({
       </div>
 
       <div className="mt-12 flex flex-wrap items-start gap-[18px]">
-        {features.map((feature) =>
+        {features.map((feature, i) =>
           feature.large ? (
-            <div
-              key={feature.title}
-              className="min-w-[300px] flex-[2_1_480px] overflow-hidden rounded-[20px] border border-ink/10"
-            >
-              <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={220} rounded={false} />
-              <div style={{ backgroundImage: largeBg }} className="p-6">
-                <div className="flex flex-wrap items-center justify-between gap-6">
-                  <div className="max-w-[340px]">
-                    <h3 className="text-[19px] font-bold text-ink">{feature.title}</h3>
-                    <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{feature.description}</p>
-                  </div>
-                  {feature.badges && (
-                    <div className="flex gap-2.5">
-                      {feature.badges.map((badge) => (
-                        <span
-                          key={badge.label}
-                          className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                            badge.color === "green"
-                              ? "border-green/30 bg-green/10 text-green-light"
-                              : "border-violet-light/30 bg-violet/10 text-violet-light"
-                          }`}
-                        >
-                          ● {badge.label}
-                        </span>
-                      ))}
+            <Reveal key={feature.title} direccion={direccionPorPosicion(i)} className="min-w-[300px] flex-[2_1_480px]">
+              <div className="overflow-hidden rounded-[20px] border border-ink/10">
+                <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={220} rounded={false} />
+                <div style={{ backgroundImage: largeBg }} className="p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-6">
+                    <div className="max-w-[340px]">
+                      <h3 className="text-[19px] font-bold text-ink">{feature.title}</h3>
+                      <p className="mt-2 text-[14.5px] leading-relaxed text-ink/60">{feature.description}</p>
                     </div>
-                  )}
+                    {feature.badges && (
+                      <div className="flex gap-2.5">
+                        {feature.badges.map((badge) => (
+                          <span
+                            key={badge.label}
+                            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                              badge.color === "green"
+                                ? "border-green/30 bg-green/10 text-green-light"
+                                : "border-violet-light/30 bg-violet/10 text-violet-light"
+                            }`}
+                          >
+                            ● {badge.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </Reveal>
           ) : (
-            <div
-              key={feature.title}
-              className="min-w-[230px] flex-[1_1_260px] overflow-hidden rounded-[20px] border border-ink/10 bg-card"
-            >
-              <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={180} rounded={false} />
-              <div className="p-6">
-                <h3 className="text-[17px] font-bold text-ink">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink/60">{feature.description}</p>
+            <Reveal key={feature.title} direccion={direccionPorPosicion(i)} delay={80} className="min-w-[230px] flex-[1_1_260px]">
+              <div className="overflow-hidden rounded-[20px] border border-ink/10 bg-card">
+                <PhotoSlot label={feature.photoLabel} src={feature.photoSrc} height={180} rounded={false} />
+                <div className="p-6">
+                  <h3 className="text-[17px] font-bold text-ink">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/60">{feature.description}</p>
+                </div>
               </div>
-            </div>
+            </Reveal>
           ),
         )}
       </div>

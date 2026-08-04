@@ -1,4 +1,5 @@
 import ChatCard, { type ChatMensaje } from "@/components/ChatCard";
+import Reveal from "@/components/Reveal";
 
 interface ConversationSectionProps {
   eyebrow: string;
@@ -31,10 +32,10 @@ export default function ConversationSection({
       <div
         className={`mx-auto grid max-w-[1240px] grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-center gap-12 px-5 py-[clamp(72px,9vw,110px)] sm:px-10`}
       >
-        <div className={reverse ? "order-2" : "order-1"}>
+        <Reveal direccion={reverse ? "derecha" : "izquierda"} className={reverse ? "order-2" : "order-1"}>
           <ChatCard negocio={negocio} canal={canal} mensajes={mensajes} className="mx-auto" />
-        </div>
-        <div className={reverse ? "order-1" : "order-2"}>
+        </Reveal>
+        <Reveal direccion={reverse ? "izquierda" : "derecha"} delay={100} className={reverse ? "order-1" : "order-2"}>
           <span className={`text-[12.5px] font-bold tracking-[0.1em] ${eyebrowColor === "green" ? "text-green-light" : "text-violet-light"}`}>
             {eyebrow}
           </span>
@@ -50,7 +51,7 @@ export default function ConversationSection({
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
