@@ -18,7 +18,7 @@ export default function Header() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-ink/10 bg-cream/90 backdrop-blur-md">
       <div className="mx-auto flex h-[76px] max-w-[1240px] flex-wrap items-center justify-between gap-6 px-5 sm:px-10">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/brand/logo.jpg" alt="" width={34} height={34} priority className="shrink-0" />
+          <Image src="/brand/logo.png" alt="" width={34} height={34} priority className="shrink-0" />
           <span className="text-base font-bold text-ink">
             ServiceAgent<span className="text-green">.</span>
           </span>

@@ -14,13 +14,6 @@ export const metadata: Metadata = {
   title: "ServiceAgent — Tu WhatsApp e Instagram, atendiendo solos",
 };
 
-const AVATARES = [
-  { letra: "M", bg: "bg-[#F0997B]", text: "text-[#4A1B0C]" },
-  { letra: "R", bg: "bg-[#5DCAA5]", text: "text-[#04342C]" },
-  { letra: "J", bg: "bg-[#85B7EB]", text: "text-[#042C53]" },
-  { letra: "C", bg: "bg-[#ED93B1]", text: "text-[#4B1528]" },
-];
-
 const RUBROS = ["Clínicas", "Tiendas online", "Peluquerías", "Talleres", "Dentistas"];
 
 const PLANES: PlanPrecio[] = [
@@ -120,23 +113,7 @@ export default function HomePage() {
                 Míralo en acción
               </Link>
             </div>
-            <div className="mt-7 flex items-center gap-2.5">
-              <div className="flex">
-                {AVATARES.map((a, i) => (
-                  <span
-                    key={a.letra}
-                    style={{ marginLeft: i === 0 ? 0 : -8 }}
-                    className={`flex h-7 w-7 items-center justify-center rounded-full border-2 border-cream text-[11px] font-bold ${a.bg} ${a.text}`}
-                  >
-                    {a.letra}
-                  </span>
-                ))}
-              </div>
-              <span className="text-[12.5px] text-ink/50">
-                <b className="text-ink">+30 locales</b> ya atienden solos
-              </span>
-            </div>
-            <p className="mt-5 text-[13px] text-ink/45">
+            <p className="mt-7 text-[13px] text-ink/45">
               Sin contrato &nbsp;·&nbsp; Sin tarjeta de crédito &nbsp;·&nbsp; Puesta en marcha en minutos
             </p>
           </div>

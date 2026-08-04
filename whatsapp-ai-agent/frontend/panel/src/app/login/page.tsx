@@ -35,7 +35,7 @@ function LoginForm() {
   return (
     <div className="mx-auto mt-20 max-w-sm">
       <div className="mb-7 flex items-center gap-2.5">
-        <Image src="/brand/logo.jpg" alt="" width={36} height={36} className="shrink-0" />
+        <Image src="/brand/logo.png" alt="" width={36} height={36} className="shrink-0" />
         <span className="text-[15px] font-bold tracking-[-0.01em] text-ink">ServiceAgent.</span>
       </div>
 
