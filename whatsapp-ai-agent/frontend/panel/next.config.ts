@@ -1,8 +1,15 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 // Backend, para connect-src del CSP de abajo. Misma env var que ya usa
 // lib/api.ts - se reusa acá en build time (next.config.ts corre en Node).
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+// 'unsafe-eval' solo en dev: Next/Turbopack (HMR, stack traces con source
+// maps) usa eval() en modo desarrollo. NUNCA se agrega en producción (next
+// build / next start) - React no usa eval() en prod, la CSP ahí queda igual
+// de estricta.
+const isDev = process.env.NODE_ENV !== "production";
 
 /**
  * El panel es la superficie más sensible del proyecto (credenciales de
@@ -30,7 +37,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
  */
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   `connect-src 'self' ${API_URL}`,
@@ -55,6 +62,12 @@ const nextConfig: NextConfig = {
   // Standalone: junta solo lo necesario para correr (server.js + deps mínimas)
   // en .next/standalone, para una imagen Docker liviana - ver Dockerfile.
   output: "standalone",
+  // El monorepo tiene un package-lock.json propio en whatsapp-ai-agent/ además
+  // del de este workspace (frontend/panel/package-lock.json) - sin esto,
+  // Turbopack infiere mal la raíz y tira el warning "multiple lockfiles".
+  turbopack: {
+    root: path.join(__dirname),
+  },
   async headers() {
     return [
       {
