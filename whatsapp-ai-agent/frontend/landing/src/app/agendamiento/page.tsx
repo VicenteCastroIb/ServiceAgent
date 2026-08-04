@@ -44,20 +44,20 @@ export default function AgendamientoPage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="bg-grid-fade absolute inset-0" />
+        <div aria-hidden className="absolute inset-0 bg-fixed bg-[url('/brand/hero-fondo.jpg')] bg-cover bg-top" />
         <div className="relative mx-auto flex max-w-[1240px] flex-wrap items-center gap-12 px-5 py-[clamp(56px,8vw,88px)] sm:px-10">
-          <div className="min-w-[300px] flex-[1.1_1_400px]">
+          <div className="min-w-[300px] flex-[1.1_1_400px] rounded-[24px] border border-white/25 bg-white/10 p-8 shadow-[0_20px_60px_rgba(43,38,32,0.12)] backdrop-blur-md">
             <span className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/8 px-3.5 py-1.5 text-xs font-semibold tracking-[0.04em] text-green-light">
               AGENDAMIENTO POR WHATSAPP CON IA
             </span>
-            <h1 className="mt-[22px] text-[clamp(32px,4.2vw,50px)] leading-[1.1] font-extrabold tracking-[-0.03em] text-ink">
+            <h1 className="mt-[22px] text-[clamp(32px,4.2vw,50px)] leading-[1.1] font-extrabold tracking-[-0.03em] text-white">
               Tu agenda{" "}
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: TEXT_GRADIENT }}>
                 se llena sola
               </span>
               , sin que muevas un dedo.
             </h1>
-            <p className="mt-[22px] max-w-[460px] text-base leading-relaxed text-ink/65">
+            <p className="mt-[22px] max-w-[460px] text-base leading-relaxed text-white/90">
               El asistente con IA que atiende por WhatsApp, ofrece tus horas libres, confirma la cita y envía
               el recordatorio. Las 24 horas, también cuando tú no puedes.
             </p>
@@ -70,12 +70,12 @@ export default function AgendamientoPage() {
               </Link>
               <Link
                 href="#conversacion"
-                className="rounded-[10px] border border-ink/15 px-[26px] py-[13px] text-[15px] font-semibold text-ink transition hover:border-ink/30"
+                className="rounded-[10px] border border-white/30 px-[26px] py-[13px] text-[15px] font-semibold text-white transition hover:border-white/60"
               >
                 Ver cómo conversa
               </Link>
             </div>
-            <p className="mt-5 text-[13px] text-ink/45">Sin tarjeta &nbsp;·&nbsp; Sin contrato &nbsp;·&nbsp; Sin instalar nada</p>
+            <p className="mt-5 text-[13px] text-white/70">Sin tarjeta &nbsp;·&nbsp; Sin contrato &nbsp;·&nbsp; Sin instalar nada</p>
           </div>
 
           <div className="relative flex min-w-[300px] flex-[0.9_1_340px] justify-center" style={{ height: 420 }}>
